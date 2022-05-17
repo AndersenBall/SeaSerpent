@@ -1,0 +1,64 @@
+tree("Root")
+	FallBack
+		tree("FireCannons")
+		tree("ReloadCannons")
+		tree("RotateCannons")
+		tree("AdjustSail")
+		tree("RepairShip")
+		tree("SteerShip")
+		tree("Idle")
+
+tree("Idle")
+	while
+		ActionCheck("Idle")
+		sequence
+			SetWanderPoint
+			Idle
+
+tree("FireCannons")
+	while
+		ActionCheck("FireCannons")
+		sequence
+			FindClosestCannon("Fire")
+			GoToClosest("Fire")
+			FireCannon
+			VariableWait("FireCannon")
+tree("ReloadCannons")
+	while
+		ActionCheck("ReloadCannons")
+		sequence
+			FindClosestCannonBall
+			GoToClosest("CannonBall")
+			GetCannonBall
+			Wait(.25)
+			FindClosestCannon("Reload")
+			GoToClosest("Reload")
+			Reload
+			VariableWait("ReloadCannon")
+tree("RotateCannons")
+	while
+		ActionCheck("RotateCannons")
+		sequence
+			FindClosestCannon("Rotate")
+			GoToClosest("Rotate")
+			RotateCannon
+			VariableWait("RotateCannon")
+tree("AdjustSail")
+	while
+		ActionCheck("AdjustSail")
+		sequence
+			GoToClosest("sail")
+			AdjustSail
+tree("RepairShip")
+	while
+		ActionCheck("Repair")
+		sequence
+			GoToClosest("hole")
+			Repair
+tree("SteerShip")
+	while
+		ActionCheck("steer")
+		sequence
+			GoToClosest("steeringWheel")
+			Steer
+			

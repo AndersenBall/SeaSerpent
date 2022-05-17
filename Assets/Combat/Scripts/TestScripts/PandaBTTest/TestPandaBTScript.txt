@@ -1,0 +1,18 @@
+tree("Root")
+	fallback
+		tree ("FarAway")
+		tree ("CloseBy")
+	
+	
+	
+tree ("FarAway")
+	while
+		greaterThenTen
+		sequence
+			MoveRight
+			MoveLeft
+
+tree ("CloseBy")
+	while
+		not greaterThenTen	
+		MoveBack
