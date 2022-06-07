@@ -30,9 +30,9 @@ public class BoatTeamManager : MonoBehaviour
     public BoatAI[] GetTeamBoatAI()
     {
         boatAIList = gameObject.GetComponentsInChildren<BoatAI>();
-        Debug.Log("boatAI length before:" + boatAIList.Length);
+        //Debug.Log("boatAI length before:" + boatAIList.Length);
         boatAIList = boatAIList.Where(e => e.isDead != true).ToArray();
-        Debug.Log("boatAI length after:" + boatAIList.Length);
+        //Debug.Log("boatAI length after:" + boatAIList.Length);
         return boatAIList;
     }
     public void SpawnBoat(Boat b) {

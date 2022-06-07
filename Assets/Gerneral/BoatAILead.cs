@@ -20,7 +20,7 @@ public class BoatAILead : MonoBehaviour
         GameEvents.LoadInitiated += LoadAllBoats;
     }
 
-    // Update is called once per frame
+
 
     public static int AssignID() {
         currentID += 1;

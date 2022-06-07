@@ -8,7 +8,7 @@ using Panda;
 public class BoatAI : MonoBehaviour
 {
     #region variables
-    private BoatMasterController boatMasterCon;//legacy
+    //private BoatMasterController boatMasterCon;//legacy
 
     private BoatMaster boatMaster;
     private BoatControls boatControl;
@@ -58,12 +58,6 @@ public class BoatAI : MonoBehaviour
 
     #endregion
 
-    #region legacy funnctions
-    public BoatMasterController GetBoatMasterController() {
-        return boatMasterCon;
-    }
-
-    #endregion
 
     #region setters and getters
     //*************setters and getters***************
@@ -130,7 +124,7 @@ public class BoatAI : MonoBehaviour
     public void SetTeamNumber(int team) {
         teamNumber = team;
         Transform t = transform.Find("Colonial Ship/ConvertTeamLayer/");
-        Debug.Log(t.name);
+        //Debug.Log("what is this" + t.name);
         AddLayerRecursively( t,"Team"+teamNumber);
         
     }
@@ -155,9 +149,9 @@ public class BoatAI : MonoBehaviour
     //*************** Methods*****************
     void AddLayerRecursively(Transform trans, string layer)
     {
-        //Debug.Log("layer:"+layer+ ":layernum:"+ LayerMask.NameToLayer(layer));
+        //Debug.Log("obejct:"+ trans.name +"layer:"+layer+ ":layernum:"+ LayerMask.NameToLayer(layer));
         trans.gameObject.layer = LayerMask.NameToLayer(layer);
-        if (trans.GetChildCount() > 0)
+        if (trans.childCount > 0)
             foreach (Transform t in trans)
                 AddLayerRecursively(t, layer);
     }

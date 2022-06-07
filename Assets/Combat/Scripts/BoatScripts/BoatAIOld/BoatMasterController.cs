@@ -26,33 +26,6 @@ public class BoatMasterController : MonoBehaviour
         
         return null;
     }
-
-    //gets closest boat to the vector 3 passed in
-    public BoatAI GetClosestBoat(Vector3 position, int teamNum) {
-        float distance;
-        float shortestDistance = 100000000;
-        
-        BoatAI[] teamBoats = GetTeamBoats(teamNum);
-
-        BoatAI closestBoat = null;
-        if (teamBoats != null && teamBoats.Length != 0) {
-            foreach (BoatAI boatCont in teamBoats) {
-                if(!boatCont.GetIsDead()){
-                    distance = Vector3.Distance(position, boatCont.transform.position);
-                    //Debug.Log("Cannon: " + cannon.name + "Distance: " + distance);
-                    if (distance > .1f) { 
-                        if (shortestDistance > distance) {
-                                shortestDistance = distance;
-                                closestBoat = boatCont;
-                                //    Debug.Log("new shortest distance: " + shortestDistance);
-                            }
-                    }   
-                }
-            }
-        }
-        return closestBoat;
-    }
-
-    
+ 
 
 }
