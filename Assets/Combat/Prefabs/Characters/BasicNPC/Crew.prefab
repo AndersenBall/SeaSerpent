@@ -2584,7 +2584,7 @@ MonoBehaviour:
   autoReset: 1
   tickOn: 0
   sourceInfos:
-  - isFoldout: 0
+  - isFoldout: 1
     breakPoints: 
     breakPointStatuses: 
     collapsedLines: 

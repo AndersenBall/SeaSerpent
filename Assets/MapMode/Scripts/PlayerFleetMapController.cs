@@ -33,6 +33,8 @@ public class PlayerFleetMapController : MonoBehaviour
         //UpdateBoatNames();
         fleet = new Fleet("House Of Ball","Andersen");
         fleet.AddBoat(new Boat("Hogger2", "Frigate"));
+        fleet.AddBoat(new Boat("Hogger3", "Frigate"));
+        fleet.AddBoat(new Boat("Hogger4", "Frigate"));
         fleet.AddBoat(new Boat("Floater", "TradeShip"));
         PlayerGlobal.playerBoat = new Boat("Serpent", "Frigate");
         PlayerGlobal.money = 100000;

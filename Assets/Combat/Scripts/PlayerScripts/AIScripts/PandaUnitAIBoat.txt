@@ -33,8 +33,9 @@ tree("ReloadCannons")
 			Wait(.25)
 			FindClosestCannon("Reload")
 			GoToClosest("Reload")
-			Reload
 			VariableWait("ReloadCannon")
+			Reload
+			
 tree("RotateCannons")
 	while
 		ActionCheck("RotateCannons")

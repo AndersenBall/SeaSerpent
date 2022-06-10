@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+//Legacy not in use
 public class NPCInterface : MonoBehaviour
 {
+    /*
     private ShipAmunitionInterface shipAmunitions;
 
     private AIMovement movement;
@@ -209,5 +211,6 @@ public class NPCInterface : MonoBehaviour
             triggerCollider = null;
         }
     }
+    */
    
 }

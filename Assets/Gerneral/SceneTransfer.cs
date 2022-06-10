@@ -23,18 +23,7 @@ public class SceneTransfer : MonoBehaviour
         
     }
 
-    public static void SaveGame() {
-        int i = 0;
-        SaveLoad.Save(i, "GameMeta");
-        GameEvents.SaveInitiated();
-    }
-    public static void LoadGame() {
-        if (SaveLoad.SaveExists("GameMeta")) {
-            GameEvents.LoadInitiated();
-        }
-        else { Debug.Log("No file to load"); }
-    }
-    public static void UpdateBoatsFromBattle() {//calleed after the world is loaded back
+    public static void UpdateBoatsFromBattle() {//calleed after the world map is loaded back
         
         if (enemyFleet != null) {
             GameObject boats = GameObject.Find("Boats");

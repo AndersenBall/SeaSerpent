@@ -25,11 +25,6 @@ public class ShipAmunitionInterface : MonoBehaviour
     }
     
 
-    public void SetCannonsToNotBusy() {
-        foreach (CannonInterface cannon in GetCannons()){
-            cannon.SetBusyStatus(false);
-        }
-    }
 
     public CannonInterface[] GetUnloadedCannons()
     {

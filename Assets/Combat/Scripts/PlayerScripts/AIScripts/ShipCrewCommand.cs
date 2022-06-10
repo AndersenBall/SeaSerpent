@@ -41,7 +41,7 @@ public class ShipCrewCommand : MonoBehaviour
     }
 
 
-    //This script reloadscannons on the ship. it does so by calling the fire Enum on every NPC
+    //This script reloads cannons on the ship. it does so by calling the fire Enum on every NPC
     public void ReloadCannons()
     {
         if (unitAIs == null) {
@@ -108,40 +108,40 @@ public class ShipCrewCommand : MonoBehaviour
         if (Input.GetKeyDown("1")) {
             if (cannonGroups.Remove(1)) {
                 DeactivatePredictionLines(1);
-                Debug.Log(gameObject.name + "removed group 1");}
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "removed group 1");}
             else { 
                 cannonGroups.Add(1); 
-                Debug.Log(gameObject.name + "added group 1");
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 1");
                 ActivatePredictionLines();
             }
         }
         if (Input.GetKeyDown("2")) {
             if (cannonGroups.Remove(2)) {
                 DeactivatePredictionLines(2);
-                Debug.Log(gameObject.name + "removed group 2"); }
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "removed group 2"); }
             else {
                 cannonGroups.Add(2);
-                Debug.Log(gameObject.name + "added group 2");
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 2");
                 ActivatePredictionLines();
             }
         }
         if (Input.GetKeyDown("3")) {
             if (cannonGroups.Remove(3)) {
                 DeactivatePredictionLines(3);
-                Debug.Log(gameObject.name + "removed group 3"); }
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "removed group 3"); }
             else {
                 cannonGroups.Add(3);
-                Debug.Log(gameObject.name + "added group 3");
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 3");
                 ActivatePredictionLines();
             }
         }
         if (Input.GetKeyDown("4")) {
             if (cannonGroups.Remove(4)) {
                 DeactivatePredictionLines(4);
-                Debug.Log(gameObject.name + "removed group 4"); }
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "removed group 4"); }
             else {
                 cannonGroups.Add(4);
-                Debug.Log(gameObject.name + "added group 4");
+                Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 4");
                 ActivatePredictionLines();
             }
         }

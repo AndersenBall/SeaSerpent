@@ -18,9 +18,9 @@ public class BoatMaster : MonoBehaviour
     {
         boatTeamManagers = gameObject.GetComponentsInChildren<BoatTeamManager>();
 
-        Debug.Log("arr length:"+ Arr2d.Length);
-        Debug.Log("arr .getupperbound 0:" + Arr2d.GetUpperBound(0));
-        Debug.Log("arr .getupperbound 1:" + Arr2d.GetUpperBound(1));
+        Debug.Log("Log:BoatMaster:arr length:"+ Arr2d.Length);
+        Debug.Log("Log:BoatMaster:arr .getupperbound 0:" + Arr2d.GetUpperBound(0));
+        Debug.Log("Log:BoatMaster:arr .getupperbound 1:" + Arr2d.GetUpperBound(1));
 
         
         for (int x = 0; x <= Arr2d.GetUpperBound(0); x++) {
@@ -30,7 +30,7 @@ public class BoatMaster : MonoBehaviour
         }
         SpawnBoats();
         allBoatsList = new List<BoatAI>(gameObject.GetComponentsInChildren<BoatAI>());
-        Debug.Log("total boats count:" + allBoatsList.Count());
+        Debug.Log("Log:BoatMaster:total boats count:" + allBoatsList.Count());
         InitalizeBoats();
 
     }
@@ -97,7 +97,7 @@ public class BoatMaster : MonoBehaviour
         foreach (BoatAI boat in allBoatsList) {
             Vector3 pos = boat.transform.position;
             (int x, int y) xyPos = (Mathf.FloorToInt(pos.x / tileSize), Mathf.FloorToInt(pos.z / tileSize));
-            Debug.Log("add boat: (" + boat.name + ") at location: " + xyPos.x +","+ xyPos.y);
+            Debug.Log("Log:BoatMaster:add boat: (" + boat.name + ") at location: " + xyPos.x +","+ xyPos.y);
             boat.SetPrevXYPos((xyPos.x, xyPos.y));
             Arr2d[xyPos.x, xyPos.y].Add(boat);
         }

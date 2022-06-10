@@ -24,7 +24,7 @@ public class BoatAILead : MonoBehaviour
 
     public static int AssignID() {
         currentID += 1;
-        Debug.Log("current ID" + currentID);
+        //Debug.Log("Log:BoatAIStatic:current ID" + currentID);
         boatIDs.Add(currentID);
         return currentID;
     }

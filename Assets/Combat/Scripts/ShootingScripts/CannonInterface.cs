@@ -128,15 +128,12 @@ public class CannonInterface : MonoBehaviour
     public void LoadGun()
     {
         if (isLoaded == false) {
-            StartCoroutine(LoadWait());
+            gunAnim.SetBool("isLoaded", true);
+            haloControl.SetHalo(false);
+            isLoaded = true;
+            isBeingWorkedOn = false;
         }
     }
-    IEnumerator LoadWait() {
-        gunAnim.SetBool("isLoaded", true);
-        yield return new WaitForSeconds(2f);
-        haloControl.SetHalo(false);
-        isLoaded = true;
-        isBeingWorkedOn = false;
-    }
+  
 
 }

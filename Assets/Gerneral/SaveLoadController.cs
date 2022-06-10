@@ -8,7 +8,7 @@ public class SaveLoadController : MonoBehaviour
     
     private void Start()
     {
-        SceneTransfer.LoadGame();
+        GameEvents.LoadGame();
         SceneTransfer.UpdateBoatsFromBattle();
     }
 
@@ -16,10 +16,10 @@ public class SaveLoadController : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown("s")) {
-            SceneTransfer.SaveGame();
+            GameEvents.SaveGame();
         }
         if (Input.GetKeyDown("l")) {
-            SceneTransfer.LoadGame();
+            GameEvents.LoadGame();
         }
         if (Input.GetKeyDown("p")) {
             SaveLoad.SeriouslyDeleteAllSaveFiles();

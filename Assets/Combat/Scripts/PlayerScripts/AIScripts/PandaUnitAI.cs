@@ -64,6 +64,7 @@ public class PandaUnitAI : MonoBehaviour
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
             nearestCannon.SetBusyStatus(false);
+            Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;
 
@@ -87,7 +88,7 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void SetWanderPoint() {
         Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
-        Debug.Log("Wander point " + wanderPoint);
+        //Debug.Log("Info:Unit:Wander point " + wanderPoint);
         movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
         Task.current.Succeed();
     }
@@ -126,9 +127,7 @@ public class PandaUnitAI : MonoBehaviour
                 return;
             }
         }
-        
-       
-        Task.current.Fail();
+        //maybe implement timer ticking, reaches certain time then fail
         
     }
     [Task]
@@ -155,6 +154,8 @@ public class PandaUnitAI : MonoBehaviour
             return;
         }
         UnsubscribeCannon();
+
+        //Debug.Log("Debug:Unit:Closest Cannon:" + name + " start search" + input);
         if (input == "Fire") {
             cannonList = shipAmunitions.GetLoadedCannons(cannonGroups);
             
@@ -176,15 +177,17 @@ public class PandaUnitAI : MonoBehaviour
         foreach (CannonInterface cannon in cannonList) {
             if (!cannon.GetBusyStatus()) {
                 distance = Vector3.Distance(transform.position, cannon.transform.position);
-                //Debug.Log("Cannon: " + cannon.name + "Distance: " + distance);
+                Debug.Log("Debug:Unit:"+name + "Cannon: " + cannon.name + "Distance: " + distance);
                 if (shortestDistance > distance) {
                     shortestDistance = distance;
                     nearestCannon = cannon;
                 }
             }
         }
-        if (nearestCannon != null) {
+        if (nearestCannon != null ) {
             nearestCannon.SetBusyStatus(true);
+            Task.current.debugInfo = nearestCannon.name;
+            Debug.Log("Debug:Unit:Closest Cannon:" + name + " end search" + nearestCannon.name);
             Task.current.Succeed();
         }
         else {
@@ -241,14 +244,16 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void Reload()
     {
-        if (hasCannonBall) {
+        
+        if (hasCannonBall && !nearestCannon.GetLoadStatus()) {
             hasCannonBall = false;
             nearestCannon.LoadGun();
             Destroy(cannonBallHand);
-            UnsubscribeCannon();
             Task.current.Succeed();
+            nearestCannon = null;
             return;
         }
+        nearestCannon = null;
         Task.current.Fail();
     }
     [Task]
