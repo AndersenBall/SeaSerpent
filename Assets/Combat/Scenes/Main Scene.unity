@@ -166,10 +166,10 @@ RectTransform:
   m_Father: {fileID: 2118910830}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 802.5, y: 449.99997}
-  m_SizeDelta: {x: 230.00665, y: 100.000275}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -271.2, y: -90.00003}
+  m_SizeDelta: {x: 230.00659, y: 100.000244}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &32229397
 MonoBehaviour:
@@ -201,13 +201,9 @@ MonoBehaviour:
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Fire Cannons L
-
-    Reload Cannons K
-
-    Cannon Angle O'
+  m_Text: "Fire Cannons: F\n    up:       V \n    down:  C\nReload Cannons: R\n"
 --- !u!222 &32229398
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1637,7 +1633,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 716734714}
-  - component: {fileID: 716734715}
   - component: {fileID: 716734716}
   m_Layer: 0
   m_Name: WorldBoats
@@ -1662,18 +1657,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &716734715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 716734713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a430c04f6d7fab4db710c30889aafab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &716734716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1749,10 +1732,10 @@ RectTransform:
   m_Father: {fileID: 2118910830}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -782.35, y: 448.33}
-  m_SizeDelta: {x: 253.1619, y: 103.336624}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 240, y: -91.67001}
+  m_SizeDelta: {x: 253.16187, y: 103.33661}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &735085565
 MonoBehaviour:
@@ -3255,9 +3238,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'T :Fire
+  m_Text: 'Q :Fire
 
-    R :Load
+    E :Load
 
     U :Angle
 

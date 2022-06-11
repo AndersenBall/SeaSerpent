@@ -36,7 +36,7 @@ public class Boat
             cargoMax = 50;
             maxSailorCount = 10;
             for (int i = 0; i < 6; i++) {
-                AddSailor(new Sailor("tom"+i));
+                AddSailor(new Sailor("tom"+ name +i));
             }
         }
         else if (type == "TradeShip") {

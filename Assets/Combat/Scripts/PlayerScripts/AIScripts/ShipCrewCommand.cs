@@ -56,9 +56,18 @@ public class ShipCrewCommand : MonoBehaviour
 
     }
 
-    public void AdjustCannonAngles() {
+    public void AdjustCannonAnglesPlayer() {
         
         foreach (PandaUnitAI unit in unitAIs) {
+            unit.SetAction("RotateCannons");
+        }
+    }
+ 
+
+    public void AdjustCannonAngles()
+    {
+        foreach (PandaUnitAI unit in unitAIs)
+        {
             unit.SetCannonGroups(cannonGroups);
             unit.SetAction("RotateCannons");
         }
@@ -69,9 +78,13 @@ public class ShipCrewCommand : MonoBehaviour
         foreach (CannonInterface cannon in cannons) {
             cannon.UpdateWantedBarrelAngle(ang);
         }
+        foreach (PandaUnitAI unit in unitAIs){
+            unit.SetActionNoUn("RotateCannons");
+        }
     }
     public void SetCannonAnglePredictions(float ang)
     {//adjust the current amount, used by player
+        //Debug.Log("Log:ShipCrew:Angle:"+ang);
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
             cannon.SetWantedBarrelAngle(ang);

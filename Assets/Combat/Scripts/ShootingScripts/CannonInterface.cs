@@ -93,9 +93,10 @@ public class CannonInterface : MonoBehaviour
             randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
             float randNormalY = cannonVariance * (float)randStdNormal;
 
-            
             //Debug.Log(randNormalX + "" + randNormalY);
             bulletRigidBody.velocity = Quaternion.AngleAxis(randNormalX, Vector3.up)* Quaternion.AngleAxis(randNormalY,Vector3.right) * barrel.forward * fireForce;
+
+            SetLineActivity(false);
         }
         
     }
@@ -133,6 +134,7 @@ public class CannonInterface : MonoBehaviour
             isLoaded = true;
             isBeingWorkedOn = false;
         }
+        Debug.Log("reload gun");
     }
   
 

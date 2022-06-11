@@ -19,12 +19,14 @@ public class CannonLine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         if (Input.GetKeyDown("y")) {
             cannonSet.Fire();
         }
-        if (Input.GetKeyDown("r")) {
+        if (Input.GetKeyDown("j")) {
             cannonSet.LoadGun();
         }
+        */
         
         UpdateLineRender();
         
