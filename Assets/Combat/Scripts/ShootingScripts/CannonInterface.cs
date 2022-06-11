@@ -134,7 +134,7 @@ public class CannonInterface : MonoBehaviour
             isLoaded = true;
             isBeingWorkedOn = false;
         }
-        Debug.Log("reload gun");
+        //Debug.Log("reload gun");
     }
   
 

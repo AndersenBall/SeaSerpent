@@ -111,6 +111,7 @@ public class PandaUnitAI : MonoBehaviour
             if (nearestCannon != null) {
                 destination = nearestCannon.transform;
                 offset = destination.forward * -3f;
+
             }
         }
         else if (type == "CannonBall") {
@@ -125,7 +126,8 @@ public class PandaUnitAI : MonoBehaviour
         
         if (destination != null) {
             movement.SetDestination(destination.position + offset);
-            Task.current.debugInfo = "" + Vector3.Distance(transform.position, destination.position + offset)+" "+ transform.position + " "+ destination.position+ offset;
+            Task.current.debugInfo = ""+ Vector3.Distance(transform.position, destination.position + offset);
+            
             if (Vector3.Distance(transform.position, destination.position +offset) < 1f) {
                 Task.current.Succeed();
                 return;

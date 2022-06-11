@@ -33,7 +33,7 @@ public class ShipCrewCommand : MonoBehaviour
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs) {
                 unit.SetCannonGroups(cannonGroups);
-                unit.SetAction("FireCannons");
+                unit.SetActionNoUn("FireCannons");
             }
         }
         ClearCannons();
@@ -50,7 +50,7 @@ public class ShipCrewCommand : MonoBehaviour
         else {
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs) {
-                unit.SetAction("ReloadCannons");
+                unit.SetActionNoUn("ReloadCannons");
             }
         }
 
@@ -66,10 +66,8 @@ public class ShipCrewCommand : MonoBehaviour
 
     public void AdjustCannonAngles()
     {
-        foreach (PandaUnitAI unit in unitAIs)
-        {
-            unit.SetCannonGroups(cannonGroups);
-            unit.SetAction("RotateCannons");
+        foreach (PandaUnitAI unit in unitAIs){
+            unit.SetActionNoUn("RotateCannons");
         }
         ClearCannons();
     }
