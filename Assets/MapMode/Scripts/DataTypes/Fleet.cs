@@ -17,7 +17,6 @@ public class Fleet
     public Fleet(string Natio,string command) {
         Nationality = Natio;
         commander = command;
-       
         fleetID = BoatAILead.AssignID();
     }
 

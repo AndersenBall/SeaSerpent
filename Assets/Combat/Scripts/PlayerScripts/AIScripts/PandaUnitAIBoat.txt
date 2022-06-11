@@ -42,8 +42,9 @@ tree("RotateCannons")
 		sequence
 			FindClosestCannon("Rotate")
 			GoToClosest("Rotate")
-			RotateCannon
 			VariableWait("RotateCannon")
+			RotateCannon
+			
 tree("AdjustSail")
 	while
 		ActionCheck("AdjustSail")

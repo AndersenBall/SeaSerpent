@@ -38,10 +38,10 @@ public class PlayerTriggerController : MonoBehaviour
         hud.UpdateSailStength((Mathf.Round(values.Item1 * 10) / 10f, Mathf.Round(values.Item2 * 10) / 10f));
         //if inside of a cannons trigger
         if (gunControl != null) {
-            if (Input.GetKeyDown("t") && gunControl.GetLoadStatus()) {
+            if (Input.GetKeyDown("q") && gunControl.GetLoadStatus()) {
                 gunControl.Fire();
             }
-            if (Input.GetKeyDown("r") && !gunControl.GetLoadStatus() && itemPickUp.GetCannonBallStatus()) {
+            if (Input.GetKeyDown("e") && !gunControl.GetLoadStatus() && itemPickUp.GetCannonBallStatus()) {
                 gunControl.LoadGun();
                 itemPickUp.RemoveCannonBall();
             }
@@ -53,11 +53,13 @@ public class PlayerTriggerController : MonoBehaviour
 
         //control boat
         if (Input.GetKeyDown("e")) {
+            itemPickUp.PickUpCannonBall();
             if (drivingBoat) {
                 EnterPlayerControls(steeringWheelTrigger);
                 drivingBoat = false;
                 steeringWheelTrigger = null;
             }
+            
             else if (triggerInsideOf != null) {
                 if (triggerInsideOf.CompareTag("steeringWheel")) {
                     EnterBoatControls(triggerInsideOf);
@@ -68,43 +70,43 @@ public class PlayerTriggerController : MonoBehaviour
         }
 
         if (shipCrewCommand != null) {
-            if (currentCommand == "fireCommand") { shipCrewCommand.SetCannonSets(); }
-            if (currentCommand == "cannonAngle") {
+            if (currentCommand == "fireCommand") { 
                 shipCrewCommand.SetCannonSets();
-                if (Input.GetKeyDown("=")) {
-                    Debug.Log("+ pressed");
-                    shipCrewCommand.AdjustCannonAnglePredictions(.5f);
+
+                float multiplier = Input.GetKeyDown(KeyCode.LeftShift) ? .5f : 1;
+                if (Input.GetKeyDown("v")){
+                    Debug.Log("Log:PlayerTrigger:+ pressed");
+                    shipCrewCommand.AdjustCannonAnglePredictions(.5f*multiplier);
                 }
-                if (Input.GetKeyDown("-")) {
-                    Debug.Log("- pressed");
-                    shipCrewCommand.AdjustCannonAnglePredictions(-.5f);
+                if (Input.GetKeyDown("c")){
+                    Debug.Log("Log:PlayerTrigger: - pressed");
+                    shipCrewCommand.AdjustCannonAnglePredictions(-.5f*multiplier);
                 }
             }
 
-            if (Input.GetKeyDown("l")) {
-                if (currentCommand == "fireCommand") {
+            if (Input.GetKeyDown("f"))
+            {
+                if (currentCommand == "fireCommand")
+                {
                     shipCrewCommand.FireCannons();
                     NewCommand("nothing");
                 }
-                else {
+                else
+                {
+                    shipCrewCommand.AdjustCannonAnglesPlayer();
                     NewCommand("fireCommand");
                     hud.CannonGroupHelpOn();
 
                 }
             }
-            if (Input.GetKeyDown("o")) {
-                if (currentCommand == "cannonAngle") {
-                    shipCrewCommand.AdjustCannonAngles();
-                    NewCommand("nothing");
-                }
-                else {
-                    NewCommand("cannonAngle");
-                    hud.CannonGroupHelpOn();
-                }
-            }
-            if (Input.GetKeyDown("k")) {
+
+            if (Input.GetKeyDown("r"))
+            {
                 shipCrewCommand.ReloadCannons();
+                NewCommand("Reload");
+                shipCrewCommand.DeactivatePredictionLines();
             }
+            
         }
 
     }
@@ -117,7 +119,7 @@ public class PlayerTriggerController : MonoBehaviour
 
     private void NewCommand(string newCommand) {
         shipCrewCommand.ClearCannons();
-        shipCrewCommand.DeactivatePredictionLines();
+        //shipCrewCommand.DeactivatePredictionLines();
         hud.CannonGroupHelpOff();
         currentCommand = newCommand;
 

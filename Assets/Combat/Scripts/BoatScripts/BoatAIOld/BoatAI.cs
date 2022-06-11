@@ -396,11 +396,13 @@ public class BoatAI : MonoBehaviour
         Debug.DrawLine(targetEnemy.transform.position + targetVec, targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
         float distance = Vector3.Distance(targetEnemy.transform.position+targetVec, transform.position);
         shipCrewCommand.SetCannonAnglePredictions(Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
-        shipCrewCommand.AdjustCannonAngles();
+        shipCrewCommand.AdjustCannonAngles();//could be here
         Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
         if (shipAmoInter.GetRotateCannons().Length == 0)
             Task.current.Succeed();
     }
+
+    /*
     [Task]
     public void ResetCannons() {
         shipCrewCommand.SetCannonSets(3);
@@ -409,6 +411,8 @@ public class BoatAI : MonoBehaviour
         shipCrewCommand.SetCannonAnglePredictions(0);
         shipCrewCommand.AdjustCannonAngles();
     }
+    */
+
     [Task]
     public void GetInAttackPosition(float exitDistance)
     {

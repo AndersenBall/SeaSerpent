@@ -20,13 +20,15 @@ public class ItemPickUp : MonoBehaviour
  
     void Update()
     {
-        if (Input.GetKeyDown("f")) {
+        /*
+        if (Input.GetKeyDown("e")) {
             Detect();
         }
-        if (Input.GetKeyDown("g") && cannonBall != null) {
+        if (Input.GetKeyDown("") && cannonBall != null) {
             RemoveCannonBall();
             HUD.cannonIconOff();
         }
+        */
     }
     public bool GetCannonBallStatus() {
         return hasCannonBall;
@@ -37,7 +39,7 @@ public class ItemPickUp : MonoBehaviour
         HUD.cannonIconOff();
         hasCannonBall = false;
     }
-    private void Detect()
+    public void PickUpCannonBall()
     {
         RaycastHit hit;
         Debug.DrawRay(fpsCam.transform.position + fpsCam.transform.forward / 10, fpsCam.transform.forward, Color.green);

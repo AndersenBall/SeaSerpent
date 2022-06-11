@@ -75,6 +75,8 @@ public class BoatTeamManager : MonoBehaviour
         foreach (Sailor s in b.GetSailors()) {
             GameObject spawnedUnit = Instantiate(unitPrefab, spawnedBoat.transform.Find("Crew"));
             GameObject spawnedAIUnit = Instantiate(unitAIPrefab, spawnedAIBoat.transform);
+            spawnedUnit.name = s.name;
+            spawnedAIUnit.name = "AI" + s.name;
             spawnedUnit.GetComponent<AIMovement>().navMeshInterface = spawnedAIUnit.GetComponent<NavMeshUnitInterface>();
             spawnedAIUnit.transform.position += new Vector3(0, 0, numberOfSailors * 2);
             numberOfSailors += 1;

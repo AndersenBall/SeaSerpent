@@ -46,6 +46,10 @@ public class PandaUnitAI : MonoBehaviour
         UnsubscribeCannon();
         currentAction = act;
     }
+    public void SetActionNoUn(string act) {
+        currentAction = act;
+    }
+
     public string GetAction() {
         return currentAction;
     }
@@ -64,7 +68,7 @@ public class PandaUnitAI : MonoBehaviour
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
             nearestCannon.SetBusyStatus(false);
-            Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
+            //Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;
 
@@ -107,6 +111,7 @@ public class PandaUnitAI : MonoBehaviour
             if (nearestCannon != null) {
                 destination = nearestCannon.transform;
                 offset = destination.forward * -3f;
+
             }
         }
         else if (type == "CannonBall") {
@@ -121,12 +126,15 @@ public class PandaUnitAI : MonoBehaviour
         
         if (destination != null) {
             movement.SetDestination(destination.position + offset);
-            Task.current.debugInfo = "" + Vector3.Distance(transform.position, destination.position + offset);
+            Task.current.debugInfo = ""+ Vector3.Distance(transform.position, destination.position + offset);
+            
             if (Vector3.Distance(transform.position, destination.position +offset) < 1f) {
                 Task.current.Succeed();
                 return;
             }
         }
+        
+        return;
         //maybe implement timer ticking, reaches certain time then fail
         
     }
@@ -137,7 +145,7 @@ public class PandaUnitAI : MonoBehaviour
         else if (input == "ReloadCannon") {
             pandaBT.Wait(10f);
         }else if (input == "RotateCannon") {
-            pandaBT.Wait(5f);
+            pandaBT.Wait(1f);
         }
         else {
             pandaBT.Wait(1f);
@@ -148,14 +156,14 @@ public class PandaUnitAI : MonoBehaviour
     public void FindClosestCannon(string input)
     {
         CannonInterface[] cannonList = null;
-
+        //Debug.Log("Debug:Unit:Closest Cannon:" + name + " start search" + input);
         if (nearestCannon != null) {
             Task.current.Succeed();
             return;
         }
         UnsubscribeCannon();
 
-        //Debug.Log("Debug:Unit:Closest Cannon:" + name + " start search" + input);
+        
         if (input == "Fire") {
             cannonList = shipAmunitions.GetLoadedCannons(cannonGroups);
             
@@ -177,7 +185,7 @@ public class PandaUnitAI : MonoBehaviour
         foreach (CannonInterface cannon in cannonList) {
             if (!cannon.GetBusyStatus()) {
                 distance = Vector3.Distance(transform.position, cannon.transform.position);
-                Debug.Log("Debug:Unit:"+name + "Cannon: " + cannon.name + "Distance: " + distance);
+                //Debug.Log("Debug:Unit:"+name + "Cannon: " + cannon.name + "Distance: " + distance);
                 if (shortestDistance > distance) {
                     shortestDistance = distance;
                     nearestCannon = cannon;
@@ -187,11 +195,11 @@ public class PandaUnitAI : MonoBehaviour
         if (nearestCannon != null ) {
             nearestCannon.SetBusyStatus(true);
             Task.current.debugInfo = nearestCannon.name;
-            Debug.Log("Debug:Unit:Closest Cannon:" + name + " end search" + nearestCannon.name);
+            //Debug.Log("Debug:Unit:Closest Cannon:" + name + " end search" + nearestCannon.name);
             Task.current.Succeed();
         }
         else {
-            Task.current.Fail();
+            Task.current.Fail(); 
         }
     }
 
@@ -250,7 +258,7 @@ public class PandaUnitAI : MonoBehaviour
             nearestCannon.LoadGun();
             Destroy(cannonBallHand);
             Task.current.Succeed();
-            nearestCannon = null;
+            UnsubscribeCannon();
             return;
         }
         nearestCannon = null;
@@ -259,9 +267,11 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void RotateCannon() {
         nearestCannon.RotateBarrel();
+        //if statment for if cannon needs to be rotated 
         animator.SetTrigger("FireCannon");
         UnsubscribeCannon();
         Task.current.Succeed();
+
     }
     [Task]
     public void AdjustSail()
