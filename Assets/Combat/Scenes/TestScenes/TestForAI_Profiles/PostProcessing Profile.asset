@@ -27,16 +27,16 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.59
+    value: 0.426
   smoothness:
     overrideState: 1
-    value: 1
+    value: 0.381
   roundness:
-    overrideState: 1
-    value: 0
-  rounded:
     overrideState: 0
-    value: 0
+    value: 1
+  rounded:
+    overrideState: 1
+    value: 1
   mask:
     overrideState: 0
     value: {fileID: 0}
@@ -62,10 +62,10 @@ MonoBehaviour:
     value: 1
   mode:
     overrideState: 1
-    value: 1
+    value: 0
   intensity:
     overrideState: 1
-    value: 0.5
+    value: 0.84
   color:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
@@ -88,8 +88,8 @@ MonoBehaviour:
     overrideState: 0
     value: 0
   radius:
-    overrideState: 0
-    value: 0.25
+    overrideState: 1
+    value: 0.37
   quality:
     overrideState: 0
     value: 2
@@ -182,34 +182,34 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1
+    value: 3.62
   threshold:
-    overrideState: 1
+    overrideState: 0
     value: 1
   softKnee:
-    overrideState: 1
+    overrideState: 0
     value: 0
   clamp:
     overrideState: 0
     value: 65472
   diffusion:
     overrideState: 1
-    value: 7
+    value: 8.06
   anamorphicRatio:
     overrideState: 0
     value: 0
   color:
     overrideState: 1
-    value: {r: 1, g: 0.85383373, b: 0.6666667, a: 1}
+    value: {r: 0.9811321, g: 0.37284693, b: 0, a: 1}
   fastMode:
-    overrideState: 1
+    overrideState: 0
     value: 0
   dirtTexture:
     overrideState: 1
     value: {fileID: 0}
     defaultState: 1
   dirtIntensity:
-    overrideState: 1
+    overrideState: 0
     value: 0
 --- !u!114 &3859054498386222262
 MonoBehaviour:
@@ -229,10 +229,10 @@ MonoBehaviour:
     value: 1
   colored:
     overrideState: 1
-    value: 1
+    value: 0
   intensity:
     overrideState: 1
-    value: 1
+    value: 0
   size:
     overrideState: 1
     value: 3
@@ -254,7 +254,7 @@ MonoBehaviour:
   active: 1
   enabled:
     overrideState: 1
-    value: 1
+    value: 0
   preset:
     overrideState: 0
     value: 2
@@ -328,20 +328,20 @@ MonoBehaviour:
     overrideState: 0
     value: 1
   temperature:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 8.78
   tint:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 3.87
   colorFilter:
     overrideState: 0
-    value: {r: 1, g: 1, b: 1, a: 1}
+    value: {r: 1, g: 0.7717664, b: 0.75, a: 1}
   hueShift:
     overrideState: 0
-    value: 2
+    value: 53
   saturation:
     overrideState: 1
-    value: 11.1
+    value: -10
   brightness:
     overrideState: 0
     value: 0
@@ -350,7 +350,7 @@ MonoBehaviour:
     value: 0.25
   contrast:
     overrideState: 1
-    value: -21.7
+    value: 0.18
   mixerRedOutRedIn:
     overrideState: 0
     value: 100
@@ -365,19 +365,19 @@ MonoBehaviour:
     value: 0
   mixerGreenOutGreenIn:
     overrideState: 0
-    value: 100
+    value: 90
   mixerGreenOutBlueIn:
     overrideState: 0
     value: 0
   mixerBlueOutRedIn:
     overrideState: 0
-    value: 0
+    value: -7
   mixerBlueOutGreenIn:
     overrideState: 0
     value: 0
   mixerBlueOutBlueIn:
     overrideState: 0
-    value: 100
+    value: 90
   lift:
     overrideState: 0
     value: {x: 1, y: 1, z: 1, w: 0}
