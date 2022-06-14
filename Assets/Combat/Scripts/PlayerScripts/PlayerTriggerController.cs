@@ -156,7 +156,7 @@ public class PlayerTriggerController : MonoBehaviour
 
         Debug.Log("we have entered boat controls");
 
-        playerControls.DeactivateActive(boatControls);
+        playerControls.ActiveBoatControls(boatControls);
         //mouseLook.enabled = false;
         hud.ShowOverheadView();
     }

@@ -3027,7 +3027,7 @@ MonoBehaviour:
   sounds:
   - name: WesternSong
     clip: {fileID: 8300000, guid: 2529594b96a4a7a4ead659c22b206dcc, type: 3}
-    volume: 0.021
+    volume: 1
     volumeVariance: 0
     pitch: 1
     pitchVariance: 0

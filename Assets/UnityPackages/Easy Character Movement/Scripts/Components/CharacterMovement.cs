@@ -534,7 +534,14 @@ namespace ECM.Components
         /// </summary>
         /// <param name="pause">True == pause, false == unpause</param>
         /// <param name="restoreVelocity">Should restore saved velocity on resume?</param>
-        
+        public void Freeze(bool input) {
+            if (input) {
+                _rigidbody.constraints = RigidbodyConstraints.FreezePosition;
+            } else {
+                _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+            }
+            
+        }
         public void Pause(bool pause, bool restoreVelocity = true)
         {
             if (pause)

@@ -15,7 +15,7 @@ namespace ECM.Controllers
     public class BaseCharacterController : MonoBehaviour
     {
         #region EDITOR EXPOSED FIELDS
-
+        
         [Header("Movement")]
         [Tooltip("Maximum movement speed (in m/s).")]
         [SerializeField]
@@ -485,7 +485,7 @@ namespace ECM.Controllers
         /// While paused, will turn the Rigidbody into kinematic, preventing any physical interaction.
         /// </summary>
 
-        private void Pause()
+        public void Pause()
         {
             if (pause && !isPaused)
             {

@@ -7,6 +7,7 @@ public class CharacterPositionInterface : MonoBehaviour
 {
     private Rigidbody rigidbod;
     private BaseFirstPersonController firstPersonController;
+   
 
     private void Start()
     {
@@ -14,10 +15,20 @@ public class CharacterPositionInterface : MonoBehaviour
         rigidbod = gameObject.GetComponent<Rigidbody>();
     }
 
-    public void SetFirstPerControllerActive(bool active) {
-        if (active) firstPersonController.enabled = true;
-        else firstPersonController.enabled = false;
+    public void SetFirstPerControllerActive(bool active)
+    {
+        if (active) {          
+            firstPersonController.enabled = true;
+            firstPersonController.movement.Freeze(false);
+
+        }
+        else {
+            firstPersonController.movement.Freeze(true);
+            firstPersonController.enabled = false;
+            
+        }
     }
+  
     public Vector3 GetLocalPosition()
     {
         return transform.localPosition;

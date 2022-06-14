@@ -49,8 +49,8 @@ tree("Attack")
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
-		race
-			repeat
+		parallel
+			repeat 10
 				sequence
 					ChooseAttackDirection
 					CreateAttackVector

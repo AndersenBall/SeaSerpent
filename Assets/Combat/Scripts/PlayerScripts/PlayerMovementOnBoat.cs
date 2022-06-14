@@ -47,7 +47,7 @@ public class PlayerMovementOnBoat : MonoBehaviour
         isFirstPerson = active;
         characterPositionInterface.SetFirstPerControllerActive(active);
     }
-    public void DeactivateActive(BoatControls b)
+    public void ActiveBoatControls(BoatControls b)
     {
         boatControl = b;
         isFirstPerson = false;
