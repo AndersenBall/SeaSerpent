@@ -392,9 +392,10 @@ public class BoatAI : MonoBehaviour
             Task.current.Fail();
             return;
         }
-        Vector3 targetVec = new Vector3(targetEnemy.transform.forward.x,0 ,targetEnemy.transform.forward.z) * 100 * (1 - Mathf.Pow(targetEnemy.GetSpeed() - 1, 2));
+        float distance = Vector3.Distance(targetEnemy.transform.position, transform.position);
+        Vector3 targetVec = new Vector3(targetEnemy.transform.forward.x,0 ,targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(targetEnemy.GetSpeed() - 1, 2));
         Debug.DrawLine(targetEnemy.transform.position + targetVec, targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
-        float distance = Vector3.Distance(targetEnemy.transform.position+targetVec, transform.position);
+        distance = Vector3.Distance(targetEnemy.transform.position + targetVec, transform.position);
         shipCrewCommand.SetCannonAnglePredictions(Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
         shipCrewCommand.AdjustCannonAngles();//could be here
         Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
@@ -601,6 +602,8 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void KeepAim()//more percise move slower
     {
+        float min = .0001f;
+        float upperLimit = .15f;
         Vector2 boatDirect = GetCardDirect();
         if (targetEnemy == null) {
             Task.current.Fail();
@@ -611,50 +614,54 @@ public class BoatAI : MonoBehaviour
         Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0),Color.green);
         Vector2 targetVec = new Vector2(predictionVec.x - this.transform.position.x, predictionVec.z - this.transform.position.z);
         Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-        float dotForward = Vector2.Dot(boatDirect, targetVec);
+        float dotForward = -3*Vector2.Dot(boatDirect, targetVec)/distance;
         float dot90 = Vector2.Dot(boatDirect, targetVec90);
         Task.current.debugInfo = "dot: " + dotForward;
         if (dot90 < 0) {
             SetAttackDirection("Left");
-            if(dotForward >= -1f && dotForward <= 1f) {
+            if(dotForward >= -min && dotForward <= min) {
                 boatControl.SetTurn(0);
-                boatControl.SetForward(0);
+                
             }
 
-            if (dotForward > 1f) {
+            if (dotForward > min) {
                 boatControl.SetForward(.25f);
-                boatControl.SetTurn(.05f);
-                if (dotForward > 50f) {
-                    boatControl.SetTurn(.25f);
+                boatControl.SetTurn(dotForward);
+                if (dotForward > upperLimit) {
+                    boatControl.SetForward(.5f);
+                    boatControl.SetTurn(dotForward);
                 }
             }
-            else if (dotForward < -1f) {
+            else if (dotForward < -min) {
                 boatControl.SetForward(.25f);
-                boatControl.SetTurn(-.05f);
-                if (dotForward < -50f) {
-                    boatControl.SetTurn(-.25f);
+                boatControl.SetTurn(dotForward);
+                if (dotForward < upperLimit) {
+                    boatControl.SetForward(.5f);
+                    boatControl.SetTurn(dotForward);
                 }
             }
         }
         else {
             SetAttackDirection("Right");
-            if (dotForward >= -1f && dotForward <= 1f ) {
+            if (dotForward >= -min && dotForward <= min ) {
                 boatControl.SetTurn(0);
-                boatControl.SetForward(0);
+        
             }
 
-            if (dotForward > 1f) {
+            if (dotForward > min) {
                 boatControl.SetForward(.25f);
-                boatControl.SetTurn(-.05f);
-                if (dotForward > 50f) {
-                    boatControl.SetTurn(-.25f);
+                boatControl.SetTurn(dotForward);
+                if (dotForward > upperLimit) {
+                    boatControl.SetForward(.5f);
+                    boatControl.SetTurn(dotForward);
                 }
             }
-            else if (dotForward < -1f) {
+            else if (dotForward < -min) {
                 boatControl.SetForward(.25f);
-                boatControl.SetTurn(.05f);
-                if (dotForward < -50f) {
-                    boatControl.SetTurn(.25f);
+                boatControl.SetTurn(dotForward);
+                if (dotForward < -upperLimit) {
+                    boatControl.SetForward(.5f);
+                    boatControl.SetTurn(dotForward);
                 }
             }
         }
