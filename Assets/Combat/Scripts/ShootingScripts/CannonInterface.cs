@@ -19,7 +19,7 @@ public class CannonInterface : MonoBehaviour
     public float gunAngle=0;
     public float wantedGunAngle = 0;
     public float fireForce = 100;
-    private float cannonVariance = 1;
+    private float cannonVariance = 0;
     private bool isLoaded = true;
     private bool isBeingWorkedOn = false;
     public int cannonSetNum;

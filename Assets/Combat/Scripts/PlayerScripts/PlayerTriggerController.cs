@@ -10,7 +10,8 @@ public class PlayerTriggerController : MonoBehaviour
     public HUDController hud;
     private CannonInterface gunControl;
     private ItemPickUp itemPickUp;
-
+    private FireGun handGunControl;
+    
     private PlayerMovementOnBoat playerControls;
     // public MouseLook mouseLook;
 
@@ -25,10 +26,12 @@ public class PlayerTriggerController : MonoBehaviour
     private bool settingShipCannonAngle = false;
     private string currentCommand = "nothing";
 
+
     private void Start()
     {
         itemPickUp = gameObject.GetComponent<ItemPickUp>();
         playerControls = gameObject.GetComponent<PlayerMovementOnBoat>();
+        handGunControl = gameObject.GetComponentInChildren<FireGun>();
         //boatControls = gameObject.GetComponentInParent<BoatControls>();
     }
 
@@ -153,11 +156,10 @@ public class PlayerTriggerController : MonoBehaviour
     private void EnterBoatControls(Collider other) {
         boatControls = other.transform.parent.parent.parent.GetComponent<BoatControls>();
         boatControls.SetIsPlayerDriving(true);
-
+        handGunControl.enabled = false;
+        playerControls.ActiveBoatControls(boatControls);
         Debug.Log("we have entered boat controls");
 
-        playerControls.ActiveBoatControls(boatControls);
-        //mouseLook.enabled = false;
         hud.ShowOverheadView();
     }
 
@@ -165,7 +167,7 @@ public class PlayerTriggerController : MonoBehaviour
     {
         boatControls = other.transform.parent.parent.parent.GetComponent<BoatControls>();
         boatControls.SetIsPlayerDriving(false);
-        
+        handGunControl.enabled = true;
         playerControls.SetIsActive(true);
 
         hud.ShowFirstPersonView();

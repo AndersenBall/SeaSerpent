@@ -9,9 +9,14 @@ public class FireGun : MonoBehaviour
     public float fireForce = 400;
     public Transform barrel;
     //public Animator gunAnim;
-   
+
 
     // Update is called once per frame
+    private void Start()
+    {
+        muzzleFlash = GetComponentInChildren<ParticleSystem>();
+    }
+
     void Update()
     {
         //must update what direction the gun is oriented. This gun is oriented towards up
@@ -19,6 +24,7 @@ public class FireGun : MonoBehaviour
 
             if (muzzleFlash != null) { 
                 muzzleFlash.Play();
+                Debug.Log("play bullet animation");
             }
 
             GameObject bulletObject = Instantiate(bulletPrefab, barrel.position+ barrel.forward , Quaternion.identity);

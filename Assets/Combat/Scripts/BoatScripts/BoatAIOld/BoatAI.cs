@@ -123,7 +123,7 @@ public class BoatAI : MonoBehaviour
     }
     public void SetTeamNumber(int team) {
         teamNumber = team;
-        Transform t = transform.Find("Colonial Ship/ConvertTeamLayer/");
+        Transform t = transform.Find("Colonial Ship");
         //Debug.Log("what is this" + t.name);
         AddLayerRecursively( t,"Team"+teamNumber);
         
@@ -414,12 +414,13 @@ public class BoatAI : MonoBehaviour
     */
 
     [Task]
-    public void GetInAttackPosition(float exitDistance)
+    public bool GetInAttackPosition(float exitDistance)
     {
         runTime += Time.deltaTime;
         if (runTime > 10f) {
             runTime = 0;
             Task.current.Fail();
+            return false;
         }
 
         float addedX = attackVector.x * boatMaster.tileSize;
@@ -432,15 +433,16 @@ public class BoatAI : MonoBehaviour
             boatControl.SetTurn(0);
             runTime = 0;
             Task.current.Succeed();
+            return true;
         }
         else {
             SetDestination(boatMaster.XYCordinates(destination.x, destination.y));
 
             AllignToVector(new Vector2(destination.x - transform.position.x, destination.y - transform.position.z));
             Task.current.debugInfo = Task.current.debugInfo + " RunTime:" + runTime;
+            return false;
         }
-
-
+        
     }
     [Task]
     public void CheckToFire()
@@ -464,7 +466,7 @@ public class BoatAI : MonoBehaviour
         direction = transform.TransformDirection(Vector3.left);
         if (Physics.Raycast(transform.position + transform.forward * 15 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
             Debug.DrawRay(transform.position + transform.forward * 15 + direction * 10, direction * hit.distance, Color.red);
-            Task.current.debugInfo = "Object hit: " + hit.collider;
+            Task.current.debugInfo = "Object hit: " + hit.collider +"layer: " + hit.collider.gameObject.layer +" " + GetTeamNumber();
             SetAttackDirection("Left");
             runTime = 0;
             Task.current.Succeed();

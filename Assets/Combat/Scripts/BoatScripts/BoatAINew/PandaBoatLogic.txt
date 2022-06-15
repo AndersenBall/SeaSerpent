@@ -49,16 +49,18 @@ tree("Attack")
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
-		parallel
-			repeat 10
-				sequence
-					ChooseAttackDirection
-					CreateAttackVector
-					Wait 1.0
-			GetInAttackPosition(100.0)
-		CheckToFire	
-		Fire
-		CheckToRetreat
+		fallback
+			while 
+				not GetInAttackPosition(100.0)
+				repeat	
+					sequence
+						ChooseAttackDirection
+						CreateAttackVector
+						Wait 1.0	
+			sequence
+				CheckToFire	
+				Fire
+				CheckToRetreat
 
 tree("ApproachTurnShoot")
 	sequence
