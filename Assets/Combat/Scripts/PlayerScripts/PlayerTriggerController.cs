@@ -37,8 +37,9 @@ public class PlayerTriggerController : MonoBehaviour
 
     private void Update()
     {
-        (float, float) values = boatControls.GetBoatSpeed();
-        hud.UpdateSailStength((Mathf.Round(values.Item1 * 10) / 10f, Mathf.Round(values.Item2 * 10) / 10f));
+
+        //(float, float) values = boatControls.GetBoatSpeed();
+        //hud.UpdateSailStength((Mathf.Round(values.Item1 * 10) / 10f, Mathf.Round(values.Item2 * 10) / 10f));
         //if inside of a cannons trigger
         if (gunControl != null) {
             if (Input.GetKeyDown("q") && gunControl.GetLoadStatus()) {

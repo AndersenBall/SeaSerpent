@@ -261,7 +261,7 @@ public class BoatAI : MonoBehaviour
     public void ChooseRunAwayLocation()
     {
         // in future maybe have run to spawn... scan nearby areas for enemy ships ext maybe have it activly avaid enemys
-        SetDestination(0, 0);
+        SetDestination(1000, 1400);
 
         Task.current.Succeed();
     }
@@ -320,7 +320,7 @@ public class BoatAI : MonoBehaviour
                 attacking = false;
             }else if ((transform.position - targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
                 SetAction("PotShot");
-            }else if ((transform.position - targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(130, 2) && dot < 0)
+            }else if ((transform.position - targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
                 SetAction("ApproachTurnShoot");
             else
                 SetAction("DriveBy");
@@ -426,7 +426,10 @@ public class BoatAI : MonoBehaviour
 
         float addedX = attackVector.x * boatMaster.tileSize;
         float addedY = attackVector.y * boatMaster.tileSize;
-
+        if (targetEnemy == null) {
+            Task.current.Fail();
+            return false;
+        }
         (float x, float y) destination = (targetEnemy.transform.position.x + addedX, targetEnemy.transform.position.z + addedY);
         Debug.DrawRay(transform.position, targetEnemy.transform.position + new Vector3(addedX, 0, addedY) - transform.position, Color.yellow);
 

@@ -16,12 +16,12 @@ public class CannonInterface : MonoBehaviour
     private HaloController haloControl;
     private CannonLine cannonLine;
     
-    public float gunAngle=0;
-    public float wantedGunAngle = 0;
-    public float fireForce = 100;
-    private float cannonVariance = 0;
+    private float gunAngle=0;
+    private float wantedGunAngle = 0;
+    private float cannonVariance = 1.2f;
     private bool isLoaded = true;
     private bool isBeingWorkedOn = false;
+    public float fireForce = 100;
     public int cannonSetNum;
 
     private void Start()

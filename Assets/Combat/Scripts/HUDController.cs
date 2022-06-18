@@ -6,8 +6,9 @@ public class HUDController : MonoBehaviour
 {
     public GameObject messagePanel;
     public GameObject cannonBallIcon;
-    public GameObject CannonGroups;
-    public GameObject SailStengthText;
+    public GameObject cannonGroups;
+    public GameObject sailStengthText;
+    public GameObject healthbar;
     public Camera firstPersonCamera;
     public Camera overheadCamera;
 
@@ -17,8 +18,13 @@ public class HUDController : MonoBehaviour
     // and enable overhead camera.
     public void UpdateSailStength((float ai, float cur)speed) {
         if (speed.ai != null && speed.cur != null) {
-            SailStengthText.GetComponent<UnityEngine.UI.Text>().text = "Sail Stength " + speed.ai + "\nCurrent Speed " + speed.cur;
+            sailStengthText.GetComponent<UnityEngine.UI.Text>().text = "Sail Stength " + speed.ai + "\nCurrent Speed " + speed.cur;
         }
+    }
+
+    public void UpdateHealth(float hp) {
+        Debug.Log("Info:HUD:update player hp"+hp);
+        healthbar.GetComponent<UnityEngine.UI.Text>().text = "Health " + hp;
     }
 
     public void ShowOverheadView()
@@ -35,10 +41,10 @@ public class HUDController : MonoBehaviour
         overheadCamera.enabled = false;
     }
     public void CannonGroupHelpOn() {
-        CannonGroups.active = true;
+        cannonGroups.active = true;
     }
     public void CannonGroupHelpOff() {
-        CannonGroups.active = false;
+        cannonGroups.active = false;
     }
     public void cannonKeyOn()
     {

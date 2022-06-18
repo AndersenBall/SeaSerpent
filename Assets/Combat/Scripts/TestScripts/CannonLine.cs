@@ -32,7 +32,7 @@ public class CannonLine : MonoBehaviour
         
     }
     public void SetActive(bool enabled) {
-        lineRender.enabled = true;
+        lineRender.enabled = enabled;
     }
     public void RotationOffset(float angle) {
         if (angle == 0) {

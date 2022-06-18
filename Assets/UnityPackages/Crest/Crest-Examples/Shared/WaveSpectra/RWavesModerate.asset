@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33068fc021dadc04dab6e00e4ff45c00, type: 3}
+  m_Name: RWavesModerate
+  m_EditorClassIdentifier: 
+  _windSpeed: 16.666668
+  _fetch: 1000000
+  _waveDirectionVariance: 90
+  _gravityScale: 1
+  _smallWavelengthMultiplier: 1
+  _multiplier: 1.7
+  _powerLog:
+  - -5.7027025
+  - -5.8766813
+  - -5.824664
+  - -5.7913003
+  - -5.6252913
+  - -5.450028
+  - -5.2452016
+  - -4.983544
+  - -4.153992
+  - -3.5439456
+  - -1.6426558
+  - -0.14199543
+  - 2.09375
+  - -2.3302
+  _powerDisabled: 0000000000000000000000000000
+  _chopScales:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  _gravityScales:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  _chop: 1
+  _showAdvancedControls: 0

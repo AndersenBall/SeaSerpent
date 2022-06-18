@@ -10,12 +10,16 @@ public class TestSetCombat : MonoBehaviour
     {
 
         Fleet playerFleet = new Fleet("england", "jalapeno");
-        //playerFleet.AddBoat(new Boat("p1", "Frigate"));
+        for (int i = 0; i < 12; i++){
+            playerFleet.AddBoat(new Boat("p"+i, "Frigate"));
+        }
         PlayerGlobal.playerBoat = new Boat("Serpent", "Frigate");
 
         Fleet enemFleet = new Fleet("france", "loser");
-        enemFleet.AddBoat(new Boat("e1", "Frigate"));
-        enemFleet.AddBoat(new Boat("e2", "Frigate"));
+        for (int i=0; i< 12; i++){
+            enemFleet.AddBoat(new Boat("e"+i, "Frigate"));
+        }
+        
         //enemFleet.AddBoat(new Boat("e3", "TradeShip"));
 
         SceneTransfer.playerFleet = playerFleet;
