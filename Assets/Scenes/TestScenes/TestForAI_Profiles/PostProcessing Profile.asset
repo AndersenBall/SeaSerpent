@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b924e2dad56384a8df2a1e111bb675, type: 3}
   m_Name: Vignette
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
@@ -27,10 +27,10 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.426
+    value: 0.203
   smoothness:
     overrideState: 1
-    value: 0.381
+    value: 0.189
   roundness:
     overrideState: 0
     value: 1
@@ -65,7 +65,7 @@ MonoBehaviour:
     value: 0
   intensity:
     overrideState: 1
-    value: 0.84
+    value: 1.75
   color:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
@@ -111,16 +111,16 @@ MonoBehaviour:
     value: 1
   focusDistance:
     overrideState: 1
-    value: 43.5
+    value: 622.8
   aperture:
-    overrideState: 1
-    value: 0.4
+    overrideState: 0
+    value: 3.5
   focalLength:
     overrideState: 0
     value: 300
   kernelSize:
-    overrideState: 1
-    value: 2
+    overrideState: 0
+    value: 3
 --- !u!114 &-570961031519846306
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -182,25 +182,25 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 3.62
+    value: 7.88
   threshold:
     overrideState: 0
-    value: 1
+    value: 0.74
   softKnee:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 1
   clamp:
     overrideState: 0
     value: 65472
   diffusion:
-    overrideState: 1
-    value: 8.06
+    overrideState: 0
+    value: 6.71
   anamorphicRatio:
     overrideState: 0
-    value: 0
+    value: 0.029
   color:
     overrideState: 1
-    value: {r: 0.9811321, g: 0.37284693, b: 0, a: 1}
+    value: {r: 0.98039216, g: 0.2995006, b: 0, a: 1}
   fastMode:
     overrideState: 0
     value: 0
@@ -334,8 +334,8 @@ MonoBehaviour:
     overrideState: 1
     value: 3.87
   colorFilter:
-    overrideState: 0
-    value: {r: 1, g: 0.7717664, b: 0.75, a: 1}
+    overrideState: 1
+    value: {r: 0.9528302, g: 0.72880834, b: 0.7056337, a: 1}
   hueShift:
     overrideState: 0
     value: 53
