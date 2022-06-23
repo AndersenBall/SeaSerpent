@@ -3785,7 +3785,6 @@ GameObject:
   - component: {fileID: 2419332430417837836}
   - component: {fileID: 388404370251906891}
   - component: {fileID: 1832134383669387684}
-  - component: {fileID: 3935029401129213905}
   m_Layer: 13
   m_Name: Colonial Ship
   m_TagString: Untagged
@@ -5291,19 +5290,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3935029401129213905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2419332430417837837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30e8a1702dee7d64f8170bf878462782, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
 --- !u!23 &3944438912718045849
 MeshRenderer:
   m_ObjectHideFlags: 0
