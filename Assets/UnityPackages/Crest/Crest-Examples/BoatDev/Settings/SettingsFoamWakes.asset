@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SettingsFoamWakes
   m_EditorClassIdentifier: 
   _foamFadeRate: 2.66
-  _waveFoamStrength: 4
-  _waveFoamCoverage: 0.948
-  _shorelineFoamMaxDepth: 0.255
-  _shorelineFoamStrength: 5
+  _waveFoamStrength: 3.86
+  _waveFoamCoverage: 1
+  _shorelineFoamMaxDepth: 2.12
+  _shorelineFoamStrength: 4.72
   _renderTextureFormat: 15

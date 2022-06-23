@@ -10,29 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 33068fc021dadc04dab6e00e4ff45c00, type: 3}
-  m_Name: mainMenuWaves
+  m_Name: WavesMainMenu
   m_EditorClassIdentifier: 
-  _windSpeed: 8.777778
+  _windSpeed: 33.333336
   _fetch: 500000
   _waveDirectionVariance: 90
   _gravityScale: 1
   _smallWavelengthMultiplier: 1
-  _multiplier: 2.59
+  _multiplier: 2.3
   _powerLog:
   - -6
   - -6
   - -5.717039
-  - -5.6638107
-  - -5.606601
-  - -5.3954997
-  - -5.0880456
-  - -4.6141734
-  - -4.183423
-  - -3.6603642
-  - -2.7779744
-  - 0.8278149
-  - 0.8996861
-  - -1.0037384
+  - -5.3356133
+  - -5.032189
+  - -5.382533
+  - -4.725322
+  - -4.2663045
+  - -3.7786694
+  - -3.4336274
+  - -1.0824356
+  - 0.54397655
+  - 2.7341833
+  - 2.0706525
   _powerDisabled: 0000000000000000000000000000
   _chopScales:
   - 1
@@ -64,5 +64,5 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  _chop: 1.576
+  _chop: 2
   _showAdvancedControls: 0
