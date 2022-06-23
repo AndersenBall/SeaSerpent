@@ -137,7 +137,7 @@ public class Town : MonoBehaviour
             }
             else
                 amountWant = 800;
-
+            //can implment distance and cost to see if its wroth while in this function
             (Fleet, int) sentOutFleet = townManager.RequestItemNonSurplus(itemToRequest.Item2, amountWant, gameObject.GetComponent<Town>());
 
             if (sentOutFleet.Item2 > 0 && sentOutFleet.Item1 != null) {
@@ -164,12 +164,11 @@ public class Town : MonoBehaviour
         predictedSupplies[item] += amount;
 
         incomingFleets.Add(f, (amount, 200, item));//default 200. could change based on distance to travel 
-        //Debug.Log(gameObject.name + "Requested new shipment of " + item + " predicted sup:" + predictedSupplies[item]);
+        Debug.Log(gameObject.name + "Requested new shipment of " + item + " predicted sup:" + predictedSupplies[item]);
 
         while (incomingFleets.ContainsKey(f) && 0 < incomingFleets[f].Item2) { //if fleet arrives or time runs out end while loop
-            incomingFleets[f] = (incomingFleets[f].Item1, incomingFleets[f].Item2 - Time.deltaTime, incomingFleets[f].Item3);//subtract off time
-            
-            //Debug.Log(incomingFleets[f]);
+            incomingFleets[f] = (incomingFleets[f].Item1, incomingFleets[f].Item2 - Time.deltaTime, incomingFleets[f].Item3);//subtract off time 
+            //Debug.Log(incomingFleets[f]); //could use varibale and subtract off 1 every second 
             yield return null;
         }
 
@@ -180,9 +179,7 @@ public class Town : MonoBehaviour
         }
         
     }
-    IEnumerator RestartExpected(int f)
-    {
-        
+    IEnumerator RestartExpected(int f){  
         int amount = incomingFleets[f].Item1;
         string item = incomingFleets[f].Item3;
         //Debug.Log(gameObject.name + "Requested new shipment of " + item + " predicted sup:" + predictedSupplies[item]);

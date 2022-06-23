@@ -36,7 +36,7 @@ public class TownManager : MonoBehaviour
             float cost = JourneyCost(t, originTown, equalAmount);
             float revenue = originTown.CalculatePrice(standardPrices[item], item, equalAmount) - t.CalculatePrice(standardPrices[item], item, -equalAmount);
             float profit = revenue - cost;// NEED TO WRITE PROFIT using new calculated price of orig vs new town
-            //Debug.Log("profit: " + profit +" revenue: " + revenue +","+ originTown.CalculatePrice(standardPrices[item], item, equalAmount)+ " cost: " + -cost +"," + -t.CalculatePrice(standardPrices[item], item, -equalAmount) + " amout:"+equalAmount+ " buy from " + t.name+ "-> sell to: " + originTown.name);
+            Debug.Log("profit: " + profit +" revenue: " + revenue +","+ originTown.CalculatePrice(standardPrices[item], item, equalAmount)+ " cost: " + -cost +"," + -t.CalculatePrice(standardPrices[item], item, -equalAmount) + " amout:"+equalAmount+ " buy from " + t.name+ "-> sell to: " + originTown.name);
             if (profit > highestProfit && profit > 5000) {
                 highestProfit = profit;
                 choosenTown = t;
@@ -47,7 +47,7 @@ public class TownManager : MonoBehaviour
         amount =  amount < choosenAmount ? amount : choosenAmount;
         //amount = choosenAmount;
         if (choosenTown != originTown) {
-            Debug.Log(originTown.name + " " + item +","+ amount+" requested from " + choosenTown.name +" Profit:"+highestProfit);
+            //Debug.Log(originTown.name + " " + item +","+ amount+" requested from " + choosenTown.name +" Profit:"+highestProfit);
             Fleet f = choosenTown.MakeTradeFleet(item, amount);
             choosenTown.SendOutFleet(f, originTown.transform);
             return (f,amount);

@@ -91,14 +91,15 @@ public class PandaUnitAI : MonoBehaviour
 
     [Task]
     public void SetWanderPoint() {
-        Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
+        //Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
         //Debug.Log("Info:Unit:Wander point " + wanderPoint);
-        movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
+        //movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
         Task.current.Succeed();
     }
     [Task]
     public void Idle()
     {
+        pandaBT.Wait(1f);
         return;
     }
 

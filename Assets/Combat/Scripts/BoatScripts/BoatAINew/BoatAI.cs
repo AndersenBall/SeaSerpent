@@ -29,7 +29,7 @@ public class BoatAI : MonoBehaviour
     public Vector2 attackVector;
     public string attackDirection;
 
-
+    private PandaBehaviour pandaBT = null;
     [Task]
     public string action;
     [Task]
@@ -52,9 +52,9 @@ public class BoatAI : MonoBehaviour
         shipCrewCommand = gameObject.GetComponent<ShipCrewCommand>();
         shipAmoInter = gameObject.GetComponent<ShipAmunitionInterface>();
         boatHP = gameObject.GetComponentInChildren<BoatHealth>();
-
-
+        
     }
+    
 
     #endregion
 
@@ -197,8 +197,9 @@ public class BoatAI : MonoBehaviour
 
     #region Panda BT Scripts
     //************** Panda BT Script **********
-
+    
     //*****Far away*****
+    
     [Task]
     public void ChooseWanderDest() {
         BoatAI enemyBoat = boatMaster.GetClosestBoat(transform.position, teamNumber == 1 ? 2 : 1);

@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/MapMode/Island View.unity
+    path: Assets/Scenes/Island View.unity
     guid: 199f1a95243132e468a8d52dec462032
   - enabled: 1
-    path: Assets/Combat/Scenes/Main Scene.unity
+    path: Assets/Scenes/Main Scene.unity
     guid: 505cb2e704e927b4dbbdf58bd9f563c4
   m_configObjects: {}
