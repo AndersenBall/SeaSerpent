@@ -275,7 +275,7 @@ MonoBehaviour:
     type: 3}
   unitAIPrefab: {fileID: 1038919290314202341, guid: 17b4fc00fbd15534fa76f73e13346329,
     type: 3}
-  boatPrefab: {fileID: 6742494546592704570, guid: ace5ae5d21f55574eaf3477661710860,
+  boatPrefab: {fileID: 6742494546592704570, guid: e8bce6ac70a1df646a04371c283bbb67,
     type: 3}
   unitPrefab: {fileID: 4519255169131703611, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
     type: 3}
@@ -665,7 +665,7 @@ MonoBehaviour:
     type: 3}
   unitAIPrefab: {fileID: 1038919290314202341, guid: 17b4fc00fbd15534fa76f73e13346329,
     type: 3}
-  boatPrefab: {fileID: 6742494546592704570, guid: ace5ae5d21f55574eaf3477661710860,
+  boatPrefab: {fileID: 6742494546592704570, guid: e8bce6ac70a1df646a04371c283bbb67,
     type: 3}
   unitPrefab: {fileID: 4519255169131703611, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
     type: 3}
@@ -11950,13 +11950,13 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: ef94c26e44a36e24a9dcbc5995a2bed1, type: 2}
   _layerName: Water
   _gravityMultiplier: 1
-  _minTexelsPerWave: 3
-  _minScale: 8
+  _minTexelsPerWave: 8
+  _minScale: 32
   _maxScale: 256
   _dropDetailHeightBasedOnWaves: 0.2
-  _lodDataResolution: 256
-  _geometryDownSampleFactor: 2
-  _lodCount: 8
+  _lodDataResolution: 512
+  _geometryDownSampleFactor: 1
+  _lodCount: 10
   _simSettingsAnimatedWaves: {fileID: 0}
   _createSeaFloorDepthData: 1
   _createFoamSim: 1
