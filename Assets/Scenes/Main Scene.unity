@@ -11950,13 +11950,13 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: ef94c26e44a36e24a9dcbc5995a2bed1, type: 2}
   _layerName: Water
   _gravityMultiplier: 1
-  _minTexelsPerWave: 3
-  _minScale: 8
+  _minTexelsPerWave: 8
+  _minScale: 32
   _maxScale: 256
   _dropDetailHeightBasedOnWaves: 0.2
-  _lodDataResolution: 256
-  _geometryDownSampleFactor: 2
-  _lodCount: 8
+  _lodDataResolution: 512
+  _geometryDownSampleFactor: 1
+  _lodCount: 10
   _simSettingsAnimatedWaves: {fileID: 0}
   _createSeaFloorDepthData: 1
   _createFoamSim: 1
