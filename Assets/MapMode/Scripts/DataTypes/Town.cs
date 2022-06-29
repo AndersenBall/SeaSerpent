@@ -42,7 +42,6 @@ public class Town : MonoBehaviour
     
     public string nationality;
     
-
     TownManager townManager;
     IDictionary<string, float> supplies = new Dictionary<string, float>();
     IDictionary<string, int> predictedSupplies = new Dictionary<string, int>();
