@@ -12,6 +12,8 @@ public class Town : MonoBehaviour
         public float[] productionAmount;
         public float[] consumptionAmount;
         public string nationality;
+        public Sprite townIcon;
+        public string townDescription;
 
         public IDictionary<string, float> supplies; 
         public IDictionary<string, int> predictedSupplies;
@@ -25,7 +27,8 @@ public class Town : MonoBehaviour
     public string DebugText = "";
     
     string[] setupSupplyItems = new string[10] {"fish","lumber","fur","guns","sugar","coffee","salt","tea","tobacco","cotton" };
-    
+    [SerializeField]
+    public Sprite townIcon;
     [SerializeField]
     int[] setupSupplyCount;
     [SerializeField]
@@ -41,7 +44,8 @@ public class Town : MonoBehaviour
     public GameObject prefabFleet;
     
     public string nationality;
-    
+    public string townDescription;
+
 
     TownManager townManager;
     IDictionary<string, float> supplies = new Dictionary<string, float>();
@@ -51,6 +55,8 @@ public class Town : MonoBehaviour
     
     Dictionary<int, (int,float,string)> incomingFleets = new Dictionary<int, (int, float,string)>();//incoming fleet id, amount its carrying, expected time till it arrives
     public List<Fleet> dockedFleets = new List<Fleet>();
+
+    private TownInfoUI townUI;
     #endregion
 
     #region Monobehaviour
@@ -59,8 +65,9 @@ public class Town : MonoBehaviour
         GameEvents.SaveInitiated += Save;// add events to happen when save and load is called
         GameEvents.LoadInitiated += Load;
         townManager = GetComponentInParent<TownManager>();
-        
-        
+        townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
+
+
         for (int i = 0; i < 10; i++) {
             supplies.Add(setupSupplyItems[i], setupSupplyCount[i]);
         }
@@ -100,7 +107,15 @@ public class Town : MonoBehaviour
         }
     }
 
-    
+    private void OnMouseOver()
+    {
+        townUI.DisplayTownUI(gameObject.GetComponent<Town>());
+    }
+    private void OnMouseExit()
+    {
+        townUI.CloseTownUI();
+    }
+
     public void SendOutFleet(Fleet fleet,Transform destination) {
         Transform parent = GameObject.Find("/Boats").transform;
         GameObject fleetPrefab = Instantiate(prefabFleet,transform.position,Quaternion.identity,parent);

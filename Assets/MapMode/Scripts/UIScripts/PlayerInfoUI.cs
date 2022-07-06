@@ -31,6 +31,11 @@ public class PlayerInfoUI : MonoBehaviour
         fillInventory();
     }
 
+    void Update()
+    {
+        fillInventory();
+    }
+
     public void setUserInformation()
     {
         playerName = fleet.commander;
@@ -43,19 +48,32 @@ public class PlayerInfoUI : MonoBehaviour
     public void fillInventory()
     {
         (string[], int[]) inventoryContent = fleet.GetInventory();
+
+        foreach (Transform contentChild in scrollViewContent.transform)
+        {
+            Destroy(contentChild.gameObject);
+        }
+
         for (int i = 0; i < inventoryContent.Item1.Length; i++)
         {
-            Image icon = Instantiate(inventoryIconPrefab);
-            Text inventoryItem = Instantiate(inventoryItemNamePrefab);
-            Text inventoryAmount = Instantiate(inventoryNumberPrefab);
+            if (inventoryContent.Item2[i] == 0)
+            {
+                return;
+            }
+            else
+            {
+                Image icon = Instantiate(inventoryIconPrefab);
+                Text inventoryItem = Instantiate(inventoryItemNamePrefab);
+                Text inventoryAmount = Instantiate(inventoryNumberPrefab);
 
-            icon.sprite = inventoryIcons[i];
-            inventoryItem.text = inventoryContent.Item1[i];
-            inventoryAmount.text = inventoryContent.Item2[i].ToString();
+                icon.sprite = inventoryIcons[i];
+                inventoryItem.text = inventoryContent.Item1[i];
+                inventoryAmount.text = inventoryContent.Item2[i].ToString();
 
-            icon.transform.SetParent(scrollViewContent);
-            inventoryItem.transform.SetParent(scrollViewContent);
-            inventoryAmount.transform.SetParent(scrollViewContent);
+                icon.transform.SetParent(scrollViewContent);
+                inventoryItem.transform.SetParent(scrollViewContent);
+                inventoryAmount.transform.SetParent(scrollViewContent);
+            }
 
 
         }

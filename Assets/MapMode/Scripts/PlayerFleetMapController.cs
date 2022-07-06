@@ -15,7 +15,7 @@ public class PlayerFleetMapController : MonoBehaviour
 
     public GameObject Canvas;
     private MeetShipUI meetShipUI;
-    private TownUI townUI;
+    private TownInfoUI townUI;
     public Unit pathfinding;
     Fleet fleet;
     
@@ -46,7 +46,7 @@ public class PlayerFleetMapController : MonoBehaviour
         UpdateBoatNames();
 
         meetShipUI = Canvas.transform.Find("MeetShip").GetComponent<MeetShipUI>();
-        townUI = GameObject.Find("ShopPanel").GetComponent<TownUI>();
+        townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
 
     }
     private void Update()
@@ -65,7 +65,7 @@ public class PlayerFleetMapController : MonoBehaviour
         }
         else if (town != null) {
             Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
-            townUI.DisplayTownUI(other.GetComponent<Town>(), fleet);
+            townUI.DisplayTownUI(other.GetComponent<Town>());
         }
     }
     #endregion
