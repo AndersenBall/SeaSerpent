@@ -281,8 +281,7 @@ public class Town : MonoBehaviour
         }
 
         //Debug.Log(name + " " + item+ " calculated prices " + price +","+ price2 + " standard price " + standardPrice+"amount buying:"+amountBought);
-        return Mathf.Abs(amountBought*(price+price2)/2);
-        
+        return Mathf.Abs(amountBought*(price+price2)/2);    
     }
 
     public bool FillCargoPlayer(Fleet fle, string resource,int amount) {
@@ -424,8 +423,6 @@ public class Town : MonoBehaviour
         }
         UpdateDebugText();
     }
-    
-   
     
     #endregion
 
