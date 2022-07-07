@@ -25,8 +25,10 @@ public class Town : MonoBehaviour
 
     [TextArea(3,10)]
     public string DebugText = "";
-    
+
+    public Sprite[] setupSupplyIcons;
     string[] setupSupplyItems = new string[10] {"fish","lumber","fur","guns","sugar","coffee","salt","tea","tobacco","cotton" };
+
     [SerializeField]
     public Sprite townIcon;
     [SerializeField]
