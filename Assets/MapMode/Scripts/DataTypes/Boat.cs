@@ -6,8 +6,13 @@ using UnityEngine;
 [System.Serializable]
 public class Boat
 {
-    public string boatName;
-    string boatType;
+    public string boatName { get; set; }
+    public string boatType { get; set; }
+    string cannonType { get; set; }
+    string mastType { get; set; }
+    string hullType { get; set; }
+
+
     float boatSpeed;
     float turnSpeed;
     int boatHealth;
@@ -99,7 +104,6 @@ public class Boat
     }
     public IDictionary<string, int> getSupplies() {
         return supplies;
-        
     }
     public float GetSpeed() {return boatSpeed; }
     public float GetTurnSpeed() { return turnSpeed; }

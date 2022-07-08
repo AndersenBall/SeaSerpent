@@ -37,7 +37,7 @@ public class PlayerFleetMapController : MonoBehaviour
         fleet.AddBoat(new Boat("Hogger4", "Frigate"));
         fleet.AddBoat(new Boat("Floater", "TradeShip"));
         PlayerGlobal.playerBoat = new Boat("Serpent", "Frigate");
-        PlayerGlobal.money = 100000;
+        PlayerGlobal.money = 1000;
 
         BoatAILead.RemoveID(fleet.FleetID);
 
@@ -108,12 +108,12 @@ public class PlayerFleetMapController : MonoBehaviour
         saveFleet.fleet = fleet;
         Vector3 place = gameObject.transform.position;
         saveFleet.pos = new float[] { place.x, place.y, place.z };
-        SaveLoad.Save(saveFleet, "Player");
+        SaveLoad.Save(saveFleet, "PlayerMapLocation");
     }
     public void LoadFleet()
     {
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
+        if (SaveLoad.SaveExists("PlayerMapLocation")) {
+            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("PlayerMapLocation");
             fleet = playerData.fleet;
             pathfinding.speed = fleet.CalculateSpeed();
             gameObject.transform.position = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
