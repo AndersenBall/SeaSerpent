@@ -11,12 +11,12 @@ public class PlayerGlobal : MonoBehaviour
     {
         public Boat playerBoat;
         public int money;
-        public Dictionary<string, Mission> activeMission;
+        //public Dictionary<string, Mission> activeMission;
     }
 
     public static Boat playerBoat { get; set; }
     public static int money { get; set; }
-
+    /*
     static Dictionary<string, Mission> activeMissions;
 
     public static void AddMission(Mission m){
@@ -51,5 +51,6 @@ public class PlayerGlobal : MonoBehaviour
             activeMissions = playerData.activeMission;
         }
     }
+    */
     #endregion
 }
