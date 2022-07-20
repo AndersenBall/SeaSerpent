@@ -59,6 +59,7 @@ public class Town : MonoBehaviour
     public List<Fleet> dockedFleets = new List<Fleet>();
 
     private TownInfoUI townUI;
+
     #endregion
 
     #region Monobehaviour
@@ -68,6 +69,7 @@ public class Town : MonoBehaviour
         GameEvents.LoadInitiated += Load;
         townManager = GetComponentInParent<TownManager>();
         townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
+
 
 
         for (int i = 0; i < 10; i++) {
@@ -117,6 +119,7 @@ public class Town : MonoBehaviour
     {
         townUI.CloseTownUI();
     }
+
 
     public void SendOutFleet(Fleet fleet,Transform destination) {
         Transform parent = GameObject.Find("/Boats").transform;

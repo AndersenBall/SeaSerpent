@@ -20,7 +20,7 @@ public class TownInfoUI : MonoBehaviour
     private TMP_Text largestSupplyName;
     private Image largestDemandIcon;
     private Image largestSupplyIcon;
-    private GameObject container;
+
 
 
     private void Start()
@@ -34,8 +34,7 @@ public class TownInfoUI : MonoBehaviour
         largestDemandName = GameObject.Find("HighestDemandName").GetComponent<TMP_Text>();
         largestDemandIcon = GameObject.Find("HighestDemandImage").GetComponent<Image>();
         largestSupplyIcon = GameObject.Find("HighestSupplyImage").GetComponent<Image>();
-        container = GameObject.Find("TownOverviewPanel").gameObject;
-        container.SetActive(false);
+        gameObject.SetActive(false);
 
     }
     public void DisplayTownUI(Town t)
@@ -80,11 +79,11 @@ public class TownInfoUI : MonoBehaviour
         townDescriptionUI.text = townDescription;
         townImageUI.sprite = townPic;
 
-        container.SetActive(true);
+        gameObject.SetActive(true);
     }
 
     public void CloseTownUI()
     {
-        container.SetActive(false);
+        gameObject.SetActive(false);
     }
 }
