@@ -18,6 +18,7 @@ public class PlayerFleetMapController : MonoBehaviour
     private TownUI townUI;
     private TownOptionsUI townOptionsUI;
     public Unit pathfinding;
+    public static Town currentTown;
     Fleet fleet;
     
     [TextArea]
@@ -69,6 +70,7 @@ public class PlayerFleetMapController : MonoBehaviour
             //           Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
             //           townUI.DisplayTownUI(other.GetComponent<Town>(), fleet);
             townOptionsUI.DisplayOptionsMenu(other.GetComponent<Town>());
+            currentTown = other.GetComponent<Town>();
         }
     }
     #endregion
