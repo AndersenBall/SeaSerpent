@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopUI : MonoBehaviour
 {
@@ -28,13 +29,13 @@ public class ShopUI : MonoBehaviour
         {
             GameObject buyPanel = Instantiate(buyInfoPanel);
 
-            buyPanel.transform.SetParent(scrollViewContent);
-
-             buyPanel.transform.SetParent(scrollViewContent.transform);
+            buyPanel.transform.GetChild(0).GetComponent<Image>().sprite = t.setupSupplyIcons[i];
              buyPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemInfo.Item1[i];
              buyPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = itemInfo.Item2[i].ToString();
              buyPanel.transform.GetChild(3).GetComponent<TMP_Text>().text = itemInfo.Item3[i].ToString();
              buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
+
+            buyPanel.transform.SetParent(scrollViewContent, false);
 
         }
 
