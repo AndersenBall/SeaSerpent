@@ -11,25 +11,40 @@ public class ShopUI : MonoBehaviour
     private Fleet fleet;
     private string ogPrice;
 
+    [Header("Buy Panel Objects")]
     public Transform scrollViewContent;
     public GameObject buyInfoPanel;
     public GameObject playerMoney;
-
-
     public TMP_Text priceText;
     public TMP_InputField itemAmountInputField;
     public Image itemInfoImage;
     public TMP_Text itemDescription;
     public TMP_Text itemName;
+    public Button purchaseBtn;
+    public GameObject buyMode;
+    [Header("Sell Panel Objects")]
+    public Transform scrollViewContentSell;
+    public GameObject sellMode;
 
     private void Start()
     {
+        fleet = GameObject.Find("PlayerBoat").GetComponent<PlayerFleetMapController>().GetFleet();
         displayBuyTab(PlayerFleetMapController.currentTown);
     }
 
 
-    private void displayBuyTab(Town t)
+    public void displayBuyTab(Town t)
     {
+
+        foreach (Transform contentChild in scrollViewContent.transform)
+        {
+            Destroy(contentChild.gameObject);
+        }
+
+
+        buyMode.SetActive(true);
+        sellMode.SetActive(false);
+
         string townName = t.name;
         town = t;
         (string[], int[], int[], float[]) itemInfo = t.SupplyDemandPrice();
@@ -48,6 +63,38 @@ public class ShopUI : MonoBehaviour
              buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
 
             buyPanel.transform.SetParent(scrollViewContent, false);
+
+        }
+
+    }
+    public void displaySellTab()
+    {
+        foreach (Transform contentChild in scrollViewContentSell.transform)
+        {
+            Destroy(contentChild.gameObject);
+        }
+
+        buyMode.SetActive(false);
+        sellMode.SetActive(true);
+
+        town = PlayerFleetMapController.currentTown;
+        string townName = town.name;
+        (string[], int[], int[], float[]) itemInfo = town.SupplyDemandPrice();
+        Debug.Log(townName);
+
+        for (int i = 0; i < itemInfo.Item1.Length; i++)
+        {
+            GameObject buyPanel = Instantiate(buyInfoPanel);
+            Button itemButton = buyPanel.GetComponent<Button>();
+            itemButton.onClick.AddListener(() => { displayItemInfo(itemButton); });
+
+            buyPanel.transform.GetChild(0).GetComponent<Image>().sprite = town.setupSupplyIcons[i];
+            buyPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemInfo.Item1[i];
+            buyPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = itemInfo.Item2[i].ToString();
+            buyPanel.transform.GetChild(3).GetComponent<TMP_Text>().text = itemInfo.Item3[i].ToString();
+            buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
+
+            buyPanel.transform.SetParent(scrollViewContentSell, false);
 
         }
 
@@ -74,6 +121,15 @@ public class ShopUI : MonoBehaviour
     {
         int multiplePrice = int.Parse(itemAmountInputField.text) * int.Parse(ogPrice);
         priceText.text = multiplePrice.ToString();
+
+        if ((PlayerGlobal.money - multiplePrice) >= 0)
+        {
+            purchaseBtn.interactable = true;
+        }
+        else
+        {
+            purchaseBtn.interactable = false;
+        }
     }
 
     public void displayItemInfo(Button itemPanel)
@@ -129,11 +185,11 @@ public class ShopUI : MonoBehaviour
         int itemAmount = int.Parse(itemAmountInputField.text);
         int price = int.Parse(priceText.text);
 
-        if((PlayerGlobal.money - price) >= 0)
-        {
-            //PlayerFleetMapController.currentTown.FillCargoPlayer(fleet, itemName.text, itemAmount); ???FLEET WHERE???
-            PlayerGlobal.money -= price;
-        }
+        PlayerFleetMapController.currentTown.FillCargoPlayer(fleet, itemName.text, itemAmount);
+        PlayerGlobal.money -= price;
+        displayBuyTab(PlayerFleetMapController.currentTown);
 
     }
+
+
 }
