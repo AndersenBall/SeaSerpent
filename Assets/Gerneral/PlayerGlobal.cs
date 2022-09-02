@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerGlobal : MonoBehaviour
 {
     public static Boat playerBoat { get; set; }
-    public static int money { get; set; }
+    public static float money { get; set; }
     
 
     
