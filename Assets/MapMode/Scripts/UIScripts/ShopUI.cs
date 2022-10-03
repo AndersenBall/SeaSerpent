@@ -397,9 +397,9 @@ public class ShopUI : MonoBehaviour
                 inventoryItem.text = inventoryContent.Item1[i];
                 inventoryAmount.text = inventoryContent.Item2[i].ToString();
 
-                icon.transform.SetParent(inventoryScrollViewContent);
-                inventoryItem.transform.SetParent(inventoryScrollViewContent);
-                inventoryAmount.transform.SetParent(inventoryScrollViewContent);
+                icon.transform.SetParent(inventoryScrollViewContent, false);
+                inventoryItem.transform.SetParent(inventoryScrollViewContent, false);
+                inventoryAmount.transform.SetParent(inventoryScrollViewContent, false);
             
 
 
