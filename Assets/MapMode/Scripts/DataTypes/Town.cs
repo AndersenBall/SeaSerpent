@@ -12,7 +12,6 @@ public class Town : MonoBehaviour
         public float[] productionAmount;
         public float[] consumptionAmount;
         public string nationality;
-        public Sprite townIcon;
         public string townDescription;
 
         public IDictionary<string, float> supplies; 
@@ -30,7 +29,7 @@ public class Town : MonoBehaviour
     string[] setupSupplyItems = new string[10] {"fish","lumber","fur","guns","sugar","coffee","salt","tea","tobacco","cotton" };
     public string[] setupSupplyDescription = new string[10] { "this is fish", " this is lumber", "this is fur", "this is guns", "this is sugar", "this is coffee", "this is salt", "this is tea", "this is tobacco", "this is cotton" };
 
-    [SerializeField]
+
     public Sprite townIcon;
     [SerializeField]
     int[] setupSupplyCount;
