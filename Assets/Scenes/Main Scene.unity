@@ -766,7 +766,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetTransform: {fileID: 2421843088458175631}
-  _distanceToTarget: 0.5
+  _distanceToTarget: 0.1
   _followSpeed: 5
 --- !u!4 &385206463 stripped
 Transform:
@@ -5367,7 +5367,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 4
+  near clip plane: 2
   far clip plane: 4000
   field of view: 60
   orthographic: 0
