@@ -10,6 +10,8 @@ public class NavMeshUnitInterface : MonoBehaviour
     private void Start()
     {
        navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+       navMeshAgent.avoidancePriority = Random.Range(0, 100);
+
     }
 
     //takes in local position based on boat. sets destination path of nav mesh based on global position.
