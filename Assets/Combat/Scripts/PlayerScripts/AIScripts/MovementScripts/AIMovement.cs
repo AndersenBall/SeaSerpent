@@ -29,6 +29,11 @@ public class AIMovement : MonoBehaviour
         navMeshInterface.SetDestination(transform.parent.InverseTransformPoint(destination));
     }
 
+    public void SetNavMeshInterface(NavMeshUnitInterface newInterface)
+    {
+        navMeshInterface = newInterface;
+    }
+
     public NavMeshUnitInterface GetNavMeshInterface() {
         return navMeshInterface;
     }

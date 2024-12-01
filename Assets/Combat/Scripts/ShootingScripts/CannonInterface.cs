@@ -81,7 +81,6 @@ public class CannonInterface : MonoBehaviour
             //sets direction that object should be facing based off guns directon and fires it
             bulletObject.transform.forward = barrel.forward;
             //bulletRigidBody.AddForce(transform.forward * fireForce);
-            UnityEngine.Random rand = new UnityEngine.Random(); //reuse this if you are generating many
             double u1 = 1.0 - UnityEngine.Random.Range(0,.99f); //uniform(0,1] random doubles
             double u2 = 1.0 - UnityEngine.Random.Range(0f,.99f);
             //Debug.Log("random number:" + u1 + " " + u2);
