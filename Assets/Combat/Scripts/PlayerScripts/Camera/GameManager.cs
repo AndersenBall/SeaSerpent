@@ -1,60 +1,48 @@
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
+using UnityEngine;
 
-//public class GameManager : MonoBehaviour
-//{
-//    public ControlModeManager modeManager;
+public class GameManager : MonoBehaviour
+{
+   
+    public CharacterPositionInterface positionInterface;
+    public BoatControls boatControls;
 
-//    //private BoatControlMode boatMode = new BoatControlMode();
-//    //private PlayerControlMode playerMode = new PlayerControlMode();
-//    //private MapControlMode mapMode = new MapControlMode();
+    private BoatControlMode boatMode;
+    private ControlModeManager modeManager;
 
-//    private bool isInSteeringWheelCollider = false; // Tracks if the player is inside the steering wheel collider
 
-//    private void Start()
-//    {
-//        // Start the game in player control mode
-//        modeManager.SetMode(playerMode);
-//    }
+    private void Start()
+    {
 
-//    void Update()
-//    {
-//        // Toggle map mode when M is pressed
-//        if (Input.GetKeyDown(KeyCode.M))
-//        {
-//            modeManager.ToggleMapMode(mapMode, playerMode);
-//        }
+        modeManager = GetComponent<ControlModeManager>();
+        if (modeManager == null)
+        {
+            Debug.LogError("ControlModeManager is missing on the same GameObject as GameManager!");
+            return;
+        }
 
-//        // Check if the player can enter boat mode (inside collider and presses B)
-//        if (isInSteeringWheelCollider && Input.GetKeyDown(KeyCode.B))
-//        {
-//            modeManager.SetMode(boatMode);
-//        }
+        // Initialize modes
+        boatMode = new BoatControlMode(positionInterface, boatControls);
+        //playerMode = new PlayerControlMode(playerMovement);
 
-//        // Exit boat mode when E is pressed, always return to player mode
-//        if (Input.GetKeyDown(KeyCode.E) && modeManager.CurrentMode == boatMode)
-//        {
-//            modeManager.ExitBoatMode(playerMode);
-//        }
-//    }
+        // Start in Player Control Mode
+        //modeManager.SetMode(playerMode);
+    }
 
-//    // Detect if the player enters the steering wheel's collider
-//    private void OnTriggerEnter(Collider other)
-//    {
-//        if (other.CompareTag("SteeringWheel")) // Assuming the steering wheel collider is tagged as "SteeringWheel"
-//        {
-//            isInSteeringWheelCollider = true;
-//        }
-//    }
+    private void Update()
+    {
+        // Swap to Boat Control Mode when near the steering wheel
+        if (Input.GetKeyDown(KeyCode.E))
+        {
 
-//    // Detect if the player exits the steering wheel's collider
-//    private void OnTriggerExit(Collider other)
-//    {
-//        if (other.CompareTag("SteeringWheel"))
-//        {
-//            isInSteeringWheelCollider = false;
-//        }
-//    }
-//}
+            // TODO 12/1 can remove when modes are made on startup
+            boatMode = new BoatControlMode(positionInterface, boatControls);
+            modeManager.SetMode(boatMode);
+        }
 
+        // Exit Boat Control Mode to Player Control Mode
+        else if (Input.GetKeyDown(KeyCode.E) && modeManager.CurrentMode == boatMode)
+        {
+            //modeManager.SetMode(playerMode);
+        }
+    }
+}
