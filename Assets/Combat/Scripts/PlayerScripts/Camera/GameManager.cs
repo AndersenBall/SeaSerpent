@@ -20,12 +20,17 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Initialize modes
-        boatMode = new BoatControlMode(positionInterface, boatControls);
-        //playerMode = new PlayerControlMode(playerMovement);
+        // Find CharacterPositionInterface on ECM_BaseFirstPersonControllerAI
+        GameObject ecmControllerAi = GameObject.Find("ECM_BaseFirstPersonControllerAI");
+        positionInterface = ecmControllerAi.GetComponent<CharacterPositionInterface>();
 
-        // Start in Player Control Mode
-        //modeManager.SetMode(playerMode);
+        // get boat controller on unist parent
+        GameObject ecmController = GameObject.Find("ECM_BaseFirstPersonController");
+        boatControls = ecmController.GetComponentInParent<BoatControls>();
+
+
+        boatMode = new BoatControlMode(positionInterface, boatControls);
+        
     }
 
     private void Update()
