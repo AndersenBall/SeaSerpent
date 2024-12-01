@@ -1,43 +1,33 @@
-//public class playercontrolmode : controlmode
-//{
-//    private playertriggercontroller player;
+using UnityEngine;
 
-//    public playercontrolmode(playertriggercontroller player)
-//    {
-//        this.player = player;
-//    }
+public class PlayerControlMode : ControlMode
+{
+    private CharacterPositionInterface characterPositionInterface;
+    private HUDController hud;
 
-//    public override void entermode()
-//    {
-//        player.enableplayercontrols();
-//        debug.log("entered player control mode");
-//    }
+    public PlayerControlMode(CharacterPositionInterface characterPositionInterface, HUDController hud)
+    {
+        this.characterPositionInterface = characterPositionInterface;
+        this.hud = hud;
+    }
 
-//    public override void updatemode()
-//    {
-//        // handle player input
-//        if (player.guncontrol != null)
-//        {
-//            if (input.getkeydown("q") && player.guncontrol.getloadstatus())
-//            {
-//                player.guncontrol.fire();
-//            }
-//            if (input.getkeydown("e") && !player.guncontrol.getloadstatus() && player.itempickup.getcannonballstatus())
-//            {
-//                player.guncontrol.loadgun();
-//                player.itempickup.removecannonball();
-//            }
-//            if (input.getkeydown("u"))
-//            {
-//                player.guncontrol.rotatebarrel();
-//            }
-//        }
-//    }
+    public override void EnterMode()
+    {
+        hud.ShowFirstPersonView();
+        characterPositionInterface.SetFirstPerControllerActive(true);
+        Debug.Log("entered player control mode");
+    }
 
-//    public override void exitmode()
-//    {
-//        player.disableplayercontrols();
-//    }
-//}
+    public override void UpdateMode()
+    {
+        
+    }
+
+    public override void ExitMode()
+    {
+        characterPositionInterface.SetFirstPerControllerActive(false);
+
+    }
+}
 
 

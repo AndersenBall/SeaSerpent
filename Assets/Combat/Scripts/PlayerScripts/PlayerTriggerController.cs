@@ -8,7 +8,7 @@ public class PlayerTriggerController : MonoBehaviour
 {
     //player controls
     public HUDController hud;
-    private CannonInterface gunControl;
+    public CannonInterface gunControl;
     private ItemPickUp itemPickUp;
     private FireGun handGunControl;
     
@@ -32,7 +32,7 @@ public class PlayerTriggerController : MonoBehaviour
         itemPickUp = gameObject.GetComponent<ItemPickUp>();
         playerControls = gameObject.GetComponent<PlayerMovementOnBoat>();
         handGunControl = gameObject.GetComponentInChildren<FireGun>();
-        //boatControls = gameObject.GetComponentInParent<BoatControls>();
+
     }
 
     private void Update()
@@ -58,19 +58,9 @@ public class PlayerTriggerController : MonoBehaviour
         //control boat
         if (Input.GetKeyDown("e")) {
             itemPickUp.PickUpCannonBall();
-            if (drivingBoat) {
-                EnterPlayerControls(steeringWheelTrigger);
-                drivingBoat = false;
-                steeringWheelTrigger = null;
-            }
             
-            else if (triggerInsideOf != null) {
-                if (triggerInsideOf.CompareTag("steeringWheel")) {
-                    EnterBoatControls(triggerInsideOf);
-                    drivingBoat = true;
-                    steeringWheelTrigger = triggerInsideOf;
-                }
-            }
+            
+            
         }
 
         if (shipCrewCommand != null) {
@@ -154,24 +144,12 @@ public class PlayerTriggerController : MonoBehaviour
         }
     }
 
-    private void EnterBoatControls(Collider other) {
-        boatControls = other.transform.parent.parent.parent.GetComponent<BoatControls>();
-        boatControls.SetIsPlayerDriving(true);
-        handGunControl.enabled = false;
-        playerControls.ActiveBoatControls(boatControls);
-        Debug.Log("we have entered boat controls");
 
-        hud.ShowOverheadView();
-    }
 
-    private void EnterPlayerControls(Collider other)
+    public void EnterPlayerControls()
     {
-        boatControls = other.transform.parent.parent.parent.GetComponent<BoatControls>();
-        boatControls.SetIsPlayerDriving(false);
         handGunControl.enabled = true;
-        playerControls.SetIsActive(true);
 
-        hud.ShowFirstPersonView();
     }
 
 }

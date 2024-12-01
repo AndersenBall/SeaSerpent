@@ -5,9 +5,10 @@ public class GameManager : MonoBehaviour
    
     public CharacterPositionInterface positionInterface;
     public BoatControls boatControls;
-
+    private PlayerControlMode playerMode;
     private BoatControlMode boatMode;
     private ControlModeManager modeManager;
+    private HUDController hudController;
 
 
     private void Start()
@@ -24,30 +25,33 @@ public class GameManager : MonoBehaviour
         GameObject ecmControllerAi = GameObject.Find("ECM_BaseFirstPersonControllerAI");
         positionInterface = ecmControllerAi.GetComponent<CharacterPositionInterface>();
 
-        // get boat controller on unist parent
+        // get boat controller on units parent
         GameObject ecmController = GameObject.Find("ECM_BaseFirstPersonController");
         boatControls = ecmController.GetComponentInParent<BoatControls>();
 
+        // Find Hud Control
+        GameObject canvas = GameObject.Find("Canvas");
+        hudController = canvas.GetComponent<HUDController>();
 
-        boatMode = new BoatControlMode(positionInterface, boatControls);
+
+        boatMode = new BoatControlMode(positionInterface, boatControls, hudController);
+        playerMode = new PlayerControlMode(positionInterface, hudController);
         
     }
 
     private void Update()
     {
-        // Swap to Boat Control Mode when near the steering wheel
+        // Swap to Boat Control Mode 
         if (Input.GetKeyDown(KeyCode.E))
         {
-
-            // TODO 12/1 can remove when modes are made on startup
-            boatMode = new BoatControlMode(positionInterface, boatControls);
-            modeManager.SetMode(boatMode);
-        }
-
-        // Exit Boat Control Mode to Player Control Mode
-        else if (Input.GetKeyDown(KeyCode.E) && modeManager.CurrentMode == boatMode)
-        {
-            //modeManager.SetMode(playerMode);
+            if (modeManager.CurrentMode == boatMode)
+            {
+                modeManager.SetMode(playerMode);
+            }
+            else
+            {
+                modeManager.SetMode(boatMode);
+            }
         }
     }
 }

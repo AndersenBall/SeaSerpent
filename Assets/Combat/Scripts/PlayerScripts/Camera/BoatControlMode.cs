@@ -4,21 +4,24 @@ public class BoatControlMode : ControlMode
 {
     public CharacterPositionInterface characterPositionInterface;
     private BoatControls boatControls;
+    private HUDController hud;
 
     private float sideways = 0;
     private float throttle = 0;
 
-    public BoatControlMode(CharacterPositionInterface characterPositionInterface, BoatControls boatControls)
+    public BoatControlMode(CharacterPositionInterface characterPositionInterface, BoatControls boatControls, HUDController hud)
     {
         this.characterPositionInterface = characterPositionInterface;
         this.boatControls = boatControls;
+        this.hud = hud;
     }
 
     public override void EnterMode()
     {
         Debug.Log("Entered Boat Control Mode");
         boatControls.SetIsPlayerDriving(true);
-        characterPositionInterface.SetFirstPerControllerActive(false); 
+        characterPositionInterface.SetFirstPerControllerActive(false);
+        hud.ShowOverheadView();
     }
 
     public override void UpdateMode()
