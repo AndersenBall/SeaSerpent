@@ -1,31 +1,35 @@
-//using UnityEngine;
+using UnityEngine;
 
-//public class MapControlMode : ControlMode
-//{
-//    private PlayerTriggerController player;
+public class MapControlMode : ControlMode
+{
+    private HUDController hud;
+    private MapCamera cam;
 
-//    public MapControlMode(PlayerTriggerController player)
-//    {
-//        this.player = player;
-//    }
+    public MapControlMode(HUDController hud, MapCamera cam)
+    {
+        this.hud = hud;
+        this.cam = cam;
+    }
 
-//    public override void EnterMode()
-//    {
-//        Debug.Log("Entered Map Control Mode");
-//        player.HUD.ShowMapView();
-//    }
+    public override void EnterMode()
+    {
+        Debug.Log("Entered Map Control Mode");
+        hud.ShowMapView();
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        cam.enabled = true;
+    }
 
-//    public override void UpdateMode()
-//    {
-//        if (Input.GetKeyDown(KeyCode.M))
-//        {
-//            player.GameManager.ToggleMapMode(new MapControlMode(player), new PlayerControlMode(player));
-//        }
-//    }
+    public override void UpdateMode()
+    {
+        
+    }
 
-//    public override void ExitMode()
-//    {
-//        player.HUD.HideMapView();
-//    }
-//}
+    public override void ExitMode()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        cam.enabled = false;
+    }
+}
 

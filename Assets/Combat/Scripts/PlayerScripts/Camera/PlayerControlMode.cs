@@ -1,43 +1,43 @@
-//public class playercontrolmode : controlmode
-//{
-//    private playertriggercontroller player;
+using ECM.Components;
+using UnityEngine;
 
-//    public playercontrolmode(playertriggercontroller player)
-//    {
-//        this.player = player;
-//    }
+public class PlayerControlMode : ControlMode
+{
+    private CharacterPositionInterface characterPositionInterface;
+    private HUDController hud;
+    private MouseLook mouseLook;
+    private PlayerTriggerController playerTriggerController;
+    public PlayerControlMode(PlayerTriggerController playerTriggerController, CharacterPositionInterface characterPositionInterface, HUDController hud,MouseLook mouseLook)
+    {
+        this.playerTriggerController = playerTriggerController;
+        this.characterPositionInterface = characterPositionInterface;
+        this.hud = hud;
+        this.mouseLook = mouseLook;
+    }
 
-//    public override void entermode()
-//    {
-//        player.enableplayercontrols();
-//        debug.log("entered player control mode");
-//    }
+    public override void EnterMode()
+    {
+        hud.ShowFirstPersonView();
+        characterPositionInterface.SetFirstPerControllerActive(true);
+        mouseLook.enabled = true;
+        playerTriggerController.enabled = true;
+        playerTriggerController.SetHandGun(true);
 
-//    public override void updatemode()
-//    {
-//        // handle player input
-//        if (player.guncontrol != null)
-//        {
-//            if (input.getkeydown("q") && player.guncontrol.getloadstatus())
-//            {
-//                player.guncontrol.fire();
-//            }
-//            if (input.getkeydown("e") && !player.guncontrol.getloadstatus() && player.itempickup.getcannonballstatus())
-//            {
-//                player.guncontrol.loadgun();
-//                player.itempickup.removecannonball();
-//            }
-//            if (input.getkeydown("u"))
-//            {
-//                player.guncontrol.rotatebarrel();
-//            }
-//        }
-//    }
+        Debug.Log("entered player control mode");
+    }
 
-//    public override void exitmode()
-//    {
-//        player.disableplayercontrols();
-//    }
-//}
+    public override void UpdateMode()
+    {
+        
+    }
+
+    public override void ExitMode()
+    {
+        characterPositionInterface.SetFirstPerControllerActive(false);
+        mouseLook.enabled = false;
+        playerTriggerController.SetHandGun(false);
+        playerTriggerController.enabled = false;
+    }
+}
 
 

@@ -11,6 +11,7 @@ public class HUDController : MonoBehaviour
     public GameObject healthbar;
     public Camera firstPersonCamera;
     public Camera overheadCamera;
+    public Camera mapCamera;
 
 
 
@@ -30,15 +31,24 @@ public class HUDController : MonoBehaviour
     public void ShowOverheadView()
     {
         firstPersonCamera.enabled = false;
+        mapCamera.enabled = false;
         overheadCamera.enabled = true;
+    }
+
+    public void ShowMapView()
+    {
+        firstPersonCamera.enabled = false;
+        overheadCamera.enabled = false;
+        mapCamera.enabled = true;
     }
 
     // Call this function to enable FPS camera,
     // and disable overhead camera.
     public void ShowFirstPersonView()
     {
-        firstPersonCamera.enabled = true;
+        mapCamera.enabled = false;
         overheadCamera.enabled = false;
+        firstPersonCamera.enabled = true;
     }
     public void CannonGroupHelpOn() {
         cannonGroups.active = true;

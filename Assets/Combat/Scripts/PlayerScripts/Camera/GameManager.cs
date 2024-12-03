@@ -1,60 +1,72 @@
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
+using ECM.Components;
+using UnityEngine;
 
-//public class GameManager : MonoBehaviour
-//{
-//    public ControlModeManager modeManager;
+public class GameManager : MonoBehaviour
+{
+   
+    public CharacterPositionInterface positionInterface;
+    public BoatControls boatControls;
+    public MouseLookBoat mouseLookBoat;
+    public MapCamera mapCamera;
+    private PlayerControlMode playerMode;
+    private BoatControlMode boatMode;
+    private MapControlMode mapMode;
+    private ControlModeManager modeManager;
+    private HUDController hudController;
+    private MouseLook mouseLook;
+    private PlayerTriggerController triggerController;
 
-//    //private BoatControlMode boatMode = new BoatControlMode();
-//    //private PlayerControlMode playerMode = new PlayerControlMode();
-//    //private MapControlMode mapMode = new MapControlMode();
+    private void Start()
+    {
 
-//    private bool isInSteeringWheelCollider = false; // Tracks if the player is inside the steering wheel collider
+        modeManager = GetComponent<ControlModeManager>();
+        
 
-//    private void Start()
-//    {
-//        // Start the game in player control mode
-//        modeManager.SetMode(playerMode);
-//    }
+        // Find CharacterPositionInterface on ECM_BaseFirstPersonControllerAI
+        GameObject ecmControllerAi = GameObject.Find("ECM_BaseFirstPersonControllerAI");
+        positionInterface = ecmControllerAi.GetComponent<CharacterPositionInterface>();
 
-//    void Update()
-//    {
-//        // Toggle map mode when M is pressed
-//        if (Input.GetKeyDown(KeyCode.M))
-//        {
-//            modeManager.ToggleMapMode(mapMode, playerMode);
-//        }
+        // get boat controller on units parent
+        GameObject ecmController = GameObject.Find("ECM_BaseFirstPersonController");
+        boatControls = ecmController.GetComponentInParent<BoatControls>();
+        mouseLook = ecmController.GetComponent<MouseLook>();
+        triggerController = ecmController.GetComponent<PlayerTriggerController>();
 
-//        // Check if the player can enter boat mode (inside collider and presses B)
-//        if (isInSteeringWheelCollider && Input.GetKeyDown(KeyCode.B))
-//        {
-//            modeManager.SetMode(boatMode);
-//        }
+        // Find Hud Control
+        GameObject canvas = GameObject.Find("Canvas");
+        hudController = canvas.GetComponent<HUDController>();
 
-//        // Exit boat mode when E is pressed, always return to player mode
-//        if (Input.GetKeyDown(KeyCode.E) && modeManager.CurrentMode == boatMode)
-//        {
-//            modeManager.ExitBoatMode(playerMode);
-//        }
-//    }
 
-//    // Detect if the player enters the steering wheel's collider
-//    private void OnTriggerEnter(Collider other)
-//    {
-//        if (other.CompareTag("SteeringWheel")) // Assuming the steering wheel collider is tagged as "SteeringWheel"
-//        {
-//            isInSteeringWheelCollider = true;
-//        }
-//    }
+        boatMode = new BoatControlMode(positionInterface, boatControls, hudController,mouseLookBoat);
+        playerMode = new PlayerControlMode(triggerController,positionInterface, hudController, mouseLook);
+        mapMode = new MapControlMode(hudController, mapCamera);
+        modeManager.SetMode(playerMode);
+    }
 
-//    // Detect if the player exits the steering wheel's collider
-//    private void OnTriggerExit(Collider other)
-//    {
-//        if (other.CompareTag("SteeringWheel"))
-//        {
-//            isInSteeringWheelCollider = false;
-//        }
-//    }
-//}
-
+    private void Update()
+    {
+        // Swap to Boat Control Mode 
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (modeManager.CurrentMode == boatMode)
+            {
+                modeManager.SetMode(playerMode);
+            }
+            else
+            {
+                modeManager.SetMode(boatMode);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (modeManager.CurrentMode == mapMode)
+            {
+                modeManager.SetMode(playerMode); 
+            }
+            else
+            {
+                modeManager.SetMode(mapMode);
+            }
+        }
+    }
+}

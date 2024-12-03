@@ -6,7 +6,7 @@ public class FireGun : MonoBehaviour
 {
     public ParticleSystem muzzleFlash;
     public GameObject bulletPrefab;
-    public float fireForce = 400;
+    public float fireForce = 2000;
     public Transform barrel;
     //public Animator gunAnim;
 
