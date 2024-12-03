@@ -116,16 +116,16 @@ public sealed class MapCamera : MonoBehaviour
 
     private void HandleMouseInput()
     {
+        int layerMask = (1 << 13) | (1 << 14); //team1 and team2
         if (Input.GetMouseButtonDown(0)) 
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
-                if (hit.transform.CompareTag("Team1") || hit.transform.CompareTag("Team2")) 
-                {
+   
                     targetTransform = hit.transform;
                     isFollowing = true; 
-                }
+
             }
         }
 

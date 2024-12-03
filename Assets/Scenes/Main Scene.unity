@@ -1783,6 +1783,9 @@ MonoBehaviour:
   _distanceToTarget: 300
   _followSpeed: 3
   _freeMoveSpeed: 10
+  _scrollSpeed: 100
+  _minZoomDistance: 50
+  _maxZoomDistance: 1000
 --- !u!4 &690803826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519255169660495899, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
@@ -5223,6 +5226,11 @@ PrefabInstance:
       propertyPath: shipAmunitionInterface
       value: 
       objectReference: {fileID: 1661610983864048945}
+    - target: {fileID: 996195548129873621, guid: f87a6dcf3b7b272429c0d328e33aa03f,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 489235
+      objectReference: {fileID: 0}
     - target: {fileID: 6866982216862303089, guid: f87a6dcf3b7b272429c0d328e33aa03f,
         type: 3}
       propertyPath: looping
