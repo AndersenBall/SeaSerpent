@@ -1685,29 +1685,14 @@ GameObject:
   - component: {fileID: 674702918}
   - component: {fileID: 674702917}
   - component: {fileID: 674702916}
-  - component: {fileID: 674702915}
+  - component: {fileID: 674702919}
   m_Layer: 0
-  m_Name: TopCamera
+  m_Name: MapCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &674702915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 674702914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ddd3af1f60b8174e9f33abad954fec6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetTransform: {fileID: 648581216304937337}
-  _distanceToTarget: 300
-  _followSpeed: 3
 --- !u!81 &674702916
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1776,12 +1761,27 @@ Transform:
   m_GameObject: {fileID: 674702914}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5735764, y: -0, z: -0, w: 0.8191521}
-  m_LocalPosition: {x: 423, y: 341, z: -144}
+  m_LocalPosition: {x: 423, y: 400, z: -144}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
+--- !u!114 &674702919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674702914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e18c193d79c189488efd19bc17ecd02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetTransform: {fileID: 648581216304937337}
+  _distanceToTarget: 300
+  _followSpeed: 3
 --- !u!4 &690803826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519255169660495899, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
@@ -4491,6 +4491,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   positionInterface: {fileID: 0}
   boatControls: {fileID: 0}
+  mouseLookBoat: {fileID: 913511139}
 --- !u!114 &30981519029274574
 MonoBehaviour:
   m_ObjectHideFlags: 0

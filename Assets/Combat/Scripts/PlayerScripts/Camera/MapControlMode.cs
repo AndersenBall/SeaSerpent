@@ -13,6 +13,8 @@ public class MapControlMode : ControlMode
     {
         Debug.Log("Entered Map Control Mode");
         hud.ShowMapView();
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public override void UpdateMode()
@@ -22,7 +24,8 @@ public class MapControlMode : ControlMode
 
     public override void ExitMode()
     {
-
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }
 

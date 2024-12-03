@@ -146,9 +146,10 @@ public class PlayerTriggerController : MonoBehaviour
 
 
 
-    public void EnterPlayerControls()
+    public void SetHandGun(bool value)
     {
-        handGunControl.enabled = true;
+        handGunControl.enabled = value;
+        Debug.Log("disable hand gun:" + value);
 
     }
 

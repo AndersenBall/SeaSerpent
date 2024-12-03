@@ -1,3 +1,4 @@
+using ECM.Components;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -5,22 +6,20 @@ public class GameManager : MonoBehaviour
    
     public CharacterPositionInterface positionInterface;
     public BoatControls boatControls;
+    public MouseLookBoat mouseLookBoat;
     private PlayerControlMode playerMode;
     private BoatControlMode boatMode;
     private MapControlMode mapMode;
     private ControlModeManager modeManager;
     private HUDController hudController;
-
+    private MouseLook mouseLook;
+    private PlayerTriggerController triggerController;
 
     private void Start()
     {
 
         modeManager = GetComponent<ControlModeManager>();
-        if (modeManager == null)
-        {
-            Debug.LogError("ControlModeManager is missing on the same GameObject as GameManager!");
-            return;
-        }
+        
 
         // Find CharacterPositionInterface on ECM_BaseFirstPersonControllerAI
         GameObject ecmControllerAi = GameObject.Find("ECM_BaseFirstPersonControllerAI");
@@ -29,16 +28,18 @@ public class GameManager : MonoBehaviour
         // get boat controller on units parent
         GameObject ecmController = GameObject.Find("ECM_BaseFirstPersonController");
         boatControls = ecmController.GetComponentInParent<BoatControls>();
+        mouseLook = ecmController.GetComponent<MouseLook>();
+        triggerController = ecmController.GetComponent<PlayerTriggerController>();
 
         // Find Hud Control
         GameObject canvas = GameObject.Find("Canvas");
         hudController = canvas.GetComponent<HUDController>();
 
 
-        boatMode = new BoatControlMode(positionInterface, boatControls, hudController);
-        playerMode = new PlayerControlMode(positionInterface, hudController);
+        boatMode = new BoatControlMode(positionInterface, boatControls, hudController,mouseLookBoat);
+        playerMode = new PlayerControlMode(triggerController,positionInterface, hudController, mouseLook);
         mapMode = new MapControlMode(hudController);
-        
+        modeManager.SetMode(playerMode);
     }
 
     private void Update()
