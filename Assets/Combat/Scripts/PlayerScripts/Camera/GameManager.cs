@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public BoatControls boatControls;
     private PlayerControlMode playerMode;
     private BoatControlMode boatMode;
+    private MapControlMode mapMode;
     private ControlModeManager modeManager;
     private HUDController hudController;
 
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
 
         boatMode = new BoatControlMode(positionInterface, boatControls, hudController);
         playerMode = new PlayerControlMode(positionInterface, hudController);
+        mapMode = new MapControlMode(hudController);
         
     }
 
@@ -51,6 +53,17 @@ public class GameManager : MonoBehaviour
             else
             {
                 modeManager.SetMode(boatMode);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (modeManager.CurrentMode == mapMode)
+            {
+                modeManager.SetMode(playerMode); 
+            }
+            else
+            {
+                modeManager.SetMode(mapMode);
             }
         }
     }
