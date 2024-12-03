@@ -1774,7 +1774,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674702914}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e18c193d79c189488efd19bc17ecd02, type: 3}
   m_Name: 
@@ -1782,6 +1782,7 @@ MonoBehaviour:
   _targetTransform: {fileID: 648581216304937337}
   _distanceToTarget: 300
   _followSpeed: 3
+  _freeMoveSpeed: 10
 --- !u!4 &690803826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519255169660495899, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
@@ -4492,6 +4493,7 @@ MonoBehaviour:
   positionInterface: {fileID: 0}
   boatControls: {fileID: 0}
   mouseLookBoat: {fileID: 913511139}
+  mapCamera: {fileID: 674702919}
 --- !u!114 &30981519029274574
 MonoBehaviour:
   m_ObjectHideFlags: 0

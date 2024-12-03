@@ -3,10 +3,12 @@ using UnityEngine;
 public class MapControlMode : ControlMode
 {
     private HUDController hud;
+    private MapCamera cam;
 
-    public MapControlMode(HUDController hud)
+    public MapControlMode(HUDController hud, MapCamera cam)
     {
         this.hud = hud;
+        this.cam = cam;
     }
 
     public override void EnterMode()
@@ -15,6 +17,7 @@ public class MapControlMode : ControlMode
         hud.ShowMapView();
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        cam.enabled = true;
     }
 
     public override void UpdateMode()
@@ -26,6 +29,7 @@ public class MapControlMode : ControlMode
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        cam.enabled = false;
     }
 }
 
