@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public BoatControls boatControls;
     public MouseLookBoat mouseLookBoat;
     public MapCamera mapCamera;
+    public RTSBoxSelection unitSelection;
     private PlayerControlMode playerMode;
     private BoatControlMode boatMode;
     private MapControlMode mapMode;
@@ -39,7 +40,7 @@ public class GameManager : MonoBehaviour
 
         boatMode = new BoatControlMode(positionInterface, boatControls, hudController,mouseLookBoat);
         playerMode = new PlayerControlMode(triggerController,positionInterface, hudController, mouseLook);
-        mapMode = new MapControlMode(hudController, mapCamera);
+        mapMode = new MapControlMode(hudController, mapCamera, unitSelection);
         modeManager.SetMode(playerMode);
     }
 

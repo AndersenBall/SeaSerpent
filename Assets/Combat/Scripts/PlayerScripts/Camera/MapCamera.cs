@@ -9,7 +9,7 @@ public sealed class MapCamera : MonoBehaviour
     private Transform _targetTransform;
 
     [SerializeField]
-    private float _distanceToTarget = 15.0f;
+    private float _distanceToTarget = 50.0f;
 
     [SerializeField]
     private float _followSpeed = 3.0f;
@@ -23,7 +23,12 @@ public sealed class MapCamera : MonoBehaviour
     [SerializeField]
     private float _minZoomDistance = 50.0f; 
     [SerializeField]
-    private float _maxZoomDistance = 1000.0f; 
+    private float _maxZoomDistance = 1000.0f;
+
+    [SerializeField]
+    private Camera _camera;
+
+    private float initialHeight;
 
     #endregion
 
@@ -35,11 +40,8 @@ public sealed class MapCamera : MonoBehaviour
         set { _targetTransform = value; }
     }
 
-    public float distanceToTarget
-    {
-        get { return _distanceToTarget; }
-        set { _distanceToTarget = Mathf.Max(0.0f, value); }
-    }
+ 
+
 
     public float followSpeed
     {
@@ -49,7 +51,7 @@ public sealed class MapCamera : MonoBehaviour
 
     private Vector3 cameraRelativePosition
     {
-        get { return targetTransform.position - transform.forward * distanceToTarget; }
+        get { return new Vector3(targetTransform.position.x, initialHeight, targetTransform.position.z); }
     }
 
     private bool isFollowing = true;
@@ -60,13 +62,13 @@ public sealed class MapCamera : MonoBehaviour
 
     public void OnValidate()
     {
-        distanceToTarget = _distanceToTarget;
         followSpeed = _followSpeed;
     }
 
     public void Awake()
     {
-        transform.position = cameraRelativePosition;
+        _camera = GetComponent<Camera>();
+        initialHeight = transform.position.y;
     }
 
     public void LateUpdate()
@@ -74,7 +76,13 @@ public sealed class MapCamera : MonoBehaviour
         if (isFollowing && targetTransform != null)
         {
 
-            transform.position = Vector3.Lerp(transform.position, cameraRelativePosition, followSpeed * Time.deltaTime);
+            Vector3 targetPosition = new Vector3(
+                Mathf.Lerp(transform.position.x, targetTransform.position.x, followSpeed * Time.deltaTime),
+                initialHeight,
+                Mathf.Lerp(transform.position.z, targetTransform.position.z, followSpeed * Time.deltaTime)
+            );
+
+            transform.position = targetPosition;
         }
         else
         {
@@ -116,16 +124,14 @@ public sealed class MapCamera : MonoBehaviour
 
     private void HandleMouseInput()
     {
-        int layerMask = (1 << 13) | (1 << 14); //team1 and team2
-        if (Input.GetMouseButtonDown(0)) 
+        int layerMask = (1 << 13) | (1 << 14);
+        if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
-   
-                    targetTransform = hit.transform;
-                    isFollowing = true; 
-
+                targetTransform = hit.transform;
+                isFollowing = true;
             }
         }
 
@@ -137,24 +143,16 @@ public sealed class MapCamera : MonoBehaviour
 
     private void HandleScrollInput()
     {
-        // Get the scroll wheel input
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
         if (scroll != 0)
         {
-            
-            distanceToTarget -= scroll * _scrollSpeed;
-            
-            if(!isFollowing)
-            {
-                Vector3 newPosition = transform.position;
-                newPosition.y -= scroll * _scrollSpeed;
-                newPosition.y = Mathf.Clamp(newPosition.y, _minZoomDistance, _maxZoomDistance);
-                transform.position = newPosition;
-            }
+            _camera.orthographicSize = Mathf.Clamp(
+                _camera.orthographicSize - scroll * _scrollSpeed,
+                _minZoomDistance,
+                _maxZoomDistance
+            );
         }
-
-  
     }
 
     #endregion

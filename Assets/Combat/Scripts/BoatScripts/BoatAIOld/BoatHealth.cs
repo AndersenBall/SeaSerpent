@@ -14,7 +14,7 @@ public class BoatHealth : MonoBehaviour
     {
         boatControls = gameObject.GetComponentInParent<BoatControls>();
         hud = GameObject.Find("HUD/Canvas").GetComponent<HUDController>();
-        Debug.Log(hud.name);
+
     }
 
 

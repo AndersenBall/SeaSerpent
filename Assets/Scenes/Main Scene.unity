@@ -1686,6 +1686,7 @@ GameObject:
   - component: {fileID: 674702917}
   - component: {fileID: 674702916}
   - component: {fileID: 674702919}
+  - component: {fileID: 674702920}
   m_Layer: 0
   m_Name: MapCamera
   m_TagString: MainCamera
@@ -1700,7 +1701,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674702914}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &674702917
 Camera:
   m_ObjectHideFlags: 0
@@ -1708,7 +1709,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674702914}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -1735,8 +1736,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 250
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1760,13 +1761,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674702914}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5735764, y: -0, z: -0, w: 0.8191521}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 423, y: 400, z: -144}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &674702919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1786,6 +1787,19 @@ MonoBehaviour:
   _scrollSpeed: 100
   _minZoomDistance: 50
   _maxZoomDistance: 1000
+  _camera: {fileID: 0}
+--- !u!114 &674702920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674702914}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909bdfaf55fed4f4ea8ade3d14cdfc49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &690803826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519255169660495899, guid: 4bdef681d1313ff40bb47f36d5f64a9f,
@@ -2395,7 +2409,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 608410681497060670}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fc6f1a6affab53498bd2a39158b588b, type: 3}
   m_Name: 
@@ -4497,6 +4511,7 @@ MonoBehaviour:
   boatControls: {fileID: 0}
   mouseLookBoat: {fileID: 913511139}
   mapCamera: {fileID: 674702919}
+  unitSelection: {fileID: 674702920}
 --- !u!114 &30981519029274574
 MonoBehaviour:
   m_ObjectHideFlags: 0
