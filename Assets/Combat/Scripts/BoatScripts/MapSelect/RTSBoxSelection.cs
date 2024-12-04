@@ -95,6 +95,10 @@ public class RTSBoxSelection : MonoBehaviour
         // Clear previous selections if Shift is not held
         if (!Input.GetKey(KeyCode.LeftShift))
         {
+            foreach (var boat in selectedBoats)
+            {
+                boat.SetSelected(false); // Turn off indicator
+            }
             selectedBoats.Clear();
         }
 
@@ -111,7 +115,8 @@ public class RTSBoxSelection : MonoBehaviour
                 Collider collider = boat.GetComponent<Collider>();
                 if (collider != null && selectionBounds.Intersects(collider.bounds))
                 {
-                    selectedBoats.Add(boat); // Automatically skips duplicates because of HashSet
+                    selectedBoats.Add(boat);
+                    boat.SetSelected(true);
                 }
             }
         }

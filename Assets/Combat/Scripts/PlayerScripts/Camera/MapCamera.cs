@@ -114,7 +114,7 @@ public sealed class MapCamera : MonoBehaviour
             direction += Vector3.right;
         }
 
-        transform.position += direction * (_freeMoveSpeed + _distanceToTarget) * Time.deltaTime;
+        transform.position += direction * (_freeMoveSpeed + _camera.orthographicSize) * Time.deltaTime;
     }
 
     private void HandleMouseInput()
