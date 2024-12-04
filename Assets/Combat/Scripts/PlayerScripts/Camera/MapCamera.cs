@@ -40,11 +40,7 @@ public sealed class MapCamera : MonoBehaviour
         set { _targetTransform = value; }
     }
 
-    public float distanceToTarget
-    {
-        get { return _distanceToTarget; }
-        set { _distanceToTarget = Mathf.Clamp(value, _minZoomDistance, _maxZoomDistance); }
-    }
+ 
 
 
     public float followSpeed
@@ -66,7 +62,6 @@ public sealed class MapCamera : MonoBehaviour
 
     public void OnValidate()
     {
-        distanceToTarget = _distanceToTarget;
         followSpeed = _followSpeed;
     }
 
@@ -129,16 +124,14 @@ public sealed class MapCamera : MonoBehaviour
 
     private void HandleMouseInput()
     {
-        int layerMask = (1 << 13) | (1 << 14); //team1 and team2
-        if (Input.GetMouseButtonDown(0)) 
+        int layerMask = (1 << 13) | (1 << 14);
+        if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
-   
-                    targetTransform = hit.transform;
-                    isFollowing = true; 
-
+                targetTransform = hit.transform;
+                isFollowing = true;
             }
         }
 
@@ -150,20 +143,16 @@ public sealed class MapCamera : MonoBehaviour
 
     private void HandleScrollInput()
     {
-        // Get the scroll wheel input
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
         if (scroll != 0)
         {
-            
-            distanceToTarget -= scroll * _scrollSpeed;
-            
-            _camera.orthographicSize  = Mathf.Clamp(distanceToTarget, _minZoomDistance, _maxZoomDistance);
-                
-            
+            _camera.orthographicSize = Mathf.Clamp(
+                _camera.orthographicSize - scroll * _scrollSpeed,
+                _minZoomDistance,
+                _maxZoomDistance
+            );
         }
-
-  
     }
 
     #endregion
