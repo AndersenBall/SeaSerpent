@@ -3,23 +3,24 @@ using UnityEngine;
 
 public class RTSBoxSelection : MonoBehaviour
 {
+    #region FIELDS
     private Vector2 startScreenPosition; // Start of drag
     private Vector2 endScreenPosition;   // End of drag
     private bool isDragging = false;     // Is the player currently dragging?
-    private List<BoatAI> selectedBoats = new List<BoatAI>(); // Selected boats
+    private HashSet<BoatAI> selectedBoats = new HashSet<BoatAI>(); // Selected boats
 
     private const float YMin = -60f; // Lower Y boundary
     private const float YMax = 100f;  // Upper Y boundary
 
     private Camera cam; // Reference to the Camera component
-
     private List<BoatAI> allBoats = new List<BoatAI>();
 
- 
+    #endregion
 
-    void Awake()
+    #region MONOBEHAVIOUR METHODS
+
+    private void Awake()
     {
-        
         cam = GetComponent<Camera>();
         if (cam == null)
         {
@@ -33,13 +34,24 @@ public class RTSBoxSelection : MonoBehaviour
 
     private void Start()
     {
-        allBoats.AddRange(FindObjectsOfType<BoatAI>());
+        // Find all BoatAI objects tagged "Team1" and layer 12
+        foreach (var boat in FindObjectsOfType<BoatAI>())
+        {
+            if (boat.gameObject.CompareTag("Team1") && boat.gameObject.layer == 12)
+            {
+                allBoats.Add(boat);
+            }
+        }
     }
 
-    void Update()
+    private void Update()
     {
         HandleInput();
     }
+
+    #endregion
+
+    #region INPUT HANDLING
 
     private void HandleInput()
     {
@@ -64,6 +76,10 @@ public class RTSBoxSelection : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region SELECTION LOGIC
+
     private void SelectBoatsInBox()
     {
         // Convert screen positions to world positions
@@ -76,41 +92,38 @@ public class RTSBoxSelection : MonoBehaviour
         float zMin = Mathf.Min(startWorld.z, endWorld.z);
         float zMax = Mathf.Max(startWorld.z, endWorld.z);
 
-        // Clear previous selections
-        if (!Input.GetKey(KeyCode.LeftShift)) // Clear selection unless holding Shift
+        // Clear previous selections if Shift is not held
+        if (!Input.GetKey(KeyCode.LeftShift))
         {
-            //ResetHighlights();
             selectedBoats.Clear();
         }
+
         Bounds selectionBounds = new Bounds();
         selectionBounds.SetMinMax(
-        new Vector3(xMin, YMin, zMin), // Minimum corner
-        new Vector3(xMax, YMax, zMax)  // Maximum corner
-    );
-        
+            new Vector3(xMin, YMin, zMin),
+            new Vector3(xMax, YMax, zMax)
+        );
 
         foreach (var boat in allBoats)
         {
-            // Check if the boat is tagged correctly and on the correct layer
-            if (boat.gameObject.tag == "Team1" && boat.gameObject.layer == 12)
+            Collider collider = boat.GetComponent<Collider>();
+            if (collider != null && selectionBounds.Intersects(collider.bounds))
             {
-                // Check if the collider is within the selection bounds
-                Collider collider = boat.GetComponent<Collider>();
-                if (collider != null && selectionBounds.Intersects(collider.bounds))
-                {
-                    selectedBoats.Add(boat);
-                }
+                selectedBoats.Add(boat); // Automatically skips duplicates because of HashSet
             }
         }
 
         Debug.Log($"Selected {selectedBoats.Count} boats.");
     }
 
-    void OnGUI()
+    #endregion
+
+    #region GUI METHODS
+
+    private void OnGUI()
     {
         if (isDragging)
         {
-            // Draw the selection rectangle on the screen
             Rect rect = GetScreenRect(startScreenPosition, endScreenPosition);
             DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
             DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
@@ -144,11 +157,14 @@ public class RTSBoxSelection : MonoBehaviour
         DrawScreenRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), color); // Right
     }
 
-    void OnDrawGizmos()
+    #endregion
+
+    #region DEBUGGING
+
+    private void OnDrawGizmos()
     {
         if (!isDragging) return;
 
-        // Convert screen positions to world positions for debugging
         Vector3 startWorld = cam.ScreenToWorldPoint(new Vector3(startScreenPosition.x, startScreenPosition.y, cam.nearClipPlane));
         Vector3 endWorld = cam.ScreenToWorldPoint(new Vector3(endScreenPosition.x, endScreenPosition.y, cam.nearClipPlane));
 
@@ -164,28 +180,5 @@ public class RTSBoxSelection : MonoBehaviour
         );
     }
 
-    private void HighlightSelectedBoats()
-    {
-        foreach (BoatAI boat in selectedBoats)
-        {
-            Renderer renderer = boat.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material.color = Color.green; // Example: Change color to green
-            }
-        }
-    }
-
-    private void ResetHighlights()
-    {
-        foreach (BoatAI boat in selectedBoats)
-        {
-            Renderer renderer = boat.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material.color = Color.white; // Reset to default color
-            }
-        }
-    }
-
+    #endregion
 }
