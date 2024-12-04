@@ -13,8 +13,13 @@ public class RTSBoxSelection : MonoBehaviour
 
     private Camera cam; // Reference to the Camera component
 
+    private List<BoatAI> allBoats = new List<BoatAI>();
+
+ 
+
     void Awake()
     {
+        
         cam = GetComponent<Camera>();
         if (cam == null)
         {
@@ -24,6 +29,11 @@ public class RTSBoxSelection : MonoBehaviour
         {
             Debug.LogError("RTSBoxSelection: The Camera is not set to Orthographic.");
         }
+    }
+
+    private void Start()
+    {
+        allBoats.AddRange(FindObjectsOfType<BoatAI>());
     }
 
     void Update()
@@ -67,15 +77,17 @@ public class RTSBoxSelection : MonoBehaviour
         float zMax = Mathf.Max(startWorld.z, endWorld.z);
 
         // Clear previous selections
-        selectedBoats.Clear();
+        if (!Input.GetKey(KeyCode.LeftShift)) // Clear selection unless holding Shift
+        {
+            //ResetHighlights();
+            selectedBoats.Clear();
+        }
         Bounds selectionBounds = new Bounds();
         selectionBounds.SetMinMax(
         new Vector3(xMin, YMin, zMin), // Minimum corner
         new Vector3(xMax, YMax, zMax)  // Maximum corner
     );
-        // Find all BoatAi in the scene
-        BoatAI[] allBoats = FindObjectsOfType<BoatAI>();
-
+        
 
         foreach (var boat in allBoats)
         {
@@ -151,4 +163,29 @@ public class RTSBoxSelection : MonoBehaviour
             new Vector3(xMax - xMin, YMax - YMin, zMax - zMin)
         );
     }
+
+    private void HighlightSelectedBoats()
+    {
+        foreach (BoatAI boat in selectedBoats)
+        {
+            Renderer renderer = boat.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material.color = Color.green; // Example: Change color to green
+            }
+        }
+    }
+
+    private void ResetHighlights()
+    {
+        foreach (BoatAI boat in selectedBoats)
+        {
+            Renderer renderer = boat.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material.color = Color.white; // Reset to default color
+            }
+        }
+    }
+
 }
