@@ -8,8 +8,6 @@ public sealed class MapCamera : MonoBehaviour
     [SerializeField]
     private Transform _targetTransform;
 
-    [SerializeField]
-    private float _distanceToTarget = 50.0f;
 
     [SerializeField]
     private float _followSpeed = 3.0f;
@@ -39,9 +37,6 @@ public sealed class MapCamera : MonoBehaviour
         get { return _targetTransform; }
         set { _targetTransform = value; }
     }
-
- 
-
 
     public float followSpeed
     {
