@@ -8,8 +8,9 @@ using Panda;
 public class BoatAI : MonoBehaviour
 {
     #region variables
-    //private BoatMasterController boatMasterCon;//legacy
 
+    [SerializeField]
+    private GameObject selectionIndicator;
     private BoatMaster boatMaster;
     private BoatControls boatControl;
     private ShipCrewCommand shipCrewCommand;
@@ -52,7 +53,7 @@ public class BoatAI : MonoBehaviour
         shipCrewCommand = gameObject.GetComponent<ShipCrewCommand>();
         shipAmoInter = gameObject.GetComponent<ShipAmunitionInterface>();
         boatHP = gameObject.GetComponentInChildren<BoatHealth>();
-        
+        selectionIndicator.SetActive(false);
     }
     
 
@@ -141,12 +142,19 @@ public class BoatAI : MonoBehaviour
     public float GetEngineSpeed() {
         return boatControl.GetEnginePower();
     }
-    
+
 
     #endregion
 
     #region Methods
-    //*************** Methods*****************
+    public void SetSelected(bool isSelected)
+    {
+        if (selectionIndicator != null)
+        {
+            selectionIndicator.SetActive(isSelected);
+        }
+    }
+
     void AddLayerRecursively(Transform trans, string layer)
     {
         //Debug.Log("obejct:"+ trans.name +"layer:"+layer+ ":layernum:"+ LayerMask.NameToLayer(layer));
