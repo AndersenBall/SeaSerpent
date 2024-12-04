@@ -28,6 +28,8 @@ public sealed class MapCamera : MonoBehaviour
     [SerializeField]
     private Camera _camera;
 
+    private float initialHeight;
+
     #endregion
 
     #region PROPERTIES
@@ -41,8 +43,9 @@ public sealed class MapCamera : MonoBehaviour
     public float distanceToTarget
     {
         get { return _distanceToTarget; }
-        set { _distanceToTarget = Mathf.Max(0.0f, value); }
+        set { _distanceToTarget = Mathf.Clamp(value, _minZoomDistance, _maxZoomDistance); }
     }
+
 
     public float followSpeed
     {
@@ -52,7 +55,7 @@ public sealed class MapCamera : MonoBehaviour
 
     private Vector3 cameraRelativePosition
     {
-        get { return targetTransform.position;  }
+        get { return new Vector3(targetTransform.position.x, initialHeight, targetTransform.position.z); }
     }
 
     private bool isFollowing = true;
@@ -70,7 +73,7 @@ public sealed class MapCamera : MonoBehaviour
     public void Awake()
     {
         _camera = GetComponent<Camera>();
-        transform.position = cameraRelativePosition;
+        initialHeight = transform.position.y;
     }
 
     public void LateUpdate()
@@ -78,7 +81,13 @@ public sealed class MapCamera : MonoBehaviour
         if (isFollowing && targetTransform != null)
         {
 
-            transform.position = Vector3.Lerp(transform.position, cameraRelativePosition, followSpeed * Time.deltaTime);
+            Vector3 targetPosition = new Vector3(
+                Mathf.Lerp(transform.position.x, targetTransform.position.x, followSpeed * Time.deltaTime),
+                initialHeight,
+                Mathf.Lerp(transform.position.z, targetTransform.position.z, followSpeed * Time.deltaTime)
+            );
+
+            transform.position = targetPosition;
         }
         else
         {
