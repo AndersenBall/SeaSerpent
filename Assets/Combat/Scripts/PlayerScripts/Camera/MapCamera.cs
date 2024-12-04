@@ -9,7 +9,7 @@ public sealed class MapCamera : MonoBehaviour
     private Transform _targetTransform;
 
     [SerializeField]
-    private float _distanceToTarget = 15.0f;
+    private float _distanceToTarget = 50.0f;
 
     [SerializeField]
     private float _followSpeed = 3.0f;
@@ -23,7 +23,10 @@ public sealed class MapCamera : MonoBehaviour
     [SerializeField]
     private float _minZoomDistance = 50.0f; 
     [SerializeField]
-    private float _maxZoomDistance = 1000.0f; 
+    private float _maxZoomDistance = 1000.0f;
+
+    [SerializeField]
+    private Camera _camera;
 
     #endregion
 
@@ -49,7 +52,7 @@ public sealed class MapCamera : MonoBehaviour
 
     private Vector3 cameraRelativePosition
     {
-        get { return targetTransform.position - transform.forward * distanceToTarget; }
+        get { return targetTransform.position;  }
     }
 
     private bool isFollowing = true;
@@ -66,6 +69,7 @@ public sealed class MapCamera : MonoBehaviour
 
     public void Awake()
     {
+        _camera = GetComponent<Camera>();
         transform.position = cameraRelativePosition;
     }
 
@@ -145,13 +149,9 @@ public sealed class MapCamera : MonoBehaviour
             
             distanceToTarget -= scroll * _scrollSpeed;
             
-            if(!isFollowing)
-            {
-                Vector3 newPosition = transform.position;
-                newPosition.y -= scroll * _scrollSpeed;
-                newPosition.y = Mathf.Clamp(newPosition.y, _minZoomDistance, _maxZoomDistance);
-                transform.position = newPosition;
-            }
+            _camera.orthographicSize  = Mathf.Clamp(distanceToTarget, _minZoomDistance, _maxZoomDistance);
+                
+            
         }
 
   
