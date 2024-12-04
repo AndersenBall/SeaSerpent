@@ -37,7 +37,7 @@ public class RTSBoxSelection : MonoBehaviour
         // Find all BoatAI objects tagged "Team1" and layer 12
         foreach (var boat in FindObjectsOfType<BoatAI>())
         {
-            if (boat.gameObject.CompareTag("Team1") && boat.gameObject.layer == 12)
+            if (boat.gameObject.layer == 12)
             {
                 allBoats.Add(boat);
             }
@@ -106,10 +106,13 @@ public class RTSBoxSelection : MonoBehaviour
 
         foreach (var boat in allBoats)
         {
-            Collider collider = boat.GetComponent<Collider>();
-            if (collider != null && selectionBounds.Intersects(collider.bounds))
+            if (boat.gameObject.CompareTag("Team1"))
             {
-                selectedBoats.Add(boat); // Automatically skips duplicates because of HashSet
+                Collider collider = boat.GetComponent<Collider>();
+                if (collider != null && selectionBounds.Intersects(collider.bounds))
+                {
+                    selectedBoats.Add(boat); // Automatically skips duplicates because of HashSet
+                }
             }
         }
 
