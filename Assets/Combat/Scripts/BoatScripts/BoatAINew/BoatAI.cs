@@ -127,7 +127,7 @@ public class BoatAI : MonoBehaviour
         Transform t = transform.Find("Colonial Ship");
         //Debug.Log("what is this" + t.name);
         AddLayerRecursively( t,"Team"+teamNumber);
-        
+        gameObject.tag = "Team" + teamNumber;
     }
 
     //returns current way boat is facing

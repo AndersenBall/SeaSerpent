@@ -15,6 +15,10 @@ public class BulletStart
 
 
     private bool hasCollided = false;
+    private void Start()
+    {
+        Destroy(this.gameObject, 20);
+    }
 
     //this sets off a bomb explossion on collison. Setting off physics explosion and animation on collision.
     private void OnCollisionEnter(Collision collision)
@@ -39,6 +43,7 @@ public class BulletStart
             Destroy(impactAnimation1, 2);
             Destroy(impactAnimation2, 2);
         }
+        makeExplosionForce(transform.position);
 
     }
     private void makeExplosionForce(Vector3 explosionPos)

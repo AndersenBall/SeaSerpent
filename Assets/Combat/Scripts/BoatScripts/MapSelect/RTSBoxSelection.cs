@@ -47,11 +47,41 @@ public class RTSBoxSelection : MonoBehaviour
     private void Update()
     {
         HandleInput();
+        HandleRightClick();
     }
 
     #endregion
 
     #region INPUT HANDLING
+
+    private void HandleRightClick()
+    {
+        // Check if the right mouse button is clicked
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            {
+                GameObject hitObject = hit.collider.gameObject;
+
+                // Check if the hit object is an enemy boat
+                if (hitObject.layer == 12 && hitObject.CompareTag("Team2"))
+                {
+                    BoatAI targetEnemy = hitObject.GetComponent<BoatAI>();
+                    if (targetEnemy != null)
+                    {
+                        // Assign the target enemy to all selected boats
+                        foreach (var boat in selectedBoats)
+                        {
+                            boat.targetEnemy = targetEnemy;
+                        }
+
+                        Debug.Log($"Target enemy set to {targetEnemy.name} for {selectedBoats.Count} selected boats.");
+                    }
+                }
+            }
+        }
+    }
 
     private void HandleInput()
     {
@@ -82,6 +112,8 @@ public class RTSBoxSelection : MonoBehaviour
 
     private void SelectBoatsInBox()
     {
+
+        allBoats.RemoveAll(boat => boat == null || boat.gameObject == null);
         // Convert screen positions to world positions
         Vector3 startWorld = cam.ScreenToWorldPoint(new Vector3(startScreenPosition.x, startScreenPosition.y, cam.nearClipPlane));
         Vector3 endWorld = cam.ScreenToWorldPoint(new Vector3(endScreenPosition.x, endScreenPosition.y, cam.nearClipPlane));
