@@ -200,11 +200,11 @@ public class BoatMaster : MonoBehaviour
 
     public void DestroyBoat(BoatAI boat) {
         if (boat.GetTeamNumber() == 1) {
-            Debug.Log("null:" +SceneTransfer.playerFleet.commander);
+            Debug.Log("Deleted:" +SceneTransfer.playerFleet.commander + boat.name);
             SceneTransfer.playerFleet.RemoveBoat(boat.name);
         }
         else {
-            Debug.Log("null?" +SceneTransfer.enemyFleet.commander);
+            Debug.Log("Destroyed:" +SceneTransfer.enemyFleet.commander + boat.name);
             SceneTransfer.enemyFleet.RemoveBoat(boat.name);
         }
 
