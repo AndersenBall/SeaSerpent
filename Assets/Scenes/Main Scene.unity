@@ -1781,7 +1781,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetTransform: {fileID: 648581216304937337}
-  _distanceToTarget: 300
   _followSpeed: 3
   _freeMoveSpeed: 10
   _scrollSpeed: 100
@@ -7285,7 +7284,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4443e5ec376704c409438d7e9fb44012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetEnemy: {fileID: 0}
+  selectionIndicator: {fileID: 0}
+  _targetEnemy: {fileID: 0}
   attackVector: {x: 0, y: 0}
   attackDirection: 
   action: DriveBy
@@ -8277,7 +8277,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 49152
+    m_Bits: 32768
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_IgnoreNavMeshAgent: 1

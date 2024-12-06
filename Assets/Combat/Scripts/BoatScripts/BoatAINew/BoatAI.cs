@@ -24,9 +24,24 @@ public class BoatAI : MonoBehaviour
 
     private float runTime = 0;
 
-    private bool turningToTarget = false;//legacy
+    private bool turningToTarget = false;//legacy TODO remove? idk
 
-    public BoatAI targetEnemy;
+    private bool targetSetByCommander = false;
+    
+    public BoatAI targetEnemy
+    {
+        get => _targetEnemy; 
+        set
+        {
+            if (_targetEnemy != value)
+            {
+                _targetEnemy = value;
+                targetSetByCommander = true; 
+            }
+        }
+    }
+    [SerializeField]
+    private BoatAI _targetEnemy;
     public Vector2 attackVector;
     public string attackDirection;
 
@@ -300,9 +315,19 @@ public class BoatAI : MonoBehaviour
         else
             Task.current.Fail();
     }
-    [Task] //needs a lot more work...
+    [Task] // TODO 12/5 expand into larger sub system with smart overall decisions for choosing who to attack. might be controlled by a seperate "commander" ai.
     public void ChooseEnemy() {
-        targetEnemy = null;
+
+        if (_targetEnemy == null || _targetEnemy.gameObject == null)
+        {
+            targetSetByCommander = false;
+            Debug.Log("Target enemy is null or destroyed. Resetting targetSetByCommander to false.");
+        }
+        if (targetSetByCommander) {
+            Task.current.Succeed();
+            return;
+        }
+        _targetEnemy = null;
         
         BoatAI[] boatAI = boatMaster.GetTeamBoats(teamNumber == 1 ? 2 : 1);
         float closestDistance = 9999999999999999999999f;
@@ -312,24 +337,24 @@ public class BoatAI : MonoBehaviour
                 Debug.DrawLine(transform.position + transform.forward * 100, boat.transform.position, Color.red, 2f);
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    targetEnemy = boat;
+                    _targetEnemy = boat;
                 }
 
             }
         }
 
-        if (targetEnemy != null) {
+        if (_targetEnemy != null) {
             Vector2 boatDirect = GetCardDirect();
-            Vector2 targetVec = new Vector2((targetEnemy.transform.position - transform.position).x, (targetEnemy.transform.position - transform.position).z);
+            Vector2 targetVec = new Vector2((_targetEnemy.transform.position - transform.position).x, (_targetEnemy.transform.position - transform.position).z);
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
-            Task.current.debugInfo = "enemy targeted: " + targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-            if ((transform.position - targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
+            Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
+            if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
                 Task.current.Fail();
                 attacking = false;
-            }else if ((transform.position - targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
+            }else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
                 SetAction("PotShot");
-            }else if ((transform.position - targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
+            }else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
                 SetAction("ApproachTurnShoot");
             else
                 SetAction("DriveBy");
@@ -345,12 +370,12 @@ public class BoatAI : MonoBehaviour
     public void ChooseAttackDirection()
     {
         Vector2 boatDirect = GetCardDirect();
-        if (targetEnemy == null) {
+        if (_targetEnemy == null) {
             Task.current.Fail();
             return;
         }
-        Vector2 targetVec = new Vector2(targetEnemy.transform.position.x - transform.position.x, targetEnemy.transform.position.z - transform.position.z);
-        targetVec += new Vector2(targetEnemy.transform.forward.x, targetEnemy.transform.forward.z) * 100 * (1 - Mathf.Pow(targetEnemy.GetSpeed() - 1, 2));
+        Vector2 targetVec = new Vector2(_targetEnemy.transform.position.x - transform.position.x, _targetEnemy.transform.position.z - transform.position.z);
+        targetVec += new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z) * 100 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
 
         Debug.DrawRay(transform.position, new Vector3(targetVec.x, 0, targetVec.y), Color.white, 1f);
         Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
@@ -364,16 +389,16 @@ public class BoatAI : MonoBehaviour
             SetAttackDirection("Left");
             Task.current.debugInfo = "Left";
         }
-        Task.current.debugInfo = "enemy speed " + targetEnemy.GetSpeed();
+        Task.current.debugInfo = "enemy speed " + _targetEnemy.GetSpeed();
         Task.current.Succeed();
     }
     [Task]
     public void CreateAttackVector() {
         if (action == "DriveBy") {
             if (attackDirection == "Left")
-                attackVector = new Vector2(targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * 2;
+                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * 2;
             else
-                attackVector = new Vector2(targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * -2;
+                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * -2;
             Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
             Task.current.Succeed();
         }
@@ -396,15 +421,15 @@ public class BoatAI : MonoBehaviour
         else {
             shipCrewCommand.SetCannonSets(3);
         }
-        if (targetEnemy == null) {
+        if (_targetEnemy == null) {
             
             Task.current.Fail();
             return;
         }
-        float distance = Vector3.Distance(targetEnemy.transform.position, transform.position);
-        Vector3 targetVec = new Vector3(targetEnemy.transform.forward.x,0 ,targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(targetEnemy.GetSpeed() - 1, 2));
-        Debug.DrawLine(targetEnemy.transform.position + targetVec, targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
-        distance = Vector3.Distance(targetEnemy.transform.position + targetVec, transform.position);
+        float distance = Vector3.Distance(_targetEnemy.transform.position, transform.position);
+        Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
+        Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
+        distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
         shipCrewCommand.SetCannonAnglePredictions(Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
         shipCrewCommand.AdjustCannonAngles();//could be here
         Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
@@ -435,12 +460,12 @@ public class BoatAI : MonoBehaviour
 
         float addedX = attackVector.x * boatMaster.tileSize;
         float addedY = attackVector.y * boatMaster.tileSize;
-        if (targetEnemy == null) {
+        if (_targetEnemy == null) {
             Task.current.Fail();
             return false;
         }
-        (float x, float y) destination = (targetEnemy.transform.position.x + addedX, targetEnemy.transform.position.z + addedY);
-        Debug.DrawRay(transform.position, targetEnemy.transform.position + new Vector3(addedX, 0, addedY) - transform.position, Color.yellow);
+        (float x, float y) destination = (_targetEnemy.transform.position.x + addedX, _targetEnemy.transform.position.z + addedY);
+        Debug.DrawRay(transform.position, _targetEnemy.transform.position + new Vector3(addedX, 0, addedY) - transform.position, Color.yellow);
 
         if (Mathf.Pow(destination.x - transform.position.x, 2) + Mathf.Pow(destination.y - transform.position.z, 2) < Mathf.Pow(exitDistance, 2)) {
             boatControl.SetTurn(0);
@@ -502,7 +527,7 @@ public class BoatAI : MonoBehaviour
     public void TurnToFire() {
         Vector2 boatDirect = GetCardDirect();
 
-        Vector2 targetVec = new Vector2(targetEnemy.transform.position.x - this.transform.position.x, targetEnemy.transform.position.z - this.transform.position.z);
+        Vector2 targetVec = new Vector2(_targetEnemy.transform.position.x - this.transform.position.x, _targetEnemy.transform.position.z - this.transform.position.z);
         Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
         float dotForward = Vector2.Dot(boatDirect, targetVec);
         float dot90 = Vector2.Dot(boatDirect, targetVec90);
@@ -548,13 +573,13 @@ public class BoatAI : MonoBehaviour
     {
         int outer = 60;
         int inner = 8;
-        if (targetEnemy == null) {
+        if (_targetEnemy == null) {
             Task.current.Fail();
             return;
         }
         Vector2 boatDirect = GetCardDirect();
-        float distance = Vector3.Distance(gameObject.transform.position, targetEnemy.transform.position);
-        Vector3 predictionVec = targetEnemy.transform.position + new Vector3(targetEnemy.transform.forward.x, 0, targetEnemy.transform.forward.z) * distance / 15 * (1 - Mathf.Pow(targetEnemy.GetSpeed() - 1, 2));
+        float distance = Vector3.Distance(gameObject.transform.position, _targetEnemy.transform.position);
+        Vector3 predictionVec = _targetEnemy.transform.position + new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z) * distance / 15 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
         Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0), Color.red);
         
         Vector2 targetVec = new Vector2(predictionVec.x - this.transform.position.x, predictionVec.z - this.transform.position.z).normalized * 100;
@@ -617,12 +642,12 @@ public class BoatAI : MonoBehaviour
         float min = .0001f;
         float upperLimit = .15f;
         Vector2 boatDirect = GetCardDirect();
-        if (targetEnemy == null) {
+        if (_targetEnemy == null) {
             Task.current.Fail();
             return;
         }
-        float distance = Vector3.Distance(gameObject.transform.position,targetEnemy.transform.position);
-        Vector3 predictionVec = targetEnemy.transform.position +new Vector3(targetEnemy.transform.forward.x, 0, targetEnemy.transform.forward.z)  *distance/15 * (1 - (Mathf.Pow(targetEnemy.GetSpeed()-1, 2)* targetEnemy.GetEngineSpeed() / 8));
+        float distance = Vector3.Distance(gameObject.transform.position,_targetEnemy.transform.position);
+        Vector3 predictionVec = _targetEnemy.transform.position +new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z)  *distance/15 * (1 - (Mathf.Pow(_targetEnemy.GetSpeed()-1, 2)* _targetEnemy.GetEngineSpeed() / 8));
         Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0),Color.green);
         Vector2 targetVec = new Vector2(predictionVec.x - this.transform.position.x, predictionVec.z - this.transform.position.z);
         Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
@@ -801,7 +826,7 @@ public class BoatAI : MonoBehaviour
             }
         }
         Task.current.debugInfo =  " my location:" + (int)GetPrevXYPos().x + "," + (int)GetPrevXYPos().y  +
-                    targetEnemy.GetPrevXYPos().x + "," + targetEnemy.GetPrevXYPos().y + " Dot: " + (int)dotSideways + debugInf;
+                    _targetEnemy.GetPrevXYPos().x + "," + _targetEnemy.GetPrevXYPos().y + " Dot: " + (int)dotSideways + debugInf;
     }
     #endregion
 
