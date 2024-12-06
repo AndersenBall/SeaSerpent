@@ -324,6 +324,7 @@ public class BoatAI : MonoBehaviour
             Debug.Log("Target enemy is null or destroyed. Resetting targetSetByCommander to false.");
         }
         if (targetSetByCommander) {
+            Task.current.Succeed();
             return;
         }
         _targetEnemy = null;
