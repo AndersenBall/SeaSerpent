@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public MouseLookBoat mouseLookBoat;
     public MapCamera mapCamera;
     public RTSBoxSelection unitSelection;
+    private CannonControlMode cannonMode;
     private PlayerControlMode playerMode;
     private BoatControlMode boatMode;
     private MapControlMode mapMode;
@@ -37,7 +38,7 @@ public class GameManager : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         hudController = canvas.GetComponent<HUDController>();
 
-
+        cannonMode = new CannonControlMode(hudController, triggerController);
         boatMode = new BoatControlMode(positionInterface, boatControls, hudController,mouseLookBoat);
         playerMode = new PlayerControlMode(triggerController,positionInterface, hudController, mouseLook);
         mapMode = new MapControlMode(hudController, mapCamera, unitSelection);
@@ -46,8 +47,18 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.E) && triggerController.activeCannon != null)
+        {
+            modeManager.SetMode(cannonMode);
+        }
+
+        // Exit Cannon Control Mode
+        if (Input.GetKeyDown(KeyCode.Escape) && modeManager.CurrentMode == cannonMode)
+        {
+            modeManager.SetMode(playerMode); 
+        }
         // Swap to Boat Control Mode 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.N))
         {
             if (modeManager.CurrentMode == boatMode)
             {

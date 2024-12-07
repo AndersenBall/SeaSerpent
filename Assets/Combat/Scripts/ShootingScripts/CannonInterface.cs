@@ -18,11 +18,21 @@ public class CannonInterface : MonoBehaviour
     
     private float gunAngle=0;
     private float wantedGunAngle = 0;
+    private float horizontalGunAngle = 0; 
     private float cannonVariance = 1.2f;
     private bool isLoaded = true;
     private bool isBeingWorkedOn = false;
     public float fireForce = 100;
     public int cannonSetNum;
+    public float rotationSpeed = 5f;
+
+    [SerializeField, Range(200f, 360f)]
+    private float minVerticalAngle = 220f;
+
+    [SerializeField, Range(200f, 360f)]
+    private float maxVerticalAngle = 300f;
+    private float minHorizontalAngle = -30f;
+    private float maxHorizontalAngle = 30f;
 
     private void Start()
     {
@@ -135,6 +145,47 @@ public class CannonInterface : MonoBehaviour
         }
         //Debug.Log("reload gun");
     }
-  
+
+
+    public void AdjustVerticalAngle(float input)
+    {
+        if (input != 0)
+        {
+            // Get the current angle, ensuring it's always in 0-360 range
+            float currentAngle = NormalizeAngle(rotationPoint.localEulerAngles.x);
+
+            // Adjust the angle based on input
+            float newAngle = currentAngle + input * rotationSpeed * Time.deltaTime;
+
+            // Clamp the angle within the defined range
+            newAngle = Mathf.Clamp(newAngle, minVerticalAngle, maxVerticalAngle);
+
+            // Apply the clamped angle to the cannon's rotation point
+            rotationPoint.localEulerAngles = new Vector3(newAngle, rotationPoint.localEulerAngles.y, rotationPoint.localEulerAngles.z);
+
+        }
+    }
+
+    private float NormalizeAngle(float angle)
+    {
+        // Ensure the angle is always within 0-360 range
+        while (angle < 0f) angle += 360f;
+        while (angle >= 360f) angle -= 360f;
+        return angle;
+    }
+
+
+
+    // Adjust horizontal rotation directly
+    public void AdjustHorizontalAngle(float input)
+    {
+        if (input != 0)
+        {
+
+            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle); 
+
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, horizontalGunAngle, transform.localEulerAngles.z);
+        }
+    }
 
 }

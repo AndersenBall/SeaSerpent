@@ -6,7 +6,7 @@ public class CannonLine : MonoBehaviour
 {
     public CannonInterface cannonSet;
     public LineRenderer lineRender;
-    public float angleOffset;
+    public float angleOffset { get; set; }
     public int numberOfPoints;
     public Transform barrel;
     // Start is called before the first frame update
