@@ -9914,8 +9914,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3933289067434718285}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 3, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10103,8 +10103,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8886098981075616554}
   - {fileID: 3933289067434718284}
+  - {fileID: 8886098981075616554}
   m_Father: {fileID: 4446774864564587052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4591557165691154306
@@ -10292,8 +10292,6 @@ MonoBehaviour:
   fireForce: 10
   cannonSetNum: 0
   rotationSpeed: 5
-  minVerticalAngle: 220
-  maxVerticalAngle: 300
 --- !u!1 &5713074603872033665
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,11 +27,11 @@ public class CannonInterface : MonoBehaviour
     public int cannonSetNum;
     public float rotationSpeed = 5f;
  
-    private float minVerticalAngle = -30f;
-
+    private float minVerticalAngle = -200f;
     private float maxVerticalAngle = 10f;
-    private float minHorizontalAngle = -30f;
-    private float maxHorizontalAngle = 30f;
+    private Transform cannonTransform;
+    private float minHorizontalAngle = -20f;
+    private float maxHorizontalAngle = 20f;
 
     private void Start()
     {
@@ -39,6 +39,7 @@ public class CannonInterface : MonoBehaviour
         gunAnim = gameObject.GetComponent<Animator>();
         cannonAudioSource = gameObject.GetComponentInChildren<AudioSource>();
         haloControl = gameObject.GetComponentInChildren<HaloController>();
+        cannonTransform = transform.Find("Cannon");
     }
 
     public bool GetNeedsRotation() {
@@ -160,17 +161,9 @@ public class CannonInterface : MonoBehaviour
             rotationPoint.localEulerAngles = new Vector3(newAngle, rotationPoint.localEulerAngles.y, rotationPoint.localEulerAngles.z);
 
             // Debug log for diagnostics
-            Debug.Log($"Current angle: {currentAngle}, New angle: {newAngle}, Input: {input}, Min: {minVerticalAngle}, Max: {maxVerticalAngle}");
+            //Debug.Log($"Current angle: {currentAngle}, New angle: {newAngle}, Input: {input}, Min: {minVerticalAngle}, Max: {maxVerticalAngle}");
         }
     }
-
-
-    private float NormalizeAngle(float angle)
-    {
-        return Mathf.Repeat(angle + 180f, 360f) - 180f;
-    }
-
-
 
 
     // Adjust horizontal rotation directly
@@ -179,9 +172,9 @@ public class CannonInterface : MonoBehaviour
         if (input != 0)
         {
 
-            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle); 
+            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle);
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, horizontalGunAngle, transform.localEulerAngles.z);
+            cannonTransform.localEulerAngles = new Vector3(cannonTransform.localEulerAngles.x, horizontalGunAngle, cannonTransform.localEulerAngles.z);
         }
     }
 

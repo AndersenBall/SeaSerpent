@@ -23,6 +23,7 @@ public class CannonControlMode : ControlMode
     public override void UpdateMode()
     {
         var activeCannon = playerController.activeCannon;
+        
         // Use movement input axes for controlling cannon
         float horizontal = Input.GetAxis("Horizontal");
         int vertical = 0;
