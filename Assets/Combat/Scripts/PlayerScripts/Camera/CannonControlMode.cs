@@ -24,8 +24,10 @@ public class CannonControlMode : ControlMode
     {
         var activeCannon = playerController.activeCannon;
         // Use movement input axes for controlling cannon
-        float horizontal = Input.GetAxis("Horizontal"); 
-        float vertical = Input.GetAxis("Vertical");    
+        float horizontal = Input.GetAxis("Horizontal");
+        int vertical = 0;
+        if (Input.GetKey(KeyCode.UpArrow)) vertical = 1;
+        if (Input.GetKey(KeyCode.DownArrow)) vertical = -1;
 
         if (horizontal != 0)
         {
