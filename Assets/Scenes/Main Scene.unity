@@ -663,8 +663,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cannonBarrel: {fileID: 0}
-  cameraOffset: {x: 0, y: 1, z: -3}
-  cameraRotation: {x: 10, y: 0, z: 0}
+  cameraOffset: {x: 0.016107919, y: -1.37731, z: -0.41332883}
+  cameraRotation: {x: -82.212, y: 0, z: 0}
 --- !u!114 &243711229
 MonoBehaviour:
   m_ObjectHideFlags: 0

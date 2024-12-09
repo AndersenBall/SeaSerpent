@@ -8,7 +8,7 @@ public class PlayerTriggerController : MonoBehaviour
 {
     //player controls
     public HUDController hud;
-    public CannonInterface activeCannon { get; set; }
+    public CannonInterface activeCannon;
     private ItemPickUp itemPickUp;
     private FireGun handGunControl;
     

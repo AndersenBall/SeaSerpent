@@ -19,6 +19,7 @@ public class CannonControlMode : ControlMode
         Debug.Log("Entered Cannon Control Mode");
         //hud.ShowCannonView(); // Show HUD for cannon controls
         playerController.activeCannon.SetLineActivity(true);
+        Transform cannonTransform = playerController.activeCannon.transform.Find("Cannon");
         cannonCameraControl.EnterCannonMode(playerController.activeCannon.transform);
         Cursor.visible = false; // Lock cursor for aiming
         Cursor.lockState = CursorLockMode.Locked;
