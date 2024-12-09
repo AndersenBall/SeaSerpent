@@ -4,11 +4,14 @@ public class CannonControlMode : ControlMode
 {
     private HUDController hud;
     private PlayerTriggerController playerController;
+    private CannonCameraControl cannonCameraControl;
 
-    public CannonControlMode(HUDController hud, PlayerTriggerController playerController)
+    public CannonControlMode(HUDController hud, PlayerTriggerController playerController, CannonCameraControl cannonCameraControl)
     {
         this.hud = hud;
         this.playerController = playerController;
+        this.cannonCameraControl = cannonCameraControl;
+
     }
 
     public override void EnterMode()
@@ -16,8 +19,10 @@ public class CannonControlMode : ControlMode
         Debug.Log("Entered Cannon Control Mode");
         //hud.ShowCannonView(); // Show HUD for cannon controls
         playerController.activeCannon.SetLineActivity(true);
+        cannonCameraControl.EnterCannonMode(playerController.activeCannon.transform);
         Cursor.visible = false; // Lock cursor for aiming
         Cursor.lockState = CursorLockMode.Locked;
+
     }
 
     public override void UpdateMode()
@@ -52,6 +57,7 @@ public class CannonControlMode : ControlMode
         Debug.Log("Exited Cannon Control Mode");
         //hud.HideCannonView(); 
         playerController.activeCannon.SetLineActivity(false);
+        cannonCameraControl.ExitCannonMode(); 
         Cursor.visible = true; // Unlock cursor
         Cursor.lockState = CursorLockMode.None;
     }
