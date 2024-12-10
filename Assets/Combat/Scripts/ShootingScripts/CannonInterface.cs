@@ -22,7 +22,7 @@ public class CannonInterface : MonoBehaviour
     private float horizontalGunAngle = 0; 
     private float cannonVariance = 1.2f;
     private bool isLoaded = true;
-    private bool isBeingWorkedOn = false;
+    public bool isBeingWorkedOn { get; set; } = false;
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;
@@ -124,15 +124,6 @@ public class CannonInterface : MonoBehaviour
     public bool GetLoadStatus() {
         return isLoaded;
     }
-    public void SetBusyStatus(bool busyStatus) {
-        
-        isBeingWorkedOn = busyStatus;
-    }
-    public bool GetBusyStatus()
-    {
-        return isBeingWorkedOn;
-    }
-
 
     //load the cannon
     public void LoadGun()

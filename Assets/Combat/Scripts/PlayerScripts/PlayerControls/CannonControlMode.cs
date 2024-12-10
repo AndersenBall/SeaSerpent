@@ -19,6 +19,7 @@ public class CannonControlMode : ControlMode
         Debug.Log("Entered Cannon Control Mode");
         //hud.ShowCannonView(); // Show HUD for cannon controls
         playerController.activeCannon.SetLineActivity(true);
+        playerController.activeCannon.isBeingWorkedOn = true;
         cannonCameraControl.EnterCannonMode(playerController.activeCannon.rotationPoint.transform);
         Cursor.visible = false; // Lock cursor for aiming
         Cursor.lockState = CursorLockMode.Locked;
@@ -57,6 +58,7 @@ public class CannonControlMode : ControlMode
         Debug.Log("Exited Cannon Control Mode");
         //hud.HideCannonView(); 
         playerController.activeCannon.SetLineActivity(false);
+        playerController.activeCannon.isBeingWorkedOn = false;
         cannonCameraControl.ExitCannonMode(); 
         Cursor.visible = true; // Unlock cursor
         Cursor.lockState = CursorLockMode.None;

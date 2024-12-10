@@ -67,7 +67,7 @@ public class PandaUnitAI : MonoBehaviour
     #region Methods
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
-            nearestCannon.SetBusyStatus(false);
+            nearestCannon.isBeingWorkedOn = false;
             //Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;
@@ -184,7 +184,7 @@ public class PandaUnitAI : MonoBehaviour
         float shortestDistance = 100f;
         float distance;
         foreach (CannonInterface cannon in cannonList) {
-            if (!cannon.GetBusyStatus()) {
+            if (!cannon.isBeingWorkedOn) {
                 distance = Vector3.Distance(transform.position, cannon.transform.position);
                 //Debug.Log("Debug:Unit:"+name + "Cannon: " + cannon.name + "Distance: " + distance);
                 if (shortestDistance > distance) {
@@ -194,7 +194,7 @@ public class PandaUnitAI : MonoBehaviour
             }
         }
         if (nearestCannon != null ) {
-            nearestCannon.SetBusyStatus(true);
+            nearestCannon.isBeingWorkedOn = true;
             Task.current.debugInfo = nearestCannon.name;
             //Debug.Log("Debug:Unit:Closest Cannon:" + name + " end search" + nearestCannon.name);
             Task.current.Succeed();

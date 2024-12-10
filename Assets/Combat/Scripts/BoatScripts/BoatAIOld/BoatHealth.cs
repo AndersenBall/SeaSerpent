@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BoatHealth : MonoBehaviour
 {
-    public float health = 50f;
+
+    public float health { get; set; } = 50f;
     private bool dead = false;
     private BoatControls boatControls;
 
