@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 
 using UnityEngine;
+using System.Drawing;
 
 public class CannonInterface : MonoBehaviour
 {
@@ -21,18 +22,16 @@ public class CannonInterface : MonoBehaviour
     private float horizontalGunAngle = 0; 
     private float cannonVariance = 1.2f;
     private bool isLoaded = true;
-    private bool isBeingWorkedOn = false;
+    public bool isBeingWorkedOn { get; set; } = false;
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;
-
-    [SerializeField, Range(200f, 360f)]
-    private float minVerticalAngle = 220f;
-
-    [SerializeField, Range(200f, 360f)]
-    private float maxVerticalAngle = 300f;
-    private float minHorizontalAngle = -30f;
-    private float maxHorizontalAngle = 30f;
+ 
+    private float minVerticalAngle = -200f;
+    private float maxVerticalAngle = 10f;
+    private Transform cannonTransform;
+    private float minHorizontalAngle = -20f;
+    private float maxHorizontalAngle = 20f;
 
     private void Start()
     {
@@ -40,6 +39,7 @@ public class CannonInterface : MonoBehaviour
         gunAnim = gameObject.GetComponent<Animator>();
         cannonAudioSource = gameObject.GetComponentInChildren<AudioSource>();
         haloControl = gameObject.GetComponentInChildren<HaloController>();
+        cannonTransform = transform.Find("Cannon");
     }
 
     public bool GetNeedsRotation() {
@@ -124,15 +124,6 @@ public class CannonInterface : MonoBehaviour
     public bool GetLoadStatus() {
         return isLoaded;
     }
-    public void SetBusyStatus(bool busyStatus) {
-        
-        isBeingWorkedOn = busyStatus;
-    }
-    public bool GetBusyStatus()
-    {
-        return isBeingWorkedOn;
-    }
-
 
     //load the cannon
     public void LoadGun()
@@ -147,33 +138,23 @@ public class CannonInterface : MonoBehaviour
     }
 
 
-    public void AdjustVerticalAngle(float input)
+    public void AdjustVerticalAngle(int input)
     {
         if (input != 0)
         {
-            // Get the current angle, ensuring it's always in 0-360 range
-            float currentAngle = NormalizeAngle(rotationPoint.localEulerAngles.x);
+            // Normalize current angle to -180 to 180
+            float currentAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
 
-            // Adjust the angle based on input
-            float newAngle = currentAngle + input * rotationSpeed * Time.deltaTime;
+            // Adjust and clamp the angle
+            float newAngle = Mathf.Clamp(currentAngle - input * rotationSpeed * Time.deltaTime, minVerticalAngle, maxVerticalAngle);
 
-            // Clamp the angle within the defined range
-            newAngle = Mathf.Clamp(newAngle, minVerticalAngle, maxVerticalAngle);
-
-            // Apply the clamped angle to the cannon's rotation point
+            // Apply the clamped angle
             rotationPoint.localEulerAngles = new Vector3(newAngle, rotationPoint.localEulerAngles.y, rotationPoint.localEulerAngles.z);
 
+            // Debug log for diagnostics
+            //Debug.Log($"Current angle: {currentAngle}, New angle: {newAngle}, Input: {input}, Min: {minVerticalAngle}, Max: {maxVerticalAngle}");
         }
     }
-
-    private float NormalizeAngle(float angle)
-    {
-        // Ensure the angle is always within 0-360 range
-        while (angle < 0f) angle += 360f;
-        while (angle >= 360f) angle -= 360f;
-        return angle;
-    }
-
 
 
     // Adjust horizontal rotation directly
@@ -182,9 +163,9 @@ public class CannonInterface : MonoBehaviour
         if (input != 0)
         {
 
-            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle); 
+            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle);
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, horizontalGunAngle, transform.localEulerAngles.z);
+            cannonTransform.localEulerAngles = new Vector3(cannonTransform.localEulerAngles.x, horizontalGunAngle, cannonTransform.localEulerAngles.z);
         }
     }
 

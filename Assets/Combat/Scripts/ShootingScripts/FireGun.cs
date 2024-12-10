@@ -24,7 +24,7 @@ public class FireGun : MonoBehaviour
 
             if (muzzleFlash != null) { 
                 muzzleFlash.Play();
-                Debug.Log("play bullet animation");
+                //Debug.Log("play bullet animation");
             }
 
             GameObject bulletObject = Instantiate(bulletPrefab, barrel.position+ barrel.forward , Quaternion.identity);
