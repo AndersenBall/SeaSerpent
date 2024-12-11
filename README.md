@@ -1,6 +1,6 @@
 # SeaSerpent
 
-SeaSerpent is a Unity-based project designed to deliver an immersive pirate-themed gameplay experience. Leveraging advanced Unity features, such as physics-based interactions, intelligent pathfinding, and real-time multiplayer capabilities, it provides an engaging and dynamic adventure for players.
+SeaSerpent is a Unity-based project designed to deliver an immersive pirate-themed gameplay experience. It is a brilliant mixture between a Pirate RPG Adventure, RTS, and grand strategy. 
 
 ## Table of Contents
 
