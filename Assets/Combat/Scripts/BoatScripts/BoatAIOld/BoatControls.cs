@@ -65,7 +65,7 @@ public class BoatControls : MonoBehaviour
         boatPhysics = gameObject.GetComponent<BoatAlignNormal>();//as it hasnt spawned yet
         boatPhysics.SetBoatSpeed(b.GetSpeed(), b.GetTurnSpeed());
         
-        gameObject.GetComponentInChildren<BoatHealth>().SetHealth(b.GetBoatHealth(),playerControlled);
+        gameObject.GetComponentInChildren<BoatHealth>().SetHealth(b.GetBoatHealth());
     }
 
     public (float, float) GetBoatSpeed() {//human input speeds

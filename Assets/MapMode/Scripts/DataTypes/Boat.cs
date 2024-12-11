@@ -118,9 +118,7 @@ public class Boat
     public void SetBoatHealth(int hp) {
         boatHealth = hp;
     }
-    public void UpdateHealth(int hp) {
-        boatHealth += hp;
-    }
+
 }
 
 
