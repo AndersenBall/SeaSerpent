@@ -1,48 +1,94 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoatHealth : MonoBehaviour
 {
 
-    public float health { get; set; } = 50f;
-    private bool dead = false;
+    public float maxHealth = 100f;
+    public float currentHealth { get; set; } = 50f;
+    private bool isDead = false;
     private BoatControls boatControls;
-
     private HUDController hud;
+
+    private Slider healthSlider; 
+    private Canvas healthCanvas; 
 
     private void Start()
     {
         boatControls = gameObject.GetComponentInParent<BoatControls>();
-        hud = GameObject.Find("HUD/Canvas").GetComponent<HUDController>();
+
+        healthCanvas = GetComponentInChildren<Canvas>();
+        if (healthCanvas != null)
+        {
+            healthSlider = healthCanvas.GetComponentInChildren<Slider>();
+            if (healthSlider != null)
+            {
+                healthSlider.maxValue = maxHealth;
+                healthSlider.value = currentHealth;
+            }
+        }
+
+        if (boatControls.GetPlayerControlled()) // Only find HUD if this is the player's boat
+        {
+            hud = GameObject.Find("HUD/Canvas")?.GetComponent<HUDController>();
+            UpdateHUD(); 
+        }
 
     }
 
 
-    public void TakeDamage(float dmgAmount) {
-        //Debug.Log(gameObject.transform.parent.name + " taken dmg: " + dmgAmount);
+    public void TakeDamage(float damageAmount)
+    {
+        if (isDead) return; // Ignore damage if already dead
+
+        currentHealth -= damageAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Ensure health doesn't go below 0
+        healthSlider.value = currentHealth;
+
+        // Update HUD only if this is the player's boat
+        UpdateHUD();
         
-        health -= dmgAmount;
-        if (health <= 0f && dead !=true) {
-            dead = true;
+
+        if (currentHealth <= 0f)
+        {
+            isDead = true;
             Die();
         }
-        if (boatControls.GetPlayerControlled()) {
-            hud.UpdateHealth(health);
-        }
     }
-    public void SetHealth(float hp,bool playerBoat) {
-        health = hp;
-        if (playerBoat) {
-            hud = GameObject.Find("HUD/Canvas").GetComponent<HUDController>();//start method is called too late
-            hud.UpdateHealth(hp);
+
+    public void SetHealth(float hp)
+    {
+        currentHealth = Mathf.Clamp(hp, 0, maxHealth);
+
+        // Update the health bar
+        if (healthSlider != null)
+        {
+            healthSlider.value = currentHealth;
         }
+
     }
-   
+
     public float GetHealth() {
-        return health;
+        return currentHealth;
     }
     private void Die() {
+        if (healthCanvas != null)
+        {
+            healthCanvas.enabled = false; 
+        }
         boatControls.Die();
     }
+
+    private void UpdateHUD()
+    {
+        healthSlider.value = currentHealth;
+
+        if (boatControls.GetPlayerControlled() && hud != null)
+        {
+            hud.UpdateHealth(currentHealth); // Update the HUD with current health
+        }
+    }
+
 }
