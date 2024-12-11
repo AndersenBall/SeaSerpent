@@ -1,79 +1,56 @@
-SeaSerpent
+# SeaSerpent
 
-SeaSerpent is a Unity-based project developed to deliver an immersive gameplay experience. This project involves advanced Unity features, such as physics-based interactions, pathfinding, and real-time multiplayer capabilities.
+SeaSerpent is a Unity-based project designed to deliver an immersive pirate-themed gameplay experience. Leveraging advanced Unity features, such as physics-based interactions, intelligent pathfinding, and real-time multiplayer capabilities, it provides an engaging and dynamic adventure for players.
 
-Table of Contents
+## Table of Contents
 
-Features
+1. [Features](#features)
+2. [Getting Started](#getting-started)
+3. [Setup Instructions](#setup-instructions)
+4. [Contributing](#contributing)
+5. [License](#license)
+6. [Acknowledgments](#acknowledgments)
 
-Getting Started
+---
 
-Setup Instructions
+## Features
 
-Contributing
+- **Physics-Based Interactions:** Realistic interactions for objects and environments using Unity’s Physics system.
+- **Pathfinding:** Intelligent AI-driven navigation powered by Unity's NavMesh system.
+- **Multiplayer:** Real-time peer-to-peer multiplayer functionality enabling cooperative gameplay.
+- **Thematic Gameplay:** Dive into an immersive pirate-themed world filled with unique challenges and hidden treasures.
+- **Modular Codebase:** Well-structured and easy to extend, making it developer-friendly.
 
-License
+---
 
-Acknowledgments
-
-Features
-
-Physics-Based Interactions: Realistic interactions for objects and environment using Unity’s Physics system.
-
-Pathfinding: Intelligent AI-driven navigation using Unity's NavMesh system.
-
-Multiplayer: Real-time peer-to-peer multiplayer mode for co-op gameplay.
-
-Thematic Gameplay: Immersive pirate-themed world with unique challenges and adventures.
-
-Modular Codebase: Easy to extend and maintain for developers.
-
-Getting Started
+## Getting Started
 
 To get started with SeaSerpent:
 
-Clone this repository to your local machine:
+1. locate Scenes folder
+![image](https://github.com/user-attachments/assets/c69dde1e-23cb-439a-a672-e7080a1be52c)
+2. Run scene CombatTestLoad for combat
+3. Run scene Island View for starting in the map view
+4. Run mainMenu to get to the game start screen
+---
 
-git clone https://github.com/AndersenBall/SeaSerpent.git
+## Setup Instructions
 
-Open the project in Unity (minimum version: 2021.3 LTS).
 
-Follow the Setup Instructions to configure the environment.
+1. **Unity Installation:**
 
-Run the game in the Unity Editor or build it for your preferred platform.
+   - Download and install Unity Hub from [Unity's website](https://unity.com/).
+   - Install Unity version 2022.3.49f1 (any 2022.3 should work) LTS .
 
-Setup Instructions
+2. **clone repo:**
+   - 
+3. **locate repo in unity hub:**
 
-Unity Installation:
 
-Download and install Unity Hub from Unity's website.
+4. **Multiplayer Setup:**
 
-Install Unity version 2021.3 LTS or newer through Unity Hub.
+   - Not added yet
 
-Dependencies:
 
-Ensure you have the following Unity packages installed:
+---
 
-Input System
-
-Cinemachine
-
-Photon Unity Networking (PUN 2) for multiplayer
-
-TextMeshPro
-
-Post-Processing Stack
-
-NavMesh Configuration:
-
-Bake the NavMesh for your scenes using Unity's Navigation Window.
-
-Multiplayer Setup:
-
-Set up your Photon App ID in the PhotonServerSettings.
-
-Ensure your firewall allows connections for the chosen networking ports.
-
-Game Configuration:
-
-Configure game settings in the GameSettings ScriptableObject located in the Assets/Resources/ folder.
