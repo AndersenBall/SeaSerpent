@@ -40,6 +40,28 @@ public class ShipCrewCommand : MonoBehaviour
         
     }
 
+    //This script fires the cannons on the ship. it does so by calling the fire Enum on every NPC
+    public void FireAtWill()
+    {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            //Debug.Log(gameObject.name + "start firing all cannons");
+            foreach (PandaUnitAI unit in unitAIs)
+            {
+                unit.SetCannonGroups(cannonGroups);
+                unit.SetActionNoUn("Gunner");
+                Debug.Log("set to gunner");
+            }
+            
+        }
+        ClearCannons();
+
+    }
+
 
     //This script reloads cannons on the ship. it does so by calling the fire Enum on every NPC
     public void ReloadCannons()

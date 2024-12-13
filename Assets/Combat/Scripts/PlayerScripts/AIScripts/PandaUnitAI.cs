@@ -17,6 +17,7 @@ public class PandaUnitAI : MonoBehaviour
     private GameObject cannonBallHand;
 
     private HashSet<int> cannonGroups = new HashSet<int>();
+    [SerializeField]
     private CannonInterface nearestCannon; // need to set to null on death or action change. Also set the cannon to be not busy
     private CannonBallSetType nearestBallPile;
 
@@ -144,7 +145,7 @@ public class PandaUnitAI : MonoBehaviour
         if (input == "FireCannon")
             pandaBT.Wait(1f);
         else if (input == "ReloadCannon") {
-            pandaBT.Wait(10f);
+            pandaBT.Wait(5f);
         }else if (input == "RotateCannon") {
             pandaBT.Wait(1f);
         }
@@ -163,11 +164,11 @@ public class PandaUnitAI : MonoBehaviour
             return;
         }
         UnsubscribeCannon();
-
-        
-        if (input == "Fire") {
+        if (input == "All") {
+            cannonList = shipAmunitions.GetCannons();
+        }
+        else if (input == "Fire") {
             cannonList = shipAmunitions.GetLoadedCannons(cannonGroups);
-            
         }
         else if (input == "Reload") {
             cannonList = shipAmunitions.GetUnloadedCannons();
@@ -200,16 +201,19 @@ public class PandaUnitAI : MonoBehaviour
             Task.current.Succeed();
         }
         else {
+            Debug.Log("failed to find closest");
             Task.current.Fail(); 
         }
     }
 
     [Task]
-    public void FireCannon()
+    public void FireCannon(string unsub)
     {
         nearestCannon.Fire();
         animator.SetTrigger("FireCannon");
-        UnsubscribeCannon();
+        if (unsub == "True") {
+            UnsubscribeCannon();
+        }
         Task.current.Succeed();
     }
 
@@ -271,6 +275,16 @@ public class PandaUnitAI : MonoBehaviour
         //if statment for if cannon needs to be rotated 
         animator.SetTrigger("FireCannon");
         UnsubscribeCannon();
+        Task.current.Succeed();
+
+    }
+    [Task]
+    public void RotateCannonNew()
+    {
+        //nearestCannon.RotateBarrel();
+        //if statment for if cannon needs to be rotated 
+        animator.SetTrigger("FireCannon");
+        Debug.Log("we rotated the cannon:" + transform.gameObject.name);
         Task.current.Succeed();
 
     }

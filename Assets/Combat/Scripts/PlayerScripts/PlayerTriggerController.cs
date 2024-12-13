@@ -88,6 +88,13 @@ public class PlayerTriggerController : MonoBehaviour
 
                 }
             }
+            if (Input.GetKeyDown("g"))
+            {
+                Debug.Log("Fire at will enabled");
+                shipCrewCommand.FireAtWill();
+
+
+            }
 
             if (Input.GetKeyDown("r"))
             {

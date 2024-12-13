@@ -1,5 +1,6 @@
 tree("Root")
 	FallBack
+		tree("Gunner")
 		tree("FireCannons")
 		tree("ReloadCannons")
 		tree("RotateCannons")
@@ -15,13 +16,43 @@ tree("Idle")
 			SetWanderPoint
 			Idle
 
+tree("Gunner")
+	while
+		ActionCheck("Gunner")
+		sequence
+			FindClosestCannon("All")
+			tree("RotateCannons1")
+			tree("FireCannons1")
+			tree("ReloadCannons1")
+
+tree("FireCannons1")
+	sequence
+		GoToClosest("Fire")
+		FireCannon("False")
+		VariableWait("FireCannon")
+tree("ReloadCannons1")
+	sequence
+		FindClosestCannonBall
+		GoToClosest("CannonBall")
+		GetCannonBall
+		Wait(.25)
+		GoToClosest("Reload")
+		VariableWait("ReloadCannon")
+		Reload
+			
+tree("RotateCannons1")
+	sequence
+		GoToClosest("Rotate")
+		VariableWait("RotateCannon")
+		RotateCannonNew
+
 tree("FireCannons")
 	while
 		ActionCheck("FireCannons")
 		sequence
 			FindClosestCannon("Fire")
 			GoToClosest("Fire")
-			FireCannon
+			FireCannon("True")
 			VariableWait("FireCannon")
 tree("ReloadCannons")
 	while
