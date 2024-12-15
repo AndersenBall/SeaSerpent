@@ -10271,7 +10271,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.81011987, y: 1.310116, z: 4.3722076}
-  m_Center: {x: 0.19332322, y: 0.66133565, z: -0.78000313}
+  m_Center: {x: 0, y: -0.5, z: -4}
 --- !u!114 &4996191243590640672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10285,13 +10285,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   muzzleFlash: {fileID: 6813656588266329292}
-  barrel: {fileID: 3933289067434718284}
-  rotationPoint: {fileID: 0}
+  firePoint: {fileID: 3933289067434718284}
+  rotationPoint: {fileID: 3933289068389749015}
   bulletPrefab: {fileID: 5977335131866036867, guid: 0563e0848372d9542ae7f9f3eb69b147,
     type: 3}
-  fireForce: 10
+  cannonVariance: 1.2
+  fireForce: 200
   cannonSetNum: 0
   rotationSpeed: 5
+  _minVerticalAngle: -20
+  _maxVerticalAngle: 10
 --- !u!1 &5713074603872033665
 GameObject:
   m_ObjectHideFlags: 0

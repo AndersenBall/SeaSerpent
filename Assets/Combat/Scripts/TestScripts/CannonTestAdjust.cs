@@ -15,7 +15,7 @@ public class CannonTestAdjust : MonoBehaviour
     {
         if (Input.GetKeyDown("u")) {
             Debug.Log(PredictAngle(distance));
-            cannon.SetWantedBarrelAngle(PredictAngle(distance));
+            //cannon.SetWantedBarrelAngle(PredictAngle(distance));
             cannon.RotateBarrel();
         }
         if (Input.GetKeyDown("f")) {

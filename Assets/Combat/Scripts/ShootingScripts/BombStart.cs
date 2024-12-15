@@ -18,7 +18,7 @@ public class BombStart : MonoBehaviour
 
     private bool hasCollided = false;
     private void Start() {
-        Destroy(this.gameObject, 20);
+        Destroy(this.gameObject, 30);
     }
     private void Update()
     {
