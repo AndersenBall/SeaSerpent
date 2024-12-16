@@ -96,7 +96,7 @@ public class ShipCrewCommand : MonoBehaviour
     public void AdjustCannonAnglePredictions(float ang) {//adjust the current amount, used by player
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
-            cannon.UpdateWantedBarrelAngle(ang);
+            cannon.WantedVerticalAngle += ang;
         }
         foreach (PandaUnitAI unit in unitAIs){
             unit.SetActionNoUn("RotateCannons");
@@ -107,7 +107,7 @@ public class ShipCrewCommand : MonoBehaviour
         //Debug.Log("Log:ShipCrew:Angle:"+ang);
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
-            cannon.SetWantedBarrelAngle(ang);
+            cannon.WantedVerticalAngle = ang; 
         }
     }
     private void ActivatePredictionLines()

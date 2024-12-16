@@ -643,6 +643,7 @@ GameObject:
   - component: {fileID: 243711230}
   - component: {fileID: 243711229}
   - component: {fileID: 243711228}
+  - component: {fileID: 243711235}
   m_Layer: 10
   m_Name: CannonCamera
   m_TagString: MainCamera
@@ -829,6 +830,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &243711235
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243711227}
+  m_Enabled: 0
 --- !u!1 &298647685
 GameObject:
   m_ObjectHideFlags: 0

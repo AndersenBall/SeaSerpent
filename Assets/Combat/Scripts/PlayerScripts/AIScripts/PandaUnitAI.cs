@@ -14,6 +14,7 @@ public class PandaUnitAI : MonoBehaviour
     private bool hasCannonBall = false;
 
     public GameObject cannonBallPrefab;
+    private BoatAI currentBoatAi;
     private GameObject cannonBallHand;
 
     private HashSet<int> cannonGroups = new HashSet<int>();
@@ -35,6 +36,7 @@ public class PandaUnitAI : MonoBehaviour
         movement = gameObject.GetComponent<AIMovement>();
         animator = gameObject.GetComponentInChildren<Animator>();
         pandaBT = gameObject.GetComponent<PandaBehaviour>();
+        currentBoatAi = gameObject.GetComponentInParent<BoatAI>();
 
         
     }
@@ -74,6 +76,19 @@ public class PandaUnitAI : MonoBehaviour
         nearestCannon = null;
 
     }
+
+    private float PredictCannonAngle(float distance)
+    {
+        float value = Mathf.Asin((distance - 7) / 4077.47f) / 2 * (180 / Mathf.PI);
+        if (float.IsNaN(value))
+        {
+            return 45f; // Default angle if prediction fails
+        }
+        else
+        {
+            return value;
+        }
+    }
     #endregion
 
     #region Panda BT Scripts
@@ -112,7 +127,7 @@ public class PandaUnitAI : MonoBehaviour
         if (type == "Fire" || type == "Reload" || type == "Rotate") {
             if (nearestCannon != null) {
                 destination = nearestCannon.transform;
-                offset = destination.forward * -3f;
+                offset = destination.forward * -4f;
 
             }
         }
@@ -281,11 +296,41 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void RotateCannonNew()
     {
-        //nearestCannon.RotateBarrel();
-        //if statment for if cannon needs to be rotated 
-        animator.SetTrigger("FireCannon");
-        Debug.Log("we rotated the cannon:" + transform.gameObject.name);
-        Task.current.Succeed();
+        if (currentBoatAi.targetEnemy == null || nearestCannon == null)
+        {
+            //Debug.LogError("Target enemy or cannon is not assigned!");
+            Task.current.Fail();
+            return;
+        }
+
+        nearestCannon.SetLineActivity(true);
+        // Step 1: Predict the target's future position
+        float distance = Vector3.Distance(gameObject.transform.position, currentBoatAi.targetEnemy.transform.position);
+        Vector3 predictionVec = currentBoatAi.targetEnemy.transform.position +
+                                new Vector3(currentBoatAi.targetEnemy.transform.forward.x, 0, currentBoatAi.targetEnemy.transform.forward.z)
+                                * distance / 15 * (1 - (Mathf.Pow(currentBoatAi.targetEnemy.GetSpeed() - 1, 2) * currentBoatAi.targetEnemy.GetEngineSpeed() / 8));
+
+        // Step 2: Calculate the direction and desired angles
+        Vector3 directionToEnemy = predictionVec - nearestCannon.transform.position;
+        float horizontalDistance = new Vector3(directionToEnemy.x, 0, directionToEnemy.z).magnitude;
+        float desiredVerticalAngle = PredictCannonAngle(horizontalDistance);
+
+        // Convert direction to local space for horizontal angle
+        Vector3 localDirection = nearestCannon.transform.InverseTransformDirection(directionToEnemy.normalized);
+        float desiredHorizontalAngle = Mathf.Atan2(localDirection.x, localDirection.z) * Mathf.Rad2Deg;
+
+        // Step 3: Set desired angles
+        nearestCannon.WantedVerticalAngle = desiredVerticalAngle;
+        nearestCannon.WantedHorizontalAngle = desiredHorizontalAngle;
+
+        // Step 4: Check if the cannon is aligned
+        bool isAligned = Mathf.Abs((-nearestCannon.currentVerticalAngle) - nearestCannon.WantedVerticalAngle) < .1f &&
+                         Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle) < .1f;
+        Task.current.debugInfo = "is alligned:" + isAligned.ToString() + Mathf.Abs((-nearestCannon.currentVerticalAngle) - desiredVerticalAngle).ToString() + ":" + Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle);
+        if (isAligned) {
+            Task.current.Succeed();
+        }
+        
 
     }
     [Task]

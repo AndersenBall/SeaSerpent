@@ -19,16 +19,11 @@ public class TestCannonControlScript : MonoBehaviour
         {
             // Calculate the direction and distance to the enemy
             Vector3 directionToEnemy = enemyTransform.position - cannonInterface.transform.position;
-            float horizontalDistance = new Vector3(directionToEnemy.x, 0, directionToEnemy.z).magnitude; // Ignore vertical component
-
-            // Predict the vertical angle using the horizontal distance
+            float horizontalDistance = new Vector3(directionToEnemy.x, 0, directionToEnemy.z).magnitude; 
             float predictedVerticalAngle = PredictCannonAngle(horizontalDistance);
             Vector3 localDirection = cannonInterface.transform.InverseTransformDirection(directionToEnemy.normalized);
 
             float predictedHorizontalAngle = Mathf.Atan2(localDirection.x, localDirection.z) * Mathf.Rad2Deg;
-
-
-
 
             // Pass the predicted vertical angle to the cannon interface
             cannonInterface.WantedVerticalAngle = predictedVerticalAngle;

@@ -19,7 +19,9 @@ public class CannonInterface : MonoBehaviour
     private CannonLine cannonLine;
     
     private float gunAngle=0;
+    [SerializeField]
     private float _wantedVerticalAngle = 0;
+    [SerializeField]
     private float _wantedHorizontalAngle = 0;
     public float WantedVerticalAngle
     {
@@ -33,7 +35,8 @@ public class CannonInterface : MonoBehaviour
         get => _wantedHorizontalAngle; 
         set => _wantedHorizontalAngle = Mathf.Clamp(value, minHorizontalAngle, maxHorizontalAngle); 
     }
-    private float horizontalGunAngle = 0;
+    public float currentHorizontalAngle { get; set; } = 0;
+    public float currentVerticalAngle { get; set; } = 0;
 
     [SerializeField]
     private float cannonVariance = 1.2f;
@@ -60,7 +63,9 @@ public class CannonInterface : MonoBehaviour
         set => _maxVerticalAngle = -value;
     }
     private Transform cannonTransform;
+    [SerializeField]
     private float minHorizontalAngle = -25f;
+    [SerializeField]
     private float maxHorizontalAngle = 25f;
 
     private void Start()
@@ -79,7 +84,7 @@ public class CannonInterface : MonoBehaviour
     private void UpdateCannonRotation()
     {
         // Adjust vertical rotation
-        float currentVerticalAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
+        currentVerticalAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
         if (Mathf.Abs(currentVerticalAngle - _wantedVerticalAngle) > 0.01f) // Avoid unnecessary updates for tiny differences
         {
             float newVerticalAngle = Mathf.MoveTowards(currentVerticalAngle, _wantedVerticalAngle, rotationSpeed * Time.deltaTime);
@@ -88,11 +93,11 @@ public class CannonInterface : MonoBehaviour
         }
 
         // Adjust horizontal rotation
-        if (Mathf.Abs(horizontalGunAngle - _wantedHorizontalAngle) > 0.01f)
+        if (Mathf.Abs(currentHorizontalAngle - _wantedHorizontalAngle) > 0.01f)
         {
-            horizontalGunAngle = Mathf.MoveTowards(horizontalGunAngle, _wantedHorizontalAngle, rotationSpeed * Time.deltaTime);
-            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle, minHorizontalAngle, maxHorizontalAngle);
-            cannonTransform.localEulerAngles = new Vector3(cannonTransform.localEulerAngles.x, horizontalGunAngle, cannonTransform.localEulerAngles.z);
+            currentHorizontalAngle = Mathf.MoveTowards(currentHorizontalAngle, _wantedHorizontalAngle, rotationSpeed * Time.deltaTime);
+            currentHorizontalAngle = Mathf.Clamp(currentHorizontalAngle, minHorizontalAngle, maxHorizontalAngle);
+            cannonTransform.localEulerAngles = new Vector3(cannonTransform.localEulerAngles.x, currentHorizontalAngle, cannonTransform.localEulerAngles.z);
         }
     }
 
@@ -110,20 +115,8 @@ public class CannonInterface : MonoBehaviour
         gunAngle = _wantedVerticalAngle;
         rotationPoint.Rotate(rotationAmount, 0, 0);
     }
-    public void UpdateWantedBarrelAngle(float ang) {//set amount you want the cannon to be at, for computer.
-        
-        if (_wantedVerticalAngle - ang > -25 && _wantedVerticalAngle - ang < 10) {
-            _wantedVerticalAngle -= ang;
-            cannonLine.RotationOffset(ang);
-        }
-    }
-    public void SetWantedBarrelAngle(float ang)
-    {//set amount you want the cannon to be at
-        
-        float prevWanted = _wantedVerticalAngle;
-        _wantedVerticalAngle = -Mathf.Clamp(ang, -10, 25); ;
-        cannonLine.RotationOffset(prevWanted-_wantedVerticalAngle);
-    }
+
+   
     #endregion
 
 
@@ -162,7 +155,7 @@ public class CannonInterface : MonoBehaviour
             //Debug.Log(randNormalX + "" + randNormalY);
             bulletRigidBody.velocity = Quaternion.AngleAxis(randNormalX, Vector3.up)* Quaternion.AngleAxis(randNormalY,Vector3.right) * firePoint.forward * fireForce;
 
-            SetLineActivity(false);
+            //SetLineActivity(false);
         }
         
     }
@@ -199,31 +192,22 @@ public class CannonInterface : MonoBehaviour
     {
         if (input != 0)
         {
-            // Normalize current angle to -180 to 180
+
             float currentAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
 
-            // Adjust and clamp the angle
-            float newAngle = Mathf.Clamp(currentAngle - input * rotationSpeed * Time.deltaTime, _minVerticalAngle, _maxVerticalAngle);
+            WantedVerticalAngle = -currentAngle + input * rotationSpeed * Time.deltaTime;
 
-            // Apply the clamped angle
-            rotationPoint.localEulerAngles = new Vector3(newAngle, rotationPoint.localEulerAngles.y, rotationPoint.localEulerAngles.z);
-
-            // Debug log for diagnostics
-            //Debug.Log($"Current angle: {currentAngle}, New angle: {newAngle}, Input: {input}, Min: {minVerticalAngle}, Max: {maxVerticalAngle}");
         }
     }
 
-
-    // Adjust horizontal rotation directly
     public void AdjustHorizontalAngle(float input)
     {
         if (input != 0)
         {
+            WantedHorizontalAngle = currentHorizontalAngle + input * rotationSpeed * Time.deltaTime;
 
-            horizontalGunAngle = Mathf.Clamp(horizontalGunAngle + input * rotationSpeed * Time.deltaTime, minHorizontalAngle, maxHorizontalAngle);
-
-            cannonTransform.localEulerAngles = new Vector3(cannonTransform.localEulerAngles.x, horizontalGunAngle, cannonTransform.localEulerAngles.z);
         }
     }
+
 
 }

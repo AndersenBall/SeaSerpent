@@ -22,14 +22,10 @@ tree("Gunner")
 		sequence
 			FindClosestCannon("All")
 			tree("RotateCannons1")
-			tree("FireCannons1")
 			tree("ReloadCannons1")
 
-tree("FireCannons1")
-	sequence
-		GoToClosest("Fire")
-		FireCannon("False")
-		VariableWait("FireCannon")
+
+		
 tree("ReloadCannons1")
 	sequence
 		FindClosestCannonBall
@@ -43,8 +39,9 @@ tree("ReloadCannons1")
 tree("RotateCannons1")
 	sequence
 		GoToClosest("Rotate")
-		VariableWait("RotateCannon")
 		RotateCannonNew
+		FireCannon("False")
+		VariableWait("FireCannon")
 
 tree("FireCannons")
 	while
