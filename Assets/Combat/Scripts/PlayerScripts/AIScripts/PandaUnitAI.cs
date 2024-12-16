@@ -313,9 +313,12 @@ public class PandaUnitAI : MonoBehaviour
         // Step 2: Calculate the direction and desired angles
         Vector3 directionToEnemy = predictionVec - nearestCannon.transform.position;
         float horizontalDistance = new Vector3(directionToEnemy.x, 0, directionToEnemy.z).magnitude;
+        
+        //calculate vertical
         float desiredVerticalAngle = PredictCannonAngle(horizontalDistance);
+        desiredVerticalAngle -= Vector3.SignedAngle(nearestCannon.transform.up, Vector3.up, nearestCannon.transform.right); //adjust for ship tilt
 
-        // Convert direction to local space for horizontal angle
+        // Calc horizontal angle
         Vector3 localDirection = nearestCannon.transform.InverseTransformDirection(directionToEnemy.normalized);
         float desiredHorizontalAngle = Mathf.Atan2(localDirection.x, localDirection.z) * Mathf.Rad2Deg;
 
@@ -330,9 +333,9 @@ public class PandaUnitAI : MonoBehaviour
         if (isAligned) {
             Task.current.Succeed();
         }
-        
 
     }
+
     [Task]
     public void AdjustSail()
     {
