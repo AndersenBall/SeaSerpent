@@ -32,7 +32,7 @@ public class ShipCrewCommand : MonoBehaviour
         else {
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs) {
-                unit.SetCannonGroups(cannonGroups);
+                unit.cannonGroups = new HashSet<int>(cannonGroups);
                 unit.SetActionNoUn("FireCannons");
             }
         }
@@ -52,13 +52,28 @@ public class ShipCrewCommand : MonoBehaviour
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs)
             {
-                unit.SetCannonGroups(cannonGroups);
                 unit.SetActionNoUn("Gunner");
                 Debug.Log("set to gunner");
             }
             
         }
-        ClearCannons();
+        
+
+    }
+
+    public void SetCannonGroups() {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            foreach (PandaUnitAI unit in unitAIs)
+            {
+                unit.cannonGroups = new HashSet<int>(cannonGroups);
+            }
+
+        }
 
     }
 
@@ -147,6 +162,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 1");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("2")) {
             if (cannonGroups.Remove(2)) {
@@ -157,6 +173,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 2");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("3")) {
             if (cannonGroups.Remove(3)) {
@@ -167,6 +184,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 3");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("4")) {
             if (cannonGroups.Remove(4)) {
@@ -177,6 +195,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 4");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         //Debug.Log("current cannon groups:"+ cannonGroups.Count);
     }

@@ -12,12 +12,25 @@ public class PandaUnitAI : MonoBehaviour
    
     public float fireSpeed;
     private bool hasCannonBall = false;
+    [SerializeField]
+    private float startTime;
+    public bool resetCannonGroups { get; set; } = false;
 
     public GameObject cannonBallPrefab;
     private BoatAI currentBoatAi;
     private GameObject cannonBallHand;
 
-    private HashSet<int> cannonGroups = new HashSet<int>();
+    private HashSet<int> _cannonGroups = new HashSet<int>();
+
+    public HashSet<int> cannonGroups
+    {
+        get => _cannonGroups;
+        set
+        {
+            _cannonGroups = value;
+            UnsubscribeCannon();
+        }
+    }
     [SerializeField]
     private CannonInterface nearestCannon; // need to set to null on death or action change. Also set the cannon to be not busy
     private CannonBallSetType nearestBallPile;
@@ -56,18 +69,13 @@ public class PandaUnitAI : MonoBehaviour
     public string GetAction() {
         return currentAction;
     }
-    public void SetCannonGroups(HashSet<int> groups) {
-        cannonGroups = null;
-        cannonGroups = new HashSet<int>(groups);
-    }
-    public HashSet<int> GetCannonGroups(){
-        return cannonGroups;
-    }
 
-    
+
     #endregion
 
     #region Methods
+  
+
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
             nearestCannon.isBeingWorkedOn = false;
@@ -140,20 +148,22 @@ public class PandaUnitAI : MonoBehaviour
                 destination = nearestBallPile.transform;
             }
         }
-        
-        if (destination != null) {
+
+        if (destination != null)
+        {
             movement.SetDestination(destination.position + offset);
-            Task.current.debugInfo = ""+ Vector3.Distance(transform.position, destination.position + offset);
-            
-            if (Vector3.Distance(transform.position, destination.position +offset) < 1f) {
+            Task.current.debugInfo = "" + Vector3.Distance(transform.position, destination.position + offset);
+
+            if (Vector3.Distance(transform.position, destination.position + offset) < 1.3f)
+            {
                 Task.current.Succeed();
                 return;
             }
         }
-        
-        return;
-        //maybe implement timer ticking, reaches certain time then fail
-        
+        else {
+            Task.current.Fail();
+        }
+       
     }
     [Task]
     public void VariableWait(string input) {
@@ -221,6 +231,8 @@ public class PandaUnitAI : MonoBehaviour
         }
     }
 
+    
+
     [Task]
     public void FireCannon(string unsub)
     {
@@ -272,7 +284,10 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void Reload()
     {
-        
+        if (nearestCannon == null) {
+            Task.current.Fail();
+        }
+
         if (hasCannonBall && !nearestCannon.GetLoadStatus()) {
             hasCannonBall = false;
             nearestCannon.LoadGun();
@@ -283,6 +298,17 @@ public class PandaUnitAI : MonoBehaviour
         }
         nearestCannon = null;
         Task.current.Fail();
+    }
+    [Task]
+    public void CheckCannonGroupReset() {
+        if (resetCannonGroups)
+        {
+            resetCannonGroups = false;
+            Task.current.Fail();
+        }
+        else {
+            Task.current.Succeed();
+        }
     }
     [Task]
     public void RotateCannon() {
@@ -296,7 +322,12 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void RotateCannonNew()
     {
-        if (currentBoatAi.targetEnemy == null || nearestCannon == null)
+        if (Task.current.isStarting)
+        {
+            startTime = Time.time;
+        }
+
+        if (currentBoatAi.targetEnemy == null || nearestCannon == null || (Time.time - startTime > 10f))
         {
             //Debug.LogError("Target enemy or cannon is not assigned!");
             Task.current.Fail();
@@ -329,7 +360,7 @@ public class PandaUnitAI : MonoBehaviour
         // Step 4: Check if the cannon is aligned
         bool isAligned = Mathf.Abs((-nearestCannon.currentVerticalAngle) - nearestCannon.WantedVerticalAngle) < .1f &&
                          Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle) < .1f;
-        Task.current.debugInfo = "is alligned:" + isAligned.ToString() + Mathf.Abs((-nearestCannon.currentVerticalAngle) - desiredVerticalAngle).ToString() + ":" + Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle);
+        Task.current.debugInfo = "is alligned:" + isAligned.ToString() +"time:" + (Time.time - startTime) +":"+ Mathf.Abs((-nearestCannon.currentVerticalAngle) - desiredVerticalAngle).ToString() + ":" + Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle);
         if (isAligned) {
             Task.current.Succeed();
         }

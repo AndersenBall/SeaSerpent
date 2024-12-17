@@ -14,9 +14,8 @@ public class PlayerTriggerController : MonoBehaviour
     
 
 
-    private bool drivingBoat = false;
     private Collider triggerInsideOf = null;
-    private Collider steeringWheelTrigger = null;
+
 
     private BoatControls boatControls;
     public ShipCrewCommand shipCrewCommand;
@@ -59,8 +58,10 @@ public class PlayerTriggerController : MonoBehaviour
         }
 
         if (shipCrewCommand != null) {
+            shipCrewCommand.SetCannonSets();
+
             if (currentCommand == "fireCommand") { 
-                shipCrewCommand.SetCannonSets();
+                //shipCrewCommand.SetCannonSets();
 
                 float multiplier = Input.GetKeyDown(KeyCode.LeftShift) ? .5f : 1;
                 if (Input.GetKeyDown("v")){
@@ -72,6 +73,7 @@ public class PlayerTriggerController : MonoBehaviour
                     shipCrewCommand.AdjustCannonAnglePredictions(-.5f*multiplier);
                 }
             }
+            
 
             if (Input.GetKeyDown("f"))
             {
@@ -90,6 +92,7 @@ public class PlayerTriggerController : MonoBehaviour
             }
             if (Input.GetKeyDown("g"))
             {
+                
                 Debug.Log("Fire at will enabled");
                 shipCrewCommand.FireAtWill();
 

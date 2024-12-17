@@ -18,11 +18,16 @@ tree("Idle")
 
 tree("Gunner")
 	while
-		ActionCheck("Gunner")
-		sequence
-			FindClosestCannon("All")
-			tree("RotateCannons1")
-			tree("ReloadCannons1")
+        CheckCannonGroupReset()
+		while
+			ActionCheck("Gunner") 
+			sequence
+				FindClosestCannon("Fire")
+				GoToClosest("Fire")
+				RotateCannonNew
+				FireCannon("False")
+				VariableWait("FireCannon")
+				tree("ReloadCannons1")
 
 
 		
@@ -38,7 +43,6 @@ tree("ReloadCannons1")
 			
 tree("RotateCannons1")
 	sequence
-		GoToClosest("Rotate")
 		RotateCannonNew
 		FireCannon("False")
 		VariableWait("FireCannon")
