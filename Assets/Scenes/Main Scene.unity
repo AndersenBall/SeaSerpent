@@ -5464,7 +5464,7 @@ PrefabInstance:
     - target: {fileID: 996195548129873621, guid: f87a6dcf3b7b272429c0d328e33aa03f,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 489235
+      value: 1013523
       objectReference: {fileID: 0}
     - target: {fileID: 6866982216862303089, guid: f87a6dcf3b7b272429c0d328e33aa03f,
         type: 3}
@@ -6096,7 +6096,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 487191
+    m_Bits: 1011479
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
