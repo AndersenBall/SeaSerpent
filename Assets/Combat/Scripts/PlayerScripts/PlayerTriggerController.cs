@@ -49,7 +49,6 @@ public class PlayerTriggerController : MonoBehaviour
         }
 
 
-        //control boat
         if (Input.GetKeyDown("e")) {
             itemPickUp.PickUpCannonBall();
             

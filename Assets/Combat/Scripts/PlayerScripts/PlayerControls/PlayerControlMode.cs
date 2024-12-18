@@ -23,7 +23,7 @@ public class PlayerControlMode : ControlMode
         characterPositionInterface.SetFirstPerControllerActive(true);
         mouseLook.enabled = true;
         mouseLookPlayer.gameObject.SetActive(true);
-        playerTriggerController.enabled = true;
+        //playerTriggerController.enabled = true;
         playerTriggerController.SetHandGun(true);
 
         Debug.Log("entered player control mode");
@@ -40,7 +40,7 @@ public class PlayerControlMode : ControlMode
         mouseLook.enabled = false;
         mouseLookPlayer.gameObject.SetActive(false);
         playerTriggerController.SetHandGun(false);
-        playerTriggerController.enabled = false;
+        //playerTriggerController.enabled = false;
     }
 }
 
