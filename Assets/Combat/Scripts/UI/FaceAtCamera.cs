@@ -9,6 +9,7 @@ public class FaceAtCamera : MonoBehaviour
     private void Start()
     {
         UpdateCurrentCamera();
+        gameObject.layer = 19;
     }
 
     private void LateUpdate()

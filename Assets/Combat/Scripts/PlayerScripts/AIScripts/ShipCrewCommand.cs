@@ -32,12 +32,49 @@ public class ShipCrewCommand : MonoBehaviour
         else {
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs) {
-                unit.SetCannonGroups(cannonGroups);
+                unit.cannonGroups = new HashSet<int>(cannonGroups);
                 unit.SetActionNoUn("FireCannons");
             }
         }
         ClearCannons();
         
+    }
+
+    //This script fires the cannons on the ship. it does so by calling the fire Enum on every NPC
+    public void FireAtWill()
+    {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            //Debug.Log(gameObject.name + "start firing all cannons");
+            foreach (PandaUnitAI unit in unitAIs)
+            {
+                unit.SetActionNoUn("Gunner");
+                Debug.Log("set to gunner");
+            }
+            
+        }
+        
+
+    }
+
+    public void SetCannonGroups() {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            foreach (PandaUnitAI unit in unitAIs)
+            {
+                unit.cannonGroups = new HashSet<int>(cannonGroups);
+            }
+
+        }
+
     }
 
 
@@ -74,7 +111,7 @@ public class ShipCrewCommand : MonoBehaviour
     public void AdjustCannonAnglePredictions(float ang) {//adjust the current amount, used by player
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
-            cannon.UpdateWantedBarrelAngle(ang);
+            cannon.WantedVerticalAngle += ang;
         }
         foreach (PandaUnitAI unit in unitAIs){
             unit.SetActionNoUn("RotateCannons");
@@ -85,7 +122,7 @@ public class ShipCrewCommand : MonoBehaviour
         //Debug.Log("Log:ShipCrew:Angle:"+ang);
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
-            cannon.SetWantedBarrelAngle(ang);
+            cannon.WantedVerticalAngle = ang; 
         }
     }
     private void ActivatePredictionLines()
@@ -125,6 +162,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 1");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("2")) {
             if (cannonGroups.Remove(2)) {
@@ -135,6 +173,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 2");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("3")) {
             if (cannonGroups.Remove(3)) {
@@ -145,6 +184,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 3");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         if (Input.GetKeyDown("4")) {
             if (cannonGroups.Remove(4)) {
@@ -155,6 +195,7 @@ public class ShipCrewCommand : MonoBehaviour
                 Debug.Log("Log:ShipCrewCommand:" + gameObject.name + "added group 4");
                 ActivatePredictionLines();
             }
+            SetCannonGroups();
         }
         //Debug.Log("current cannon groups:"+ cannonGroups.Count);
     }
