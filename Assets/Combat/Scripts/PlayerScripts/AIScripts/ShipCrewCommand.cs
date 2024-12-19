@@ -203,5 +203,6 @@ public class ShipCrewCommand : MonoBehaviour
         //Debug.Log(gameObject.name + ": ai set group " + cannonSet);
         cannonGroups.Clear();
         cannonGroups.Add(cannonSet);
+        SetCannonGroups();
     }
 }

@@ -358,8 +358,8 @@ public class PandaUnitAI : MonoBehaviour
         nearestCannon.WantedHorizontalAngle = desiredHorizontalAngle;
 
         // Step 4: Check if the cannon is aligned
-        bool isAligned = Mathf.Abs((-nearestCannon.currentVerticalAngle) - nearestCannon.WantedVerticalAngle) < .1f &&
-                         Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle) < .1f;
+        bool isAligned = Mathf.Abs((-nearestCannon.currentVerticalAngle) - nearestCannon.WantedVerticalAngle) < .05f &&
+                         Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle) < .05f;
         Task.current.debugInfo = "is alligned:" + isAligned.ToString() +"time:" + (Time.time - startTime) +":"+ Mathf.Abs((-nearestCannon.currentVerticalAngle) - desiredVerticalAngle).ToString() + ":" + Mathf.Abs(nearestCannon.currentHorizontalAngle - desiredHorizontalAngle);
         if (isAligned) {
             Task.current.Succeed();
