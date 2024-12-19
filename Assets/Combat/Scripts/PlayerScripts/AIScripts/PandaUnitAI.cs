@@ -74,7 +74,9 @@ public class PandaUnitAI : MonoBehaviour
     #endregion
 
     #region Methods
-  
+    public void Die() {
+        UnsubscribeCannon();
+    }
 
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {

@@ -349,7 +349,7 @@ public class BoatAI : MonoBehaviour
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-            SetAction("FireAtWill");
+            //SetAction("FireAtWill");
             //if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
             //    Task.current.Fail();
             //    attacking = false;
@@ -358,7 +358,7 @@ public class BoatAI : MonoBehaviour
             //}else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
             //    SetAction("ApproachTurnShoot");
             //else
-            //    SetAction("DriveBy");
+                SetAction("DriveBy");
 
             Task.current.Succeed();
         } else {
@@ -431,23 +431,25 @@ public class BoatAI : MonoBehaviour
         Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
         Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
         distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
-        shipCrewCommand.SetCannonAnglePredictions(Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
-        shipCrewCommand.AdjustCannonAngles();//could be here
+        shipCrewCommand.SetCannonAnglePredictions(0,Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
+        shipCrewCommand.AdjustCannonAngles();
         Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
         if (shipAmoInter.GetRotateCannons().Length == 0)
             Task.current.Succeed();
     }
+    
 
-    /*
     [Task]
-    public void ResetCannons() {
+    public void SetCannonsNutral()
+    {
         shipCrewCommand.SetCannonSets(3);
-        shipCrewCommand.SetCannonAnglePredictions(0);
+        shipCrewCommand.SetCannonAnglePredictions(0,0);
         shipCrewCommand.SetCannonSets(4);
-        shipCrewCommand.SetCannonAnglePredictions(0);
+        shipCrewCommand.SetCannonAnglePredictions(0, 0);
         shipCrewCommand.AdjustCannonAngles();
+        Task.current.Succeed();
     }
-    */
+
 
     [Task]
     public bool GetInAttackPosition(float exitDistance)

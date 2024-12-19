@@ -41,7 +41,9 @@ public class CannonInterface : MonoBehaviour
     [SerializeField]
     private float cannonVariance = 1.2f;
     private bool isLoaded = true;
-    public bool isBeingWorkedOn { get; set; } = false;
+    [SerializeField]
+    private bool _isBeingWorkedOn = false;
+    public bool isBeingWorkedOn { get =>_isBeingWorkedOn; set => _isBeingWorkedOn = value; }
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;

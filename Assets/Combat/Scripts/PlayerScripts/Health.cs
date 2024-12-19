@@ -15,6 +15,15 @@ public class Health : MonoBehaviour
     }
 
     private void Die() {
+        PandaUnitAI pandaUnitAI = GetComponent<PandaUnitAI>();
+        if (pandaUnitAI != null)
+        {
+            // Call the Die function in PandaUnitAI
+            pandaUnitAI.Die();
+        }
+        
+        Debug.LogWarning("unit died:" + gameObject.name);
         Destroy(gameObject);
+        
     }
 }
