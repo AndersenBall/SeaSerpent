@@ -349,15 +349,16 @@ public class BoatAI : MonoBehaviour
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-            if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
-                Task.current.Fail();
-                attacking = false;
-            }else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
-                SetAction("PotShot");
-            }else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
-                SetAction("ApproachTurnShoot");
-            else
-                SetAction("DriveBy");
+            SetAction("FireAtWill");
+            //if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
+            //    Task.current.Fail();
+            //    attacking = false;
+            //}else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
+            //    SetAction("PotShot");
+            //}else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
+            //    SetAction("ApproachTurnShoot");
+            //else
+            //    SetAction("DriveBy");
 
             Task.current.Succeed();
         } else {
@@ -402,7 +403,7 @@ public class BoatAI : MonoBehaviour
             Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
             Task.current.Succeed();
         }
-        else if (action == "ApproachTurnShoot" || action == "Ram" || action == "PotShot") {
+        else if (action == "FireAtWill" || action == "ApproachTurnShoot" || action == "Ram" || action == "PotShot") {
             attackVector = new Vector2(0, 0);
 
             Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
@@ -776,6 +777,25 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void Idle() {
         Task.current.Succeed();
+    }
+    [Task]
+    public void FireAwayCommand() {
+        HashSet<int> cannonGroups = new HashSet<int>();
+        Task.current.debugInfo = "attack Direction:" + attackDirection;
+        if (attackDirection == "Left")
+        {
+            cannonGroups.Add(3);
+            shipCrewCommand.SetCannonSets(3);
+        }
+        if (attackDirection == "Right")
+        {
+            cannonGroups.Add(4);
+            shipCrewCommand.SetCannonSets(4);
+        }
+
+        shipCrewCommand.FireAtWill();
+        Task.current.Fail();
+        
     }
     //***********helper methods***************
     public float PredictCannonAngle(float distance)

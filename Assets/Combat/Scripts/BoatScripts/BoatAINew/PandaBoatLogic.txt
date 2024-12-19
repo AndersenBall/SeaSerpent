@@ -43,6 +43,7 @@ tree("Attack")
 				tree("ApproachTurnShoot")
 				tree("Ram")
 				tree("PotShot")
+				tree("FireAtWill")
 
 
 
@@ -94,5 +95,18 @@ tree("PotShot")
 				Wait 2.0
 				Fire
 			KeepAim
+		Wait 2.0
+		CheckToRetreat
+
+tree("FireAtWill")
+	sequence
+		ActionCheck("FireAtWill")
+		ChooseAttackDirection
+		CreateAttackVector
+		TurnToFireFar
+		Race
+			FireAwayCommand
+			KeepAim
+			Wait 20.0
 		Wait 2.0
 		CheckToRetreat
