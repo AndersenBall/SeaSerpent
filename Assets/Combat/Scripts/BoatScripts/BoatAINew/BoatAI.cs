@@ -352,28 +352,21 @@ public class BoatAI : MonoBehaviour
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
 
 
-            if (gameObject.CompareTag("Team1"))
+
+
+            if (closestDistance > Mathf.Pow(3500, 2))
             {
-                SetAction("FireAtWill");
+                Task.current.Fail();
+                attacking = false;
             }
-            else if (gameObject.CompareTag("Team2"))
+            else if (closestDistance > Mathf.Pow(800, 2))
             {
                 SetAction("PotShot");
             }
-
-            //if (closestDistance > Mathf.Pow(3500, 2))
-            //{
-            //    Task.current.Fail();
-            //    attacking = false;
-            //}
-            //else if (closestDistance > Mathf.Pow(800, 2))
-            //{
-            //    SetAction("PotShot");
-            //}
-            //else if (closestDistance > Mathf.Pow(200, 2))
-            //    SetAction("FireAtWill");
-            //else
-            //    SetAction("DriveBy");
+            else if (closestDistance > Mathf.Pow(200, 2))
+                SetAction("FireAtWill");
+            else
+                SetAction("DriveBy");
 
             Task.current.Succeed();
         } else {
