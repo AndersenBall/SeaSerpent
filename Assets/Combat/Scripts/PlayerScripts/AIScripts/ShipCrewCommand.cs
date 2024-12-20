@@ -117,12 +117,13 @@ public class ShipCrewCommand : MonoBehaviour
             unit.SetActionNoUn("RotateCannons");
         }
     }
-    public void SetCannonAnglePredictions(float ang)
+    public void SetCannonAnglePredictions(float x, float ang)
     {//adjust the current amount, used by player
         //Debug.Log("Log:ShipCrew:Angle:"+ang);
         CannonInterface[] cannons = shipAmunitionInterface.GetCannons(cannonGroups);
         foreach (CannonInterface cannon in cannons) {
-            cannon.WantedVerticalAngle = ang; 
+            cannon.WantedVerticalAngle = ang;
+            cannon.WantedHorizontalAngle = x;
         }
     }
     private void ActivatePredictionLines()

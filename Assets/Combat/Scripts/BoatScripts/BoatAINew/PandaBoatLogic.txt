@@ -50,6 +50,7 @@ tree("Attack")
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
+		SetCannonsNutral
 		fallback
 			while 
 				not GetInAttackPosition(100.0)
