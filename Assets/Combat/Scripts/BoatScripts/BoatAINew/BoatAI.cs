@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Panda;
+using TMPro;
 
 //methods and functions for panda bt tree
 public class BoatAI : MonoBehaviour
@@ -349,16 +350,30 @@ public class BoatAI : MonoBehaviour
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-            //SetAction("FireAtWill");
-            //if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(3500, 2)) {
+
+
+            if (gameObject.CompareTag("Team1"))
+            {
+                SetAction("FireAtWill");
+            }
+            else if (gameObject.CompareTag("Team2"))
+            {
+                SetAction("PotShot");
+            }
+
+            //if (closestDistance > Mathf.Pow(3500, 2))
+            //{
             //    Task.current.Fail();
             //    attacking = false;
-            //}else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude > Mathf.Pow(500, 2)) {
+            //}
+            //else if (closestDistance > Mathf.Pow(800, 2))
+            //{
             //    SetAction("PotShot");
-            //}else if ((transform.position - _targetEnemy.transform.position).sqrMagnitude < Mathf.Pow(200, 2) && dot < 0)
-            //    SetAction("ApproachTurnShoot");
+            //}
+            //else if (closestDistance > Mathf.Pow(200, 2))
+            //    SetAction("FireAtWill");
             //else
-                SetAction("DriveBy");
+            //    SetAction("DriveBy");
 
             Task.current.Succeed();
         } else {
@@ -427,12 +442,24 @@ public class BoatAI : MonoBehaviour
             Task.current.Fail();
             return;
         }
+
+
         float distance = Vector3.Distance(_targetEnemy.transform.position, transform.position);
-        Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-        Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
-        distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
+        //Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
+        //Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
+        //distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
+
+
+        Vector3 targetPosition = _targetEnemy.transform.position;
+        Vector3 targetDirection = new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z);
+        float targetSpeed = (_targetEnemy.GetSpeed() * _targetEnemy.GetEngineSpeed());
+        float bulletTravelTime = distance / 200;
+
+        Vector3 predictionVec = targetPosition + targetDirection * targetSpeed * bulletTravelTime;
+        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0), Color.black);
+
         shipCrewCommand.SetCannonAnglePredictions(0,Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
-        shipCrewCommand.AdjustCannonAngles();
+        //shipCrewCommand.AdjustCannonAngles();
         Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
         if (shipAmoInter.GetRotateCannons().Length == 0)
             Task.current.Succeed();
@@ -446,7 +473,7 @@ public class BoatAI : MonoBehaviour
         shipCrewCommand.SetCannonAnglePredictions(0,0);
         shipCrewCommand.SetCannonSets(4);
         shipCrewCommand.SetCannonAnglePredictions(0, 0);
-        shipCrewCommand.AdjustCannonAngles();
+        //shipCrewCommand.AdjustCannonAngles();
         Task.current.Succeed();
     }
 

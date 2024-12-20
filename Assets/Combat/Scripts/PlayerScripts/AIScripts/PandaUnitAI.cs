@@ -314,7 +314,10 @@ public class PandaUnitAI : MonoBehaviour
     }
     [Task]
     public void RotateCannon() {
-        nearestCannon.RotateBarrel();
+        if (nearestCannon != null) {
+            nearestCannon.RotateBarrel();
+        }
+        
         //if statment for if cannon needs to be rotated 
         animator.SetTrigger("FireCannon");
         UnsubscribeCannon();
@@ -338,10 +341,14 @@ public class PandaUnitAI : MonoBehaviour
 
         nearestCannon.SetLineActivity(true);
         // Step 1: Predict the target's future position
-        float distance = Vector3.Distance(gameObject.transform.position, currentBoatAi.targetEnemy.transform.position);
-        Vector3 predictionVec = currentBoatAi.targetEnemy.transform.position +
-                                new Vector3(currentBoatAi.targetEnemy.transform.forward.x, 0, currentBoatAi.targetEnemy.transform.forward.z)
-                                * distance / 15 * (1 - (Mathf.Pow(currentBoatAi.targetEnemy.GetSpeed() - 1, 2) * currentBoatAi.targetEnemy.GetEngineSpeed() / 8));
+        Vector3 targetPosition = currentBoatAi.targetEnemy.transform.position;
+        float distance = Vector3.Distance(gameObject.transform.position, targetPosition);
+        Vector3 targetDirection = new Vector3(currentBoatAi.targetEnemy.transform.forward.x, 0, currentBoatAi.targetEnemy.transform.forward.z);
+        float targetSpeed = (currentBoatAi.targetEnemy.GetSpeed() * currentBoatAi.targetEnemy.GetEngineSpeed());
+        float bulletTravelTime = distance / nearestCannon.fireForce;
+
+        Vector3 predictionVec = targetPosition + targetDirection * targetSpeed * bulletTravelTime;
+        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0),Color.black);
 
         // Step 2: Calculate the direction and desired angles
         Vector3 directionToEnemy = predictionVec - nearestCannon.transform.position;

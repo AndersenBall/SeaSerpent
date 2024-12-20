@@ -105,17 +105,14 @@ public class CannonInterface : MonoBehaviour
 
     #region legacy
     public bool GetNeedsRotation() {
-        if (_wantedVerticalAngle == gunAngle)
+        if ((Mathf.Abs(currentHorizontalAngle + (-_wantedHorizontalAngle)) < 0.01f) && (Mathf.Abs(currentVerticalAngle + (-_wantedVerticalAngle)) < 0.01f))
             return false;
         else
             return true;
     }
     public void RotateBarrel() // amount to rotate the gun
     {
-        cannonLine.RotationOffset(0);
-        float rotationAmount = _wantedVerticalAngle - gunAngle;
-        gunAngle = _wantedVerticalAngle;
-        rotationPoint.Rotate(rotationAmount, 0, 0);
+        return;
     }
 
    
