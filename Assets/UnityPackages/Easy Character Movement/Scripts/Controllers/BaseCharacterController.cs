@@ -853,6 +853,14 @@ namespace ECM.Controllers
             rootMotionController = GetComponentInChildren<RootMotionController>();
         }
 
+        //added by me
+        void OnEnable()
+        {
+            Vector3 rotation = transform.rotation.eulerAngles;
+            rotation.x = 0;
+            transform.rotation = Quaternion.Euler(rotation);
+        }
+
         public virtual void FixedUpdate()
         {
             // Pause / resume character

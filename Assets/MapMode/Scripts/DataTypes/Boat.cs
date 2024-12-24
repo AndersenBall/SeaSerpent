@@ -23,14 +23,14 @@ public class Boat
         boatName = name;
         boatType = type;
         if (type == "ManOfWar") {
-            boatSpeed = 5f;
+            boatSpeed = 7f;
             turnSpeed = .2f;
             boatHealth = 900;
             cargoMax = 1000;
             maxSailorCount = 70;
         }
         else if (type == "Frigate") {
-            boatSpeed = 8f;
+            boatSpeed = 12f;
             turnSpeed = .3f;
             boatHealth = 100;
             cargoMax = 50;
@@ -40,8 +40,8 @@ public class Boat
             }
         }
         else if (type == "TradeShip") {
-            boatSpeed = 4;
-            turnSpeed = .2f;
+            boatSpeed = 8;
+            turnSpeed = .4f;
             boatHealth = 50;
             cargoMax = 100;
             maxSailorCount = 6;
