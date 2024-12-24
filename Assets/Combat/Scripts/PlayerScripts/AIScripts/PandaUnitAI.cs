@@ -80,9 +80,7 @@ public class PandaUnitAI : MonoBehaviour
 
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
-            nearestCannon.isBeingWorkedOn = false;
-            nearestCannon.SetLineActivity(false);
-            nearestCannon.isManned = false;
+            nearestCannon.StopWorkingOnCannon();
             //Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;

@@ -126,16 +126,10 @@ public class CannonInterface : MonoBehaviour
 
     #region legacy
     public bool GetNeedsRotation() {
-<<<<<<< HEAD
-        if ((Mathf.Abs(currentHorizontalAngle + (-_wantedHorizontalAngle)) < 0.01f) && (Mathf.Abs(currentVerticalAngle + (-_wantedVerticalAngle)) < 0.01f))
-            return false;
-        else
-            return true;
-=======
-        bool isAligned = Mathf.Abs(currentVerticalAngle - WantedVerticalAngle) < .05f &&
+        bool isAligned = Mathf.Abs(currentVerticalAngle + WantedVerticalAngle) < .05f &&
                         Mathf.Abs(currentHorizontalAngle - _wantedHorizontalAngle) < .05f;
-        return isAligned;
->>>>>>> d031dd7 (clean up cannon interface)
+        Debug.Log("needs rotation" + isAligned);
+        return !isAligned;
     }
     public void RotateBarrel() // amount to rotate the gun
     {
