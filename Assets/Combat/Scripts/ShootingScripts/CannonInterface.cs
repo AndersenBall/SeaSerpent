@@ -43,7 +43,23 @@ public class CannonInterface : MonoBehaviour
     private bool isLoaded = true;
     [SerializeField]
     private bool _isBeingWorkedOn = false;
+<<<<<<< HEAD
     public bool isBeingWorkedOn { get =>_isBeingWorkedOn; set => _isBeingWorkedOn = value; }
+=======
+    public bool isBeingWorkedOn
+    {
+        get => _isBeingWorkedOn;
+        set => _isBeingWorkedOn = value;
+    }
+
+    [SerializeField]
+    private bool _isManned = false;
+    public bool isManned
+    {
+        get => _isManned;
+        set => _isManned = value;
+    }
+>>>>>>> d031dd7 (clean up cannon interface)
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;
@@ -80,13 +96,18 @@ public class CannonInterface : MonoBehaviour
     }
     private void Update()
     {
-        UpdateCannonRotation();
+        currentVerticalAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
+        currentHorizontalAngle = rotationPoint.localEulerAngles.y;
+        if (isManned) {
+            UpdateCannonRotation();
+        }
+        
     }
 
     private void UpdateCannonRotation()
     {
         // Adjust vertical rotation
-        currentVerticalAngle = Mathf.Repeat(rotationPoint.localEulerAngles.x + 180f, 360f) - 180f;
+        
         if (Mathf.Abs(currentVerticalAngle - _wantedVerticalAngle) > 0.01f) // Avoid unnecessary updates for tiny differences
         {
             float newVerticalAngle = Mathf.MoveTowards(currentVerticalAngle, _wantedVerticalAngle, rotationSpeed * Time.deltaTime);
@@ -105,10 +126,16 @@ public class CannonInterface : MonoBehaviour
 
     #region legacy
     public bool GetNeedsRotation() {
+<<<<<<< HEAD
         if ((Mathf.Abs(currentHorizontalAngle + (-_wantedHorizontalAngle)) < 0.01f) && (Mathf.Abs(currentVerticalAngle + (-_wantedVerticalAngle)) < 0.01f))
             return false;
         else
             return true;
+=======
+        bool isAligned = Mathf.Abs(currentVerticalAngle - WantedVerticalAngle) < .05f &&
+                        Mathf.Abs(currentHorizontalAngle - _wantedHorizontalAngle) < .05f;
+        return isAligned;
+>>>>>>> d031dd7 (clean up cannon interface)
     }
     public void RotateBarrel() // amount to rotate the gun
     {
@@ -206,6 +233,18 @@ public class CannonInterface : MonoBehaviour
             WantedHorizontalAngle = currentHorizontalAngle + input * rotationSpeed * Time.deltaTime;
 
         }
+    }
+
+    public void WorkOnCannon() {
+        SetLineActivity(true);
+        isManned = true;
+    }
+
+    public void StopWorkingOnCannon() {
+        SetLineActivity(false);
+        isManned = false;
+        isBeingWorkedOn=false;
+    
     }
 
 

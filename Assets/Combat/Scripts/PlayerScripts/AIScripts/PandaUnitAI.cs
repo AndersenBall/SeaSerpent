@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Panda;
@@ -81,6 +81,8 @@ public class PandaUnitAI : MonoBehaviour
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
             nearestCannon.isBeingWorkedOn = false;
+            nearestCannon.SetLineActivity(false);
+            nearestCannon.isManned = false;
             //Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;
@@ -314,12 +316,11 @@ public class PandaUnitAI : MonoBehaviour
     }
     [Task]
     public void RotateCannon() {
-        if (nearestCannon != null) {
-            nearestCannon.RotateBarrel();
+        nearestCannon.isManned = true;
+        if (nearestCannon.GetNeedsRotation()) {
+            return;
         }
-        
-        //if statment for if cannon needs to be rotated 
-        animator.SetTrigger("FireCannon");
+
         UnsubscribeCannon();
         Task.current.Succeed();
 
@@ -339,6 +340,7 @@ public class PandaUnitAI : MonoBehaviour
             return;
         }
 
+        nearestCannon.isManned = true;
         nearestCannon.SetLineActivity(true);
         // Step 1: Predict the target's future position
         Vector3 targetPosition = currentBoatAi.targetEnemy.transform.position;
