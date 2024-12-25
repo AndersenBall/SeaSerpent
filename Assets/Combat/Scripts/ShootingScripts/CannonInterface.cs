@@ -35,8 +35,14 @@ public class CannonInterface : MonoBehaviour
         get => _wantedHorizontalAngle; 
         set => _wantedHorizontalAngle = Mathf.Clamp(value, minHorizontalAngle, maxHorizontalAngle); 
     }
-    public float currentHorizontalAngle { get; set; } = 0;
-    public float currentVerticalAngle { get; set; } = 0;
+    [SerializeField]
+    private float _currentHorizontalAngle = 0;
+    public float currentHorizontalAngle { get =>_currentHorizontalAngle; set =>_currentHorizontalAngle = value; }
+
+    [SerializeField]
+    public float _currentVerticalAngle = 0;
+
+    public float currentVerticalAngle { get => _currentVerticalAngle; set => _currentVerticalAngle = value; }
 
     [SerializeField]
     private float cannonVariance = 1.2f;
@@ -44,6 +50,14 @@ public class CannonInterface : MonoBehaviour
     [SerializeField]
     private bool _isBeingWorkedOn = false;
     public bool isBeingWorkedOn { get =>_isBeingWorkedOn; set => _isBeingWorkedOn = value; }
+    [SerializeField]
+    private bool _isManned = false;
+    public bool isManned
+    {
+        get => _isManned;
+        set => _isManned = value;
+    }
+
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;
@@ -80,7 +94,11 @@ public class CannonInterface : MonoBehaviour
     }
     private void Update()
     {
-        UpdateCannonRotation();
+        if (_isManned)
+        {
+            UpdateCannonRotation();
+        }
+        
     }
 
     private void UpdateCannonRotation()
@@ -208,5 +226,17 @@ public class CannonInterface : MonoBehaviour
         }
     }
 
+    public void WorkOnCannon()
+    {
+        SetLineActivity(true);
+        isManned = true;
+    }
 
+    public void StopWorkingOnCannon()
+    {
+        SetLineActivity(false);
+        isManned = false;
+        isBeingWorkedOn = false;
+
+    }
 }

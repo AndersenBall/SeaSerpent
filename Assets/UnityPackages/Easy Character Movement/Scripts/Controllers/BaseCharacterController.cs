@@ -841,7 +841,12 @@ namespace ECM.Controllers
         /// NOTE: If you override this, it is important to call the parent class' version of method,
         /// (eg: base.Awake) in the derived class method implementation, in order to fully initialize the class. 
         /// </summary>
-
+        void OnEnable()
+        {
+            Vector3 rotation = transform.rotation.eulerAngles;
+            rotation.x = 0;
+            transform.rotation = Quaternion.Euler(rotation);
+        }
         public virtual void Awake()
         {
             // Cache components
