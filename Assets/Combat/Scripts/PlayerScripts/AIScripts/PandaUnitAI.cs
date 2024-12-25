@@ -80,7 +80,7 @@ public class PandaUnitAI : MonoBehaviour
 
     public void UnsubscribeCannon() {
         if (nearestCannon != null) {
-            nearestCannon.isBeingWorkedOn = false;
+            nearestCannon.StopWorkingOnCannon();
             //Debug.Log("Debug:Unit:" + name + ":unsubscribe cannon: " + nearestCannon.name);
         }
         nearestCannon = null;
@@ -339,7 +339,7 @@ public class PandaUnitAI : MonoBehaviour
             return;
         }
 
-        nearestCannon.SetLineActivity(true);
+        nearestCannon.WorkOnCannon();
         // Step 1: Predict the target's future position
         Vector3 targetPosition = currentBoatAi.targetEnemy.transform.position;
         float distance = Vector3.Distance(gameObject.transform.position, targetPosition);

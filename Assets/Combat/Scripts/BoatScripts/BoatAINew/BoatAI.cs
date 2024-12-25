@@ -359,10 +359,10 @@ public class BoatAI : MonoBehaviour
                 Task.current.Fail();
                 attacking = false;
             }
-            else if (closestDistance > Mathf.Pow(800, 2))
-            {
-                SetAction("PotShot");
-            }
+            //else if (closestDistance > Mathf.Pow(800, 2))
+            //{
+            //    SetAction("PotShot");
+            //}
             else if (closestDistance > Mathf.Pow(200, 2))
                 SetAction("FireAtWill");
             else
