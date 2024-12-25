@@ -43,9 +43,7 @@ public class CannonInterface : MonoBehaviour
     private bool isLoaded = true;
     [SerializeField]
     private bool _isBeingWorkedOn = false;
-<<<<<<< HEAD
-    public bool isBeingWorkedOn { get =>_isBeingWorkedOn; set => _isBeingWorkedOn = value; }
-=======
+
     public bool isBeingWorkedOn
     {
         get => _isBeingWorkedOn;
@@ -59,7 +57,6 @@ public class CannonInterface : MonoBehaviour
         get => _isManned;
         set => _isManned = value;
     }
->>>>>>> d031dd7 (clean up cannon interface)
     public float fireForce = 100;
     public int cannonSetNum;
     public float rotationSpeed = 5f;
