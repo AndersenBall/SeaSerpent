@@ -10291,7 +10291,9 @@ MonoBehaviour:
     type: 3}
   _wantedVerticalAngle: 0
   _wantedHorizontalAngle: 0
-  cannonVariance: 0
+  cannonVariance: 2
+  _isBeingWorkedOn: 0
+  _isManned: 0
   fireForce: 200
   cannonSetNum: 0
   rotationSpeed: 5

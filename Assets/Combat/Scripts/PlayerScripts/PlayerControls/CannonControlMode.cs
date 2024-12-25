@@ -50,7 +50,7 @@ public class CannonControlMode : ControlMode
         // Fire cannon with space bar
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            activeCannon.Fire();
+            activeCannon.Fire(0);
         }
     }
 

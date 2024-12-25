@@ -19,7 +19,7 @@ public class CannonTestAdjust : MonoBehaviour
             cannon.RotateBarrel();
         }
         if (Input.GetKeyDown("f")) {
-            cannon.Fire();
+            cannon.Fire(0);
 
         }
         if (Input.GetKeyDown("r")) {

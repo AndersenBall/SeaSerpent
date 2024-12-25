@@ -35,7 +35,7 @@ public class TestCannonControlScript : MonoBehaviour
             {
                 if (cannonInterface.GetLoadStatus()) // Ensure cannon is loaded
                 {
-                    cannonInterface.Fire();
+                    cannonInterface.Fire(1);
                     Debug.Log("Cannon fired!");
                     cannonInterface.LoadGun();
                     cannonInterface.SetLineActivity(true);

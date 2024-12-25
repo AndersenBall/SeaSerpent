@@ -238,7 +238,7 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void FireCannon(string unsub)
     {
-        nearestCannon.Fire();
+        nearestCannon.Fire(1);
         animator.SetTrigger("FireCannon");
         if (unsub == "True") {
             UnsubscribeCannon();

@@ -144,7 +144,7 @@ public class CannonInterface : MonoBehaviour
         cannonLine.SetActive(activity);
     }
 
-    public void Fire(){
+    public void Fire(float playerAimModifyier){
         if (isLoaded == true) {
             isLoaded = false;
             isBeingWorkedOn = false;
@@ -165,12 +165,12 @@ public class CannonInterface : MonoBehaviour
             double u2 = 1.0 - UnityEngine.Random.Range(0f,.99f);
             //Debug.Log("random number:" + u1 + " " + u2);
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            float randNormalX =   cannonVariance * (float)randStdNormal;
+            float randNormalX = playerAimModifyier * cannonVariance * (float)randStdNormal;
             u1 = 1.0 - UnityEngine.Random.Range(0, .99f); //uniform(0,1] random doubles
             u2 = 1.0 - UnityEngine.Random.Range(0f, .99f);
             //Debug.Log("random number:" + u1 + " " + u2);
             randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            float randNormalY = cannonVariance * (float)randStdNormal;
+            float randNormalY = playerAimModifyier* cannonVariance * (float)randStdNormal;
 
             //Debug.Log(randNormalX + "" + randNormalY);
             bulletRigidBody.velocity = Quaternion.AngleAxis(randNormalX, Vector3.up)* Quaternion.AngleAxis(randNormalY,Vector3.right) * firePoint.forward * fireForce;
