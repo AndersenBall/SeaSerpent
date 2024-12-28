@@ -261,30 +261,40 @@ namespace SlimUI.ModernMenu{
 			#endif
 		}
 
-		// Load Bar synching animation
-		IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
-			AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-			operation.allowSceneActivation = false;
-			mainCanvas.SetActive(false);
-			loadingMenu.SetActive(true);
+        // Load Bar synching animation
+        IEnumerator LoadAsynchronously(string sceneName)
+        {
+            Debug.Log("Loading scene: " + sceneName);
 
-			while (!operation.isDone){
-				float progress = Mathf.Clamp01(operation.progress / .95f);
-				loadingBar.value = progress;
+            // Start loading the scene asynchronously
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+            operation.allowSceneActivation = false; // Prevent automatic activation initially
 
-				if (operation.progress >= 0.9f && waitForInput){
-					loadPromptText.text = "Press " + userPromptKey.ToString().ToUpper() + " to continue";
-					loadingBar.value = 1;
+            // Adjust UI to show loading screen
+            mainCanvas.SetActive(false); // Hide the main canvas
+            loadingMenu.SetActive(true); // Show the loading menu
 
-					if (Input.GetKeyDown(userPromptKey)){
-						operation.allowSceneActivation = true;
-					}
-                }else if(operation.progress >= 0.9f && !waitForInput){
-					operation.allowSceneActivation = true;
-				}
+            // Loop until the scene is loaded
+            while (!operation.isDone)
+            {
+                // Calculate loading progress (progress ranges from 0 to 0.9 before activation)
+                float progress = Mathf.Clamp01(operation.progress / 0.9f);
+                loadingBar.value = progress;
 
-				yield return null;
-			}
-		}
-	}
+                Debug.Log($"Loading progress: {progress * 100}%");
+
+                // If loading is complete (operation.progress >= 0.9f), activate the scene
+                if (operation.progress >= 0.9f)
+                {
+                    Debug.Log("Scene loading complete. Activating...");
+                    operation.allowSceneActivation = true; // Allow scene activation
+                }
+
+                yield return null; // Wait for the next frame
+            }
+
+            Debug.Log($"Scene {sceneName} loaded and activated.");
+        }
+
+    }
 }
