@@ -45,7 +45,7 @@ public class BoatAILead : MonoBehaviour
         currentID = data.currentID;
         boatIDs = data.boatIDs;
         foreach (int boatID in BoatAILead.boatIDs) {
-        //Debug.Log("load boat" + boatID);
+            //Debug.Log("load boat" + boatID);
             GameObject fleetPrefab = Instantiate(prefabFleet, transform.position, Quaternion.identity, parent);
             fleetPrefab.GetComponent<FleetMapController>().LoadNPCFleet(boatID);  
         }   
