@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerFleetMapController : MonoBehaviour
 {
@@ -17,7 +18,9 @@ public class PlayerFleetMapController : MonoBehaviour
     private MeetShipUI meetShipUI;
     private TownUI townUI;
     private TownOptionsUI townOptionsUI;
-    public Unit pathfinding;
+
+    public NavMeshAgent navAgent;
+    public Transform target;
     public static Town currentTown;
     Fleet fleet;
     
@@ -26,6 +29,11 @@ public class PlayerFleetMapController : MonoBehaviour
     #endregion
 
     #region Monobehaviours
+    private void Awake()
+    {
+        navAgent = gameObject.GetComponent<NavMeshAgent>();
+    }
+
     void Start()
     {
 
@@ -42,9 +50,9 @@ public class PlayerFleetMapController : MonoBehaviour
         PlayerGlobal.money = 100000;
 
         BoatAILead.RemoveID(fleet.FleetID);
-
-        pathfinding = GetComponent<Unit>();//get unit attached 
-        pathfinding.speed = fleet.CalculateSpeed(); // set speed based on fleet
+        
+        navAgent.speed = fleet.CalculateSpeed();
+        
         UpdateBoatNames();
 
         meetShipUI = Canvas.transform.Find("MeetShip").GetComponent<MeetShipUI>();
@@ -54,7 +62,14 @@ public class PlayerFleetMapController : MonoBehaviour
     }
     private void Update()
     {
+        // TODO 12/28 performance improvement is possible here. Does not need to be on every frame. Can be on event. 
         UpdateBoatNames();
+        
+        if (target != null)
+        {
+            navAgent.SetDestination(target.position);
+        }
+        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -120,7 +135,7 @@ public class PlayerFleetMapController : MonoBehaviour
         if (SaveLoad.SaveExists("Player")) {
             PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
             fleet = playerData.fleet;
-            pathfinding.speed = fleet.CalculateSpeed();
+            navAgent.speed = fleet.CalculateSpeed();
             gameObject.transform.position = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
         }
         UpdateBoatNames();

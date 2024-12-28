@@ -27,7 +27,7 @@ public class TestSetCombat : MonoBehaviour
 
         SceneTransfer.playerFleet = playerFleet;
         SceneTransfer.enemyFleet = enemFleet;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("MainScene");
 
     }
 
