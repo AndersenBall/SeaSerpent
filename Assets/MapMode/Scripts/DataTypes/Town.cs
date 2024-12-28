@@ -305,8 +305,8 @@ public class Town : MonoBehaviour
 
         if (ratio <= 1)
         {
-            // Interpolate between 8x (at ratio 0) and 1x (at ratio 1)
-            multiplier = Mathf.Lerp(8f, 1f, ratio / 1f);
+            // Interpolate between 4x (at ratio 0) and 1x (at ratio 1)
+            multiplier = Mathf.Lerp(4f, 1f, ratio / 1f);
         }
         else if (ratio <= 2)
         {

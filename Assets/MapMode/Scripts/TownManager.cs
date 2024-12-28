@@ -13,12 +13,12 @@ public class TownManager : MonoBehaviour
         towns= GetComponentsInChildren<Town>();
         standardPrices.Add("fish", 50);
         standardPrices.Add("lumber", 100);
-        standardPrices.Add("fur", 5000);
+        standardPrices.Add("fur", 2000);
         standardPrices.Add("guns", 2500);
         standardPrices.Add("sugar", 100);
-        standardPrices.Add("coffee", 80);
+        standardPrices.Add("coffee", 180);
         standardPrices.Add("salt", 70);
-        standardPrices.Add("tea", 1000);
+        standardPrices.Add("tea", 200);
         standardPrices.Add("tobacco", 400);
         standardPrices.Add("cotton", 150);
        

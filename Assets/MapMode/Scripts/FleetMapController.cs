@@ -33,7 +33,7 @@ public class FleetMapController : MonoBehaviour
     void Start()
     {
         GameEvents.SaveInitiated += SaveNPCFleet;
-
+        navAgent = gameObject.GetComponent<NavMeshAgent>();
         navAgent.speed = fleet.CalculateSpeed();
         UpdateBoatNames();
     }
