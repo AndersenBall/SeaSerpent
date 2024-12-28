@@ -18,7 +18,7 @@ public class SceneTransfer : MonoBehaviour
     public static void TransferToMap() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("IslandView");
         GameEvents.ClearActions();
         
     }

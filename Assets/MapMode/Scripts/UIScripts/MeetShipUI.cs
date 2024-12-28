@@ -49,6 +49,6 @@ public class MeetShipUI : MonoBehaviour
         SceneTransfer.playerFleet = playerFleetMap.GetFleet();
         SceneTransfer.enemyFleet = oppositeFleet;
         GameEvents.SaveInitiated();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
 }

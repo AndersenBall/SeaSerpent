@@ -26,7 +26,7 @@ public class TestSceneSwap : MonoBehaviour
             }
             SceneTransfer.enemyFleet = enemy;
             SceneTransfer.playerFleet = player;
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("MainScene");
         }
     }
 }

@@ -471,15 +471,17 @@ public class Town : MonoBehaviour
     }
 
     public void Save() {
-        TownData data = new TownData();
-        data.productionAmount = productionAmount;
-        data.consumptionAmount = consumptionAmount;
-        data.nationality = nationality;
-        data.supplies = supplies;
-        data.predictedSupplies = predictedSupplies;
-        data.demand = demand;
-        data.incomingFleets = incomingFleets;
-        data.fleets = dockedFleets;
+        TownData data = new()
+        {
+            productionAmount = productionAmount,
+            consumptionAmount = consumptionAmount,
+            nationality = nationality,
+            supplies = supplies,
+            predictedSupplies = predictedSupplies,
+            demand = demand,
+            incomingFleets = incomingFleets,
+            fleets = dockedFleets
+        };
         SaveLoad.Save(data, name);
 
     }
