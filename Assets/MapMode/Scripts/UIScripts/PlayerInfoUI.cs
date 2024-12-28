@@ -33,8 +33,8 @@ public class PlayerInfoUI : MonoBehaviour
 
     void Update()
     {
-        fillInventory();
-        setUserInformation();
+        //fillInventory();
+        //setUserInformation();
     }
 
     public void setUserInformation()
