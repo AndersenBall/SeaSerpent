@@ -6,7 +6,7 @@ public class Unit : MonoBehaviour {
 	const float minPathUpdateTime = .2f;
 	const float pathUpdateMoveThreshold = .5f;
 
-	public Transform target; // if target use target. otherwise go to destination
+	public Transform target { get; set; } // if target use target. otherwise go to destination
 	public Vector3 destination;
 	
 	public float speed = 20;

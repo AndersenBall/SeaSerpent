@@ -126,7 +126,7 @@ public class Town : MonoBehaviour
         GameObject fleetPrefab = Instantiate(prefabFleet,transform.position,Quaternion.identity,parent);
         fleetPrefab.GetComponent<FleetMapController>().SetFleet(fleet);
         fleetPrefab.GetComponent<FleetMapController>().destination = destination;
-        fleetPrefab.GetComponent<Unit>().target = destination;
+
     }
 
     public Fleet MakeTradeFleet(string resource, int amount)
@@ -137,7 +137,7 @@ public class Town : MonoBehaviour
         Fleet f1 = new Fleet(nationality, "Trader");
         for (int i = 0; i < numberOfBoats; i++)
         {
-            f1.AddBoat(new Boat("HMS V" + i, "TradeShip"));
+            f1.AddBoat(new Boat(name+"HMS V" + i, "TradeShip"));
         }
         FillCargo(f1, resource, amount);
         //Debug.Log("Boats in new trade fleet:" + f1.boats.Count);
@@ -253,7 +253,7 @@ public class Town : MonoBehaviour
             dem[i] = (int)demand[setupSupplyItems[i]];
         }
         for (int i = 0; i < 10; i++) {
-            price[i] = CalculatePrice(townManager.standardPrices[setupSupplyItems[i]],setupSupplyItems[i]);
+            price[i] = CalculateDynamicPrice(setupSupplyItems[i]);
         }
         return (setupSupplyItems,sup, dem, price);
     }
@@ -280,6 +280,77 @@ public class Town : MonoBehaviour
         return price;
 
     }
+
+    public float CalculateDynamicPrice(string item)
+    {
+        // Get supply, demand, and standard price for the item
+        float supply = supplies.ContainsKey(item) ? (int)supplies[item] : 0f; // Cast supply to int as in your original code
+        float demand = this.demand.ContainsKey(item) ? this.demand[item] : 0f;
+        float standardPrice = townManager.standardPrices.ContainsKey(item) ? townManager.standardPrices[item] : 1f; // Fallback to 1f if missing
+
+        // Avoid division by zero by setting a minimum supply/demand threshold
+        const float minValue = 0.01f;
+        supply = Mathf.Max(supply, minValue);
+        demand = Mathf.Max(demand, minValue);
+
+        // Calculate the supply/demand ratio
+        float ratio = supply / demand;
+
+        // Dynamic multiplier:
+        // - 8x when supply is near 0 relative to demand
+        // - 1x when supply equals demand (ratio = 1)
+        // - 0.5x when supply is 2x demand (ratio = 2)
+        // - 0.25x when supply is 3x demand
+        float multiplier;
+
+        if (ratio <= 1)
+        {
+            // Interpolate between 8x (at ratio 0) and 1x (at ratio 1)
+            multiplier = Mathf.Lerp(8f, 1f, ratio / 1f);
+        }
+        else if (ratio <= 2)
+        {
+            // Interpolate between 1x (at ratio 1) and 0.5x (at ratio 2)
+            multiplier = Mathf.Lerp(1f, 0.5f, (ratio - 1f) / 1f);
+        }
+        else if (ratio <= 3)
+        {
+            // Interpolate between 0.5x (at ratio 2) and 0.25x (at ratio 3)
+            multiplier = Mathf.Lerp(0.5f, 0.25f, (ratio - 2f) / 1f);
+        }
+        else
+        {
+            // Beyond 3x supply, cap the multiplier at 0.25x
+            multiplier = 0.25f;
+        }
+
+        // Calculate final price
+        return standardPrice * multiplier;
+    }
+
+    public float CalculateTransactionPrice(string item, int amount)
+    {
+        // Retrieve the current supply and demand for the item
+        float supply = supplies.ContainsKey(item) ? (int)supplies[item] : 0f;
+        float initialPrice = CalculateDynamicPrice(item); // Price before transaction
+
+        // Adjust supply based on the amount being bought or sold
+        supplies[item] = supply + amount;
+
+        // Calculate price after the supply adjustment
+        float adjustedPrice = CalculateDynamicPrice(item);
+
+        // Restore original supply (so we don't actually modify the supply in this calculation)
+        supplies[item] = supply;
+
+        // Calculate the average price for the transaction
+        float averagePrice = (initialPrice + adjustedPrice) / 2;
+
+        // Total cost/revenue for the transaction
+        return averagePrice * amount;
+    }
+
+
 
     public float CalculatePrice(float standardPrice, string item, int amountBought) {//town buying /ship sell
         float sup = (int)supplies[item];
@@ -429,7 +500,7 @@ public class Town : MonoBehaviour
 
     private void SetUpConsumption(){
         for (int i = 0; i < 10; i++) {
-            consumptionAmount[i] -= (float)demand[setupSupplyItems[i]] /730;
+            consumptionAmount[i] -= (float)demand[setupSupplyItems[i]] /1000;
         }
     }
     private void RunProduction() {
@@ -456,7 +527,7 @@ public class Town : MonoBehaviour
         int count = 0;
         foreach (KeyValuePair<string, float> item in supplies) {
             DebugText += count +": "+ item.Key + (int)item.Value + "+"+predictedSupplies[item.Key]+"->"+ (int)demand[item.Key] +" p:"
-                + CalculatePrice(townManager.standardPrices[item.Key],item.Key) + "\n";
+                + CalculateDynamicPrice(item.Key) + "\n";
             count += 1;
         }
         
