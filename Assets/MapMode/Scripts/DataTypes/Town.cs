@@ -244,7 +244,6 @@ public class Town : MonoBehaviour
         int[] sup = new int[10];
         int[] dem = new int[10];
         float[] price = new float[10];
-
         
         for (int i = 0; i < 10; i++) {
             sup[i] = (int)supplies[setupSupplyItems[i]];
@@ -264,22 +263,6 @@ public class Town : MonoBehaviour
     public int DemandOfItem(string item){
         return demand[item];
     }
-    public float CalculatePrice(float standardPrice, string item)
-    {
-        float sup = (int)supplies[item];
-        float dem = demand[item];
-        float price;
-        if (sup < dem) {
-            price = standardPrice * Mathf.Pow(4, -(sup / dem) + 1);
-        }
-        else {
-            price = standardPrice * Mathf.Pow(2, -(sup / dem) + 1);
-        }
-
-        //Debug.Log(name + " " + item+ " calculated price " + price + " standard price " + standardPrice);
-        return price;
-
-    }
 
     public float CalculateDynamicPrice(string item)
     {
@@ -288,19 +271,11 @@ public class Town : MonoBehaviour
         float demand = this.demand.ContainsKey(item) ? this.demand[item] : 0f;
         float standardPrice = townManager.standardPrices.ContainsKey(item) ? townManager.standardPrices[item] : 1f; // Fallback to 1f if missing
 
-        // Avoid division by zero by setting a minimum supply/demand threshold
         const float minValue = 0.01f;
         supply = Mathf.Max(supply, minValue);
         demand = Mathf.Max(demand, minValue);
 
-        // Calculate the supply/demand ratio
         float ratio = supply / demand;
-
-        // Dynamic multiplier:
-        // - 8x when supply is near 0 relative to demand
-        // - 1x when supply equals demand (ratio = 1)
-        // - 0.5x when supply is 2x demand (ratio = 2)
-        // - 0.25x when supply is 3x demand
         float multiplier;
 
         if (ratio <= 1)
@@ -350,35 +325,8 @@ public class Town : MonoBehaviour
         return averagePrice * amount;
     }
 
-
-
-    public float CalculatePrice(float standardPrice, string item, int amountBought) {//town buying /ship sell
-        float sup = (int)supplies[item];
-        float sup2 = (int)supplies[item]+amountBought;
-        float dem = demand[item];
-        float price;
-        float price2;
-        if (sup < dem) {
-            price = standardPrice * Mathf.Pow(4, -(sup / dem) + 1);
-        }
-        else {
-            price = standardPrice * Mathf.Pow(2, -(sup / dem) + 1);
-        }
-
-        if (sup2 < dem) {
-            price2 = standardPrice * Mathf.Pow(4, -(sup2 / dem) + 1);
-        }
-        else {
-            price2 = standardPrice * Mathf.Pow(2, -(sup2 / dem) + 1);
-        }
-
-        //Debug.Log(name + " " + item+ " calculated prices " + price +","+ price2 + " standard price " + standardPrice+"amount buying:"+amountBought);
-        return Mathf.Abs(amountBought*(price+price2)/2);
-        
-    }
-
     public bool FillCargoPlayer(Fleet fle, string resource,int amount) {
-        if (PlayerGlobal.money < CalculatePrice(townManager.standardPrices[resource], resource, amount)) {
+        if (PlayerGlobal.money < CalculateTransactionPrice( resource, amount)) {
             Debug.Log("not enough money");
             return false;
         }
@@ -413,6 +361,7 @@ public class Town : MonoBehaviour
         }
         return true;
     }
+
     public void FillCargo(Fleet fle, string resource, int amount)
     {
 
@@ -446,6 +395,7 @@ public class Town : MonoBehaviour
             }
         }
     }
+
     public float SellItemsInCargo(Fleet fle,int amount,string resource){//script for boats
         int fleetID = fle.FleetID;
         string ite ="None";
@@ -503,6 +453,7 @@ public class Town : MonoBehaviour
             consumptionAmount[i] -= (float)demand[setupSupplyItems[i]] /1000;
         }
     }
+
     private void RunProduction() {
         for (int i = 0; i < productionAmount.Length; i++ ) {
             float production =  -consumptionAmount[i] * productionAmount[i] * Mathf.Pow(2f, -(supplies[setupSupplyItems[i]] / demand[setupSupplyItems[i]]) + 1);
@@ -516,8 +467,6 @@ public class Town : MonoBehaviour
         }
         UpdateDebugText();
     }
-    
-   
     
     #endregion
 

@@ -32,6 +32,21 @@ public class SaveLoad : MonoBehaviour
         return returnValue;
     }
 
+    public static void DeleteSave(string key)
+    {
+        if (SaveExists(key))
+        {
+            string path = Application.persistentDataPath + "/saves/" + key + ".txt";
+            File.Delete(path);
+            Debug.Log($"Deleted save file: {path}");
+        }
+        else
+        {
+            Debug.LogWarning($"Save file not found for key: {key}");
+        }
+    }
+
+
     public static bool SaveExists(string key)
     {
         string path = Application.persistentDataPath + "/saves/" + key + ".txt";

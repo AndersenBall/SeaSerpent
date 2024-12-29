@@ -20,7 +20,10 @@ public class GameEvents : MonoBehaviour
         {
             GameEvents.LoadInitiated.Invoke();
         }
-        else { Debug.Log("No file to load"); }
+        else { 
+            SaveGame(); 
+            Debug.Log("No file to load"); 
+        }
     }
 
     public static void ClearActions() {
