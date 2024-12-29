@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 2709414243621237409}
   - component: {fileID: 2709414243621237408}
   - component: {fileID: 2709414243621237439}
-  - component: {fileID: 2709414243621237438}
   - component: {fileID: 6494616929364100437}
   - component: {fileID: 7209569266625792081}
   - component: {fileID: 1328243377002621528}
+  - component: {fileID: 6739508446571261611}
   m_Layer: 0
   m_Name: Fleet
   m_TagString: Untagged
@@ -88,27 +88,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &2709414243621237438
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2709414243621237436}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.25
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6494616929364100437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,9 +149,32 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 0.5
-  m_BaseOffset: 0.2
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
+--- !u!136 &6739508446571261611
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2709414243621237436}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.25080752
+  m_Height: 1.4768504
+  m_Direction: 2
+  m_Center: {x: -0.031938244, y: 0, z: -0.38732153}
 --- !u!1 &8389527211795532865
 GameObject:
   m_ObjectHideFlags: 0

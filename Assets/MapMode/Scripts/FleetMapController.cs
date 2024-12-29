@@ -57,10 +57,24 @@ public class FleetMapController : MonoBehaviour
             //Debug.Log("Fleet: " + fleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
         }
         else if (town != null && town.name == destination.name) {
-            //Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
+            Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
             town.SellItemsInCargo(fleet,10000,"All");
             UpdateBoatNames();
             DockFleet(town);
+        }
+    }
+
+    void OnDestroy()
+    {
+        // Perform cleanup when the object is destroyed
+        GameEvents.SaveInitiated -= SaveNPCFleet;
+        if (fleet != null)
+        {
+            BoatAILead.RemoveID(fleet.FleetID);
+            
+        }
+        else {
+            Debug.Log("why is this null?");
         }
     }
     #endregion
@@ -70,13 +84,11 @@ public class FleetMapController : MonoBehaviour
 
     public void DockFleet(Town town) {
         town.DockFleet(fleet);
-        DestroyFleet();
-    }
-    public void DestroyFleet() {
-        BoatAILead.RemoveID(fleet.FleetID);
-        GameEvents.SaveInitiated -= SaveNPCFleet;
+        string key = "boat" + fleet.FleetID;
+        SaveLoad.DeleteSave(key);
         Destroy(gameObject, .1f);
     }
+  
     #endregion
     #region DevMethods
     public void SaveNPCFleet() {

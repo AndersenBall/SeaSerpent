@@ -244,7 +244,6 @@ public class Town : MonoBehaviour
         int[] sup = new int[10];
         int[] dem = new int[10];
         float[] price = new float[10];
-
         
         for (int i = 0; i < 10; i++) {
             sup[i] = (int)supplies[setupSupplyItems[i]];
@@ -264,7 +263,6 @@ public class Town : MonoBehaviour
     public int DemandOfItem(string item){
         return demand[item];
     }
-   
 
     public float CalculateDynamicPrice(string item)
     {
@@ -273,19 +271,11 @@ public class Town : MonoBehaviour
         float demand = this.demand.ContainsKey(item) ? this.demand[item] : 0f;
         float standardPrice = townManager.standardPrices.ContainsKey(item) ? townManager.standardPrices[item] : 1f; // Fallback to 1f if missing
 
-        // Avoid division by zero by setting a minimum supply/demand threshold
         const float minValue = 0.01f;
         supply = Mathf.Max(supply, minValue);
         demand = Mathf.Max(demand, minValue);
 
-        // Calculate the supply/demand ratio
         float ratio = supply / demand;
-
-        // Dynamic multiplier:
-        // - 4x when supply is near 0 relative to demand
-        // - 1x when supply equals demand (ratio = 1)
-        // - 0.5x when supply is 2x demand (ratio = 2)
-        // - 0.25x when supply is 3x demand
         float multiplier;
 
         if (ratio <= 1)

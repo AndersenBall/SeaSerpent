@@ -6,6 +6,10 @@ using UnityEngine;
 public class TownManager : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    public float baseCostPerShip = 50;
+    public float costPerUnitDistance = 5;
+
     public Town[] towns { get; set; }
     public IDictionary<string, float> standardPrices = new Dictionary<string,float>();
     void Start()
@@ -49,11 +53,12 @@ public class TownManager : MonoBehaviour
             // Determine the amount of goods to trade
             int equalAmount = BlanceResourceAmount(t, originTown, item);
 
-            // Skip towns where no tradeable amount is available
-            if (equalAmount == 0)
+            if (equalAmount <= 0)
             {
                 continue;
             }
+
+            equalAmount = Math.Max(equalAmount, ((equalAmount - 20) / 50) * 50);
 
             // Calculate the cost of the journey between towns
             float transportationCost = JourneyCost(t, originTown, equalAmount);
@@ -93,7 +98,7 @@ public class TownManager : MonoBehaviour
         }
 
         // No viable trade route found
-        Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
+        //Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
         return (null, -1);
     }
 
@@ -108,7 +113,8 @@ public class TownManager : MonoBehaviour
 
     public float JourneyCost(Town t1, Town t2,int amount) {
         int numberOfShips = Mathf.CeilToInt((float)amount / 100);
-        //Debug.Log(amount+", " + numberOfShips + "price of journey:" +t1.name +"->"+ t2.name + (numberOfShips * (t1.transform.position - t2.transform.position).magnitude * 3 + 100));
-        return numberOfShips * (t1.transform.position-t2.transform.position).magnitude*5+100;
+
+        return numberOfShips * ((t1.transform.position - t2.transform.position).magnitude * costPerUnitDistance + baseCostPerShip);
+
     }
 }
