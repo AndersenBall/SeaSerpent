@@ -71,7 +71,7 @@ public class BoatAILead : MonoBehaviour
                     boatIDs.Add(boatID);
                 }
                 // Instantiate the boat
-                GameObject fleetPrefab = Instantiate(prefabFleet, transform.position, Quaternion.identity, parent);
+                GameObject fleetPrefab = Instantiate(prefabFleet, Vector3.zero, Quaternion.identity, parent);
                 fleetPrefab.GetComponent<FleetMapController>().LoadNPCFleet(boatID);
             }
             else
