@@ -3,12 +3,19 @@ using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 namespace SlimUI.ModernMenu{
 	public class UIMenuManager : MonoBehaviour {
 		private Animator CameraObject;
 
-		// campaign button sub menu
+		[Header("LoadScreen")]
+		[Tooltip("Button prefab for loads")]
+        public GameObject buttonPrefab;
+		[Tooltip("Folder For Saves")]
+        public string saveFolderPath = "/saves/";
+
+        // campaign button sub menu
         [Header("MENUS")]
         [Tooltip("The Menu for when the MAIN menu buttons")]
         public GameObject mainMenu;
@@ -16,6 +23,8 @@ namespace SlimUI.ModernMenu{
         public GameObject firstMenu;
         [Tooltip("The Menu for when the PLAY button is clicked")]
         public GameObject playMenu;
+        [Tooltip("The Menu for when the PLAY button is clicked")]
+        public GameObject loadGameMenu;
         [Tooltip("The Menu for when the EXIT button is clicked")]
         public GameObject exitMenu;
         [Tooltip("Optional 4th Menu")]
@@ -122,8 +131,62 @@ namespace SlimUI.ModernMenu{
 			if(extrasMenu) extrasMenu.SetActive(false);
 			playMenu.SetActive(true);
 		}
-		
-		public void PlayCampaignMobile(){
+
+        public void PlayLoadCampaign()
+        {
+            loadGameMenu.SetActive(true);
+
+			Transform verticalLayoutParent = loadGameMenu.transform.Find("VerticalLayout");
+ 
+            // Clear existing buttons
+            foreach (Transform child in verticalLayoutParent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Get all directories in the save folder
+            string fullPath = Application.persistentDataPath + saveFolderPath;
+            if (Directory.Exists(fullPath))
+            {
+                string[] folderNames = Directory.GetDirectories(fullPath);
+
+                foreach (string folderPath in folderNames)
+                {
+                    // Extract the folder name
+                    string folderName = Path.GetFileName(folderPath);
+
+                    // Create a new button
+                    GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+                    newButton.name = "Btn_" + folderName;
+
+                    // Set the button text to the folder name
+                    TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+                    if (buttonText != null)
+                    {
+                        buttonText.text = folderName;
+                    }
+
+                    // Optionally, add a click listener to the button
+                    Button button = newButton.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        button.onClick.AddListener(() => OnLoadGameButtonClicked(folderName));
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Save folder not found: " + fullPath);
+            }
+        }
+
+        private void OnLoadGameButtonClicked(string folderName)
+        {
+            Debug.Log("Load game from folder: " + folderName);
+            // Add your load game logic here
+        }
+
+        public void PlayCampaignMobile(){
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			playMenu.SetActive(true);

@@ -53,7 +53,7 @@ public class BoatAILead : MonoBehaviour
         currentID = data.currentID;
         boatIDs = new List<int>();
 
-        string saveDirectory = Application.persistentDataPath + "/saves/";
+        string saveDirectory = SaveLoad.GetSaveDirectory();
         if (!Directory.Exists(saveDirectory))
         {
             Debug.LogWarning("Save directory not found: " + saveDirectory);

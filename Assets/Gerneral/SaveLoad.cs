@@ -7,9 +7,22 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class SaveLoad : MonoBehaviour
 {
+    private static string currentFolder = "Default"; // Default save folder
+
+    public static void SetSaveFolder(string folder)
+    {
+        currentFolder = folder;
+        Debug.Log("Save folder set to: " + currentFolder);
+    }
+
+    public static string GetSaveDirectory()
+    {
+        return Application.persistentDataPath + $"/saves/{currentFolder}/";
+    }
+
     public static void Save<T>(T objectToSave, string key)
     {
-        string path = Application.persistentDataPath + "/saves/";
+        string path = Application.persistentDataPath + $"/saves/{currentFolder}/";
         Directory.CreateDirectory(path);
         BinaryFormatter formatter = new BinaryFormatter();
         using (FileStream fileStream = new FileStream(path + key + ".txt", FileMode.Create))
@@ -21,7 +34,7 @@ public class SaveLoad : MonoBehaviour
 
     public static T Load<T>(string key)
     {
-        string path = Application.persistentDataPath + "/saves/";
+        string path = Application.persistentDataPath + $"/saves/{currentFolder}/";
         BinaryFormatter formatter = new BinaryFormatter();
         T returnValue = default(T);
         using (FileStream fileStream = new FileStream(path + key + ".txt", FileMode.Open))
@@ -34,9 +47,9 @@ public class SaveLoad : MonoBehaviour
 
     public static void DeleteSave(string key)
     {
+        string path = Application.persistentDataPath + $"/saves/{currentFolder}/{key}.txt";
         if (SaveExists(key))
         {
-            string path = Application.persistentDataPath + "/saves/" + key + ".txt";
             File.Delete(path);
             Debug.Log($"Deleted save file: {path}");
         }
@@ -49,9 +62,10 @@ public class SaveLoad : MonoBehaviour
 
     public static bool SaveExists(string key)
     {
-        string path = Application.persistentDataPath + "/saves/" + key + ".txt";
+        string path = Application.persistentDataPath + $"/saves/{currentFolder}/{key}.txt";
         return File.Exists(path);
     }
+
 
     public static void SeriouslyDeleteAllSaveFiles()
     {
