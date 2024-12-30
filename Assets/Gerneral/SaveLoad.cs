@@ -7,7 +7,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class SaveLoad : MonoBehaviour
 {
-    private static string currentFolder = "Default"; // Default save folder
+    private static string currentFolder = "New"; // Default save folder
+
+    
 
     public static void SetSaveFolder(string folder)
     {

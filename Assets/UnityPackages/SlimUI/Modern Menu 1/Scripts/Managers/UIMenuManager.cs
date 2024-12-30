@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.IO;
+using UnityEditor.SearchService;
 
 namespace SlimUI.ModernMenu{
 	public class UIMenuManager : MonoBehaviour {
@@ -182,8 +183,13 @@ namespace SlimUI.ModernMenu{
 
         private void OnLoadGameButtonClicked(string folderName)
         {
-            Debug.Log("Load game from folder: " + folderName);
-            // Add your load game logic here
+            Debug.Log("Selected save folder: " + folderName);
+
+            // Set the save folder
+            SceneTransferMainMenu.SetSaveFolder(folderName);
+
+            // Load the IslandView scene
+            StartCoroutine(LoadAsynchronously("IslandView"));
         }
 
         public void PlayCampaignMobile(){

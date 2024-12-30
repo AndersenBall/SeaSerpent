@@ -136,7 +136,10 @@ public class PlayerFleetMapController : MonoBehaviour
             PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
             fleet = playerData.fleet;
             navAgent.speed = fleet.CalculateSpeed();
-            gameObject.transform.position = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+            Vector3 targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+            gameObject.transform.position = targetPosition;
+            navAgent.Warp(targetPosition);
+
         }
         UpdateBoatNames();
     }
