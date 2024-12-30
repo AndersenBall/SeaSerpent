@@ -96,6 +96,7 @@ public class FleetMapController : MonoBehaviour
         data.fleet = fleet;
         Vector3 location = gameObject.transform.position;
         data.pos = new float[] { location.x, location.y, location.z };
+        Debug.Log("save fleet:" + name + ":" + data.pos[0] + "," + data.pos[1] + "," + data.pos[2]);
         data.destName = destination.name;
         SaveLoad.Save<FleetData>(data, "boat"+fleet.FleetID);
     }
@@ -103,7 +104,12 @@ public class FleetMapController : MonoBehaviour
         FleetData data = SaveLoad.Load<FleetData>("boat"+id);
         fleet = data.fleet;
         gameObject.name = "fleet" + fleet.FleetID;
+
         transform.position = new Vector3(data.pos[0], data.pos[1], data.pos[2]);
+        Vector3 targetPosition = new Vector3(data.pos[0], data.pos[1], data.pos[2]);
+        navAgent.Warp(targetPosition);
+
+        Debug.Log("load fleet:" + name + ":" + data.pos[0] + "," + data.pos[1] + "," + data.pos[2] + "actual:" +transform.position);
         GameObject dest = GameObject.Find("/enviroment/towns/" +data.destName);
  
         if (dest != null) {
