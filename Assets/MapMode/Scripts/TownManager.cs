@@ -7,21 +7,21 @@ public class TownManager : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public float baseCostPerShip = 50;
-    public float costPerUnitDistance = 5;
+    public float baseCostPerShip = 1000000;
+    public float costPerUnitDistance = 50;
 
     public Town[] towns { get; set; }
     public IDictionary<string, float> standardPrices = new Dictionary<string,float>();
     void Start()
     {
         towns= GetComponentsInChildren<Town>();
-        standardPrices.Add("fish", 50);
-        standardPrices.Add("lumber", 100);
+        standardPrices.Add("fish", 100);
+        standardPrices.Add("lumber", 150);
         standardPrices.Add("fur", 2000);
         standardPrices.Add("guns", 2500);
         standardPrices.Add("sugar", 100);
         standardPrices.Add("coffee", 180);
-        standardPrices.Add("salt", 70);
+        standardPrices.Add("salt", 150);
         standardPrices.Add("tea", 200);
         standardPrices.Add("tobacco", 400);
         standardPrices.Add("cotton", 150);
@@ -64,18 +64,20 @@ public class TownManager : MonoBehaviour
             float transportationCost = JourneyCost(t, originTown, equalAmount);
 
             // Calculate the profit from goods alone (revenue - cost of acquisition)
-            float profitGoods = originTown.CalculateTransactionPrice(item, equalAmount)
-                              - t.CalculateTransactionPrice(item, -equalAmount);
+            float profitGoods = originTown.CalculateTransactionPrice(item, equalAmount);
+
+            float cost = -t.CalculateTransactionPrice(item, -equalAmount);
 
             // Total profit after including transportation cost
-            float totalProfit = profitGoods - transportationCost;
+            float totalProfit = profitGoods - transportationCost - cost;
 
             // Check if this trade is the most profitable and meets the minimum profit threshold
-            if (totalProfit > highestProfit && totalProfit > 5000)
+            if (totalProfit > highestProfit && totalProfit > ((cost + transportationCost )* .2))
             {
                 highestProfit = totalProfit;
                 chosenTown = t;
                 lessAmount = equalAmount;
+                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit );
             }
         }
 

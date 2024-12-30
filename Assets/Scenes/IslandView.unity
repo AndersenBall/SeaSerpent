@@ -9736,28 +9736,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
-      propertyPath: productionAmount.Array.data[0]
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
-        type: 3}
-      propertyPath: productionAmount.Array.data[1]
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
-        type: 3}
-      propertyPath: productionAmount.Array.data[2]
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
-        type: 3}
       propertyPath: productionAmount.Array.data[3]
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
-      propertyPath: productionAmount.Array.data[7]
-      value: 0
+      propertyPath: productionAmount.Array.data[4]
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -14793,8 +14778,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
-      propertyPath: setupSupplyCount.Array.data[0]
-      value: 2200
+      propertyPath: productionAmount.Array.data[3]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: productionAmount.Array.data[4]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: productionAmount.Array.data[9]
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -21707,8 +21702,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 434945a7651710a439b9087a70afc5d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseCostPerShip: 50
-  costPerUnitDistance: 5
+  baseCostPerShip: 200
+  costPerUnitDistance: 1
 --- !u!1 &1984374136
 GameObject:
   m_ObjectHideFlags: 0
@@ -22293,6 +22288,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1982377351}
     m_Modifications:
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: productionAmount.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: productionAmount.Array.data[3]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: productionAmount.Array.data[4]
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_RootOrder
@@ -24206,17 +24216,12 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: productionAmount.Array.data[3]
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: productionAmount.Array.data[4]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
-        type: 3}
-      propertyPath: setupSupplyCount.Array.data[3]
-      value: 1800
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
