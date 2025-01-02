@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,59 +33,102 @@ public class MissionSystem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private void OnEnable()
+    //to delete
+    private void Start()
     {
-        GameEvents.SaveInitiated += Save;
-        GameEvents.LoadInitiated += Load;
+        // Create a basic mission to kill 5 goblins
+        var goblinKillTask = new EnemyKillTask("Kill 5 Goblins", 0, 5, "Goblin");
+        var humanKillTask = new EnemyKillTask("Kill 5 Humans", 0, 5, "Human");
+        var goblinKillTask2 = new EnemyKillTask("Kill 5 Goblins", 1, 5, "Goblin");
+        var mission = new Mission("M001", "Goblin Slayer", "Defeat 5 goblins.", new List<MissionTask> { goblinKillTask, humanKillTask, goblinKillTask2 });
+        AddMission(mission);
+
+        Debug.Log("Added basic mission: Kill 5 Goblins");
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        GameEvents.SaveInitiated -= Save;
-        GameEvents.LoadInitiated -= Load;
+        // Press B to simulate killing a goblin
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Debug.Log("Killed a goblin!");
+            GameEvents.EnemyKilled("Goblin");
+        }
+
+        // Press N to simulate killing a human
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Debug.Log("Killed a human!");
+            GameEvents.EnemyKilled("Human");
+        }
+
+        if (Input.GetKey(KeyCode.M))
+        {
+            Debug.Log("Active Missions:");
+            foreach (var mission in activeMissions)
+            {
+                Debug.Log(mission.ToString());
+            }
+
+            Debug.Log("Completed Missions:");
+            foreach (var mission in completedMissions)
+            {
+                Debug.Log(mission.ToString());
+            }
+
+
+        }
+    }
+
+    //private void OnEnable()
+    //{
+    //    GameEvents.SaveInitiated += Save;
+    //    GameEvents.LoadInitiated += Load;
+    //}
+
+    //private void OnDisable()
+    //{
+    //    GameEvents.SaveInitiated -= Save;
+    //    GameEvents.LoadInitiated -= Load;
+    //}
+    private void OnDestroy()
+    {
+        foreach (var mission in activeMissions)
+        {
+            mission.Cleanup(); // Ensure cleanup is done if MissionSystem is destroyed
+        }
     }
 
     public void AddMission(Mission mission)
     {
-        if (!activeMissions.Exists(m => m.MissionID == mission.MissionID))
+        if (!activeMissions.Exists(m => m.MissionID == mission.MissionID) )
         {
             activeMissions.Add(mission);
-            Debug.Log($"Mission added: {mission.Title}");
         }
-        else
-        {
-            Debug.LogWarning($"Mission with ID {mission.MissionID} already exists.");
-        }
+        Debug.Log("Add a mission" + mission);
     }
 
-    public void CompleteRequirement(string missionID, string targetID, object data)
+    public void CompleteMission(Mission completedMission)
     {
-        Mission mission = activeMissions.Find(m => m.MissionID == missionID);
-        if (mission != null)
+        if (completedMission == null)
         {
-            if (mission.CompleteRequirement(targetID, data))
-            {
-                if (mission.IsCompleted)
-                {
-                    activeMissions.Remove(mission);
-                    completedMissions.Add(mission);
-                    Debug.Log($"Mission completed: {mission.Title}");
-                }
-                else
-                {
-                    Debug.Log($"Progress made on mission: {mission.Title}");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"Current requirements not met for mission: {mission.Title}");
-            }
+            Debug.LogWarning("Attempted to complete a null mission.");
+            return;
         }
-        else
+
+        if (!activeMissions.Contains(completedMission))
         {
-            Debug.LogWarning($"Mission with ID {missionID} not found.");
+            Debug.LogWarning($"Mission '{completedMission.Title}' is not in the active missions list.");
+            return;
         }
+
+        Debug.Log($"Completed a mission: {completedMission.Title}\nDetails: {completedMission}");
+
+        completedMission.Cleanup(); // Ensure events are unsubscribed
+        activeMissions.Remove(completedMission); // Safely remove the mission from the active list
+        completedMissions.Add(completedMission); // Add the mission to the completed list
+
+        Debug.Log($"Mission '{completedMission.Title}' moved to completed missions.");
     }
 
     public void Save()
@@ -97,7 +139,6 @@ public class MissionSystem : MonoBehaviour
             CompletedMissions = completedMissions
         };
         SaveLoad.Save(saveData, SaveKey);
-        Debug.Log("MissionSystem saved.");
     }
 
     public void Load()
@@ -107,26 +148,6 @@ public class MissionSystem : MonoBehaviour
             MissionSaveData saveData = SaveLoad.Load<MissionSaveData>(SaveKey);
             activeMissions = saveData.ActiveMissions ?? new List<Mission>();
             completedMissions = saveData.CompletedMissions ?? new List<Mission>();
-            Debug.Log("MissionSystem loaded successfully.");
-        }
-        else
-        {
-            Debug.LogWarning("No MissionSystem save data found.");
-        }
-    }
-
-    public void DisplayMissions()
-    {
-        Debug.Log("Active Missions:");
-        foreach (var mission in activeMissions)
-        {
-            Debug.Log($"- {mission.Title}: {mission.Description} (Completed: {mission.IsCompleted})");
-        }
-
-        Debug.Log("Completed Missions:");
-        foreach (var mission in completedMissions)
-        {
-            Debug.Log($"- {mission.Title}: {mission.Description}");
         }
     }
 }
