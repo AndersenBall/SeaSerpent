@@ -17,6 +17,8 @@ public abstract class MissionTask
         Step = step;
     }
 
+    public abstract void Initialize();
+
     public abstract void CheckProgress();
 
     protected void CompleteTask()
@@ -26,5 +28,9 @@ public abstract class MissionTask
             IsCompleted = true;
             OnTaskCompleted?.Invoke(this); // Notify listeners
         }
+    }
+    public virtual void Cleanup()
+    {
+        OnTaskCompleted = null; // Unsubscribe all event listeners
     }
 }

@@ -33,6 +33,16 @@ public class Mission
         }
     }
 
+    public void Initialize()
+    {
+        foreach (var task in Tasks)
+        {
+            task.Initialize();
+            task.isActive = task.Step == CurrentStep;
+            task.OnTaskCompleted += CheckProgress;
+        }
+    }
+
 
     private void CheckProgress(MissionTask completedTask)
     {
@@ -62,6 +72,7 @@ public class Mission
     {
         foreach (var task in Tasks)
         {
+            task.Cleanup();
             task.OnTaskCompleted -= CheckProgress; // Unsubscribe to avoid memory leaks
         }
     }
