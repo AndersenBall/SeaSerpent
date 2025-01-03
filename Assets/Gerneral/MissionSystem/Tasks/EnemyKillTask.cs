@@ -20,6 +20,15 @@ public class EnemyKillTask : MissionTask
         GameEvents.OnEnemyKilled += HandleEnemyKilled;
     }
 
+    public override void Initialize()
+    {
+
+        // Re-subscribe to the enemy killed event
+        GameEvents.OnEnemyKilled += HandleEnemyKilled;
+
+        Debug.Log($"Initialized EnemyKillTask: {TaskName}, Target: {TargetEnemyID}, Current Kills: {CurrentKills}/{TargetKills}");
+    }
+
     private void HandleEnemyKilled(string enemyID)
     {
         // Check if the task is active, not completed, and the enemy ID matches
@@ -41,10 +50,15 @@ public class EnemyKillTask : MissionTask
             GameEvents.OnEnemyKilled -= HandleEnemyKilled;
         }
     }
+    public override void Cleanup()
+    {
+        // Unsubscribe from the enemy killed event
+        GameEvents.OnEnemyKilled -= HandleEnemyKilled;
+        base.Cleanup(); // Call the base cleanup for event cleanup
+    }
 
     ~EnemyKillTask()
     {
-        // Ensure cleanup in case the task is destroyed before completion
-        GameEvents.OnEnemyKilled -= HandleEnemyKilled;
+        Cleanup();
     }
 }

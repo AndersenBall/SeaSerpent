@@ -80,17 +80,17 @@ public class MissionSystem : MonoBehaviour
         }
     }
 
-    //private void OnEnable()
-    //{
-    //    GameEvents.SaveInitiated += Save;
-    //    GameEvents.LoadInitiated += Load;
-    //}
+    private void OnEnable()
+    {
+        GameEvents.SaveInitiated += Save;
+        GameEvents.LoadInitiated += Load;
+    }
 
-    //private void OnDisable()
-    //{
-    //    GameEvents.SaveInitiated -= Save;
-    //    GameEvents.LoadInitiated -= Load;
-    //}
+    private void OnDisable()
+    {
+        GameEvents.SaveInitiated -= Save;
+        GameEvents.LoadInitiated -= Load;
+    }
     private void OnDestroy()
     {
         foreach (var mission in activeMissions)
@@ -101,11 +101,15 @@ public class MissionSystem : MonoBehaviour
 
     public void AddMission(Mission mission)
     {
-        if (!activeMissions.Exists(m => m.MissionID == mission.MissionID) )
+        if (!activeMissions.Exists(m => m.MissionID == mission.MissionID))
         {
             activeMissions.Add(mission);
+            Debug.Log("Add a mission" + mission);
         }
-        Debug.Log("Add a mission" + mission);
+        else {
+            Debug.Log("mission already added" + mission);
+        }
+       
     }
 
     public void CompleteMission(Mission completedMission)
@@ -138,6 +142,7 @@ public class MissionSystem : MonoBehaviour
             ActiveMissions = activeMissions,
             CompletedMissions = completedMissions
         };
+        Debug.Log("save the missions");
         SaveLoad.Save(saveData, SaveKey);
     }
 
@@ -145,9 +150,36 @@ public class MissionSystem : MonoBehaviour
     {
         if (SaveLoad.SaveExists(SaveKey))
         {
+            // Clear and deconstruct existing missions
+            foreach (var mission in activeMissions)
+            {
+                mission.Cleanup(); // Ensure events are unsubscribed
+            }
+            activeMissions.Clear();
+
+            foreach (var mission in completedMissions)
+            {
+                mission.Cleanup(); // Ensure events are unsubscribed
+            }
+            completedMissions.Clear();
+        
             MissionSaveData saveData = SaveLoad.Load<MissionSaveData>(SaveKey);
-            activeMissions = saveData.ActiveMissions ?? new List<Mission>();
-            completedMissions = saveData.CompletedMissions ?? new List<Mission>();
+            // Add active missions using AddMission for consistent initialization
+            foreach (var mission in saveData.ActiveMissions )
+            {
+                mission.Initialize();
+                AddMission(mission);
+            }
+
+            // Add completed missions directly since they are not active
+            completedMissions = saveData.CompletedMissions ;
+
+            Debug.Log("Missions loaded successfully.");
+        }
+        else
+        {
+            Debug.LogWarning("No save file found to load missions.");
         }
     }
+
 }
