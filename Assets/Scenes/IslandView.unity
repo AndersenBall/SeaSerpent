@@ -7259,6 +7259,7 @@ GameObject:
   - component: {fileID: 667089506}
   - component: {fileID: 667089508}
   - component: {fileID: 667089509}
+  - component: {fileID: 667089510}
   m_Layer: 0
   m_Name: GameInputs
   m_TagString: Untagged
@@ -7315,6 +7316,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46238f306b9feaf418b5385d53cd3102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &667089510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667089505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d6e4493da980a4d9c5e1ed346afd19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &677178068
@@ -17357,7 +17370,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1415268364}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb106efa355bdc24c963bc6551346f88, type: 3}
   m_Name: 
@@ -17932,7 +17945,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -25705,8 +25718,8 @@ SceneRoots:
   - {fileID: 1439832475}
   - {fileID: 1415072089}
   - {fileID: 1252930511}
-  - {fileID: 667089507}
   - {fileID: 481727674}
+  - {fileID: 667089507}
   - {fileID: 1415268367}
   - {fileID: 1721601280}
   - {fileID: 439902560}
