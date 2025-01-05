@@ -70,7 +70,11 @@ public class Town : MonoBehaviour
         townManager = GetComponentInParent<TownManager>();
         townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
 
-
+        productionAmount = new float[10]; // Ensure the array has at least 10 elements
+        for (int i = 0; i < 10; i++)
+        {
+            productionAmount[i] = Random.Range(0.5f, 1.5f);
+        }
 
         for (int i = 0; i < 10; i++) {
             supplies.Add(setupSupplyItems[i], setupSupplyCount[i]);
