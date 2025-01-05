@@ -15,10 +15,15 @@ public class FleetMapController : MonoBehaviour
         public string destName;
     }
     public NavMeshAgent navAgent;
-
+    [TextArea]
+    private string pathStatusMessage = "";
     public Transform _destination;
+    private Vector3 lastDestinationPosition;
+    private float chaseUpdateInterval = 0.5f; 
+    private float timeSinceLastUpdate = 0f;
     public Transform destination { get => _destination; set => _destination = value; }
-    // Start is called before the first frame update
+
+
     Fleet fleet;
     [TextArea]
     public string boatNames = "";
@@ -28,7 +33,7 @@ public class FleetMapController : MonoBehaviour
     private void Awake()
     {
         navAgent = gameObject.GetComponent<NavMeshAgent>();
-        //_destination = GetComponent<Transform>();
+        
     }
     void Start()
     {
@@ -41,9 +46,37 @@ public class FleetMapController : MonoBehaviour
 
     private void Update()
     {
-        if (destination != null)
+
+        if (navAgent != null)
         {
-            navAgent.SetDestination(destination.position);
+            if (destination != null && destination.position != lastDestinationPosition)
+            {
+                timeSinceLastUpdate += Time.deltaTime;
+
+                if (timeSinceLastUpdate >= chaseUpdateInterval)
+                {
+                    navAgent.SetDestination(destination.position);
+                    lastDestinationPosition = destination.position;
+                    timeSinceLastUpdate = 0f;
+                }
+            }
+
+            // Check path status and update the message
+            if (navAgent.pathStatus == NavMeshPathStatus.PathComplete)
+            {
+                pathStatusMessage = "Path is valid.";
+            }
+            else if (navAgent.pathStatus == NavMeshPathStatus.PathPartial)
+            {
+                pathStatusMessage = "Path is partially reachable.";
+            }
+            else if (navAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+            {
+                pathStatusMessage = "Path is invalid.";
+            }
+        }
+        else {
+            Debug.LogError("FleetMapController needs a navagent");
         }
 
     }
