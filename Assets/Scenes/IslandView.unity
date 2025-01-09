@@ -10714,6 +10714,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: nationality
+      value: Spain
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: productionAmount.Array.data[3]
       value: 1
       objectReference: {fileID: 0}
@@ -10730,7 +10735,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2376.656
+      value: 2466.4
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -10740,7 +10745,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1437.1
+      value: 1439.3
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -10780,7 +10785,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158969, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Name
-      value: Town2
+      value: Santiago de Cuba
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158969, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -15963,6 +15968,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: nationality
+      value: Spain
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: productionAmount.Array.data[3]
       value: 1
       objectReference: {fileID: 0}
@@ -15984,7 +15994,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2575.3132
+      value: 2606.6
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -15994,12 +16004,12 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1445.7515
+      value: 1503.5
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.98967797
+      value: 0.55829674
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -16009,7 +16019,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.1433097
+      value: -0.8296414
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -16024,7 +16034,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 16.479
+      value: -112.124
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -16034,7 +16044,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158969, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Name
-      value: Town3
+      value: Baracoa
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158969, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -17212,88 +17222,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1411455095}
   m_CullTransparentMesh: 0
---- !u!1 &1415072088
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1415072089}
-  - component: {fileID: 1415072091}
-  - component: {fileID: 1415072090}
-  - component: {fileID: 1415072092}
-  m_Layer: 0
-  m_Name: A*
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1415072089
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415072088}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1415072090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415072088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 975bf18cbf46d4844a16fa874844bb97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1415072091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415072088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f30ba1b23f7e704499d38d3a7d017724, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1415072092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415072088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a61815431a7c3940aa6f5ef186e3d1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayGridGizmos: 0
-  unwalkableMask:
-    serializedVersion: 2
-    m_Bits: 0
-  gridWorldSize: {x: 1000, y: 500}
-  nodeRadius: 5
-  walkableRegions:
-  - terrainMask:
-      serializedVersion: 2
-      m_Bits: 16777216
-    terrainPenalty: 0
-  obstacleProximityPenalty: 10
 --- !u!1 &1415268364
 GameObject:
   m_ObjectHideFlags: 0
@@ -23711,6 +23639,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: nationality
+      value: Spain
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: productionAmount.Array.data[3]
       value: 1
       objectReference: {fileID: 0}
@@ -23727,7 +23660,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1960.9542
+      value: 2032.7
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -23737,7 +23670,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1654.27
+      value: 1609.3
       objectReference: {fileID: 0}
     - target: {fileID: 8781370842952158966, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -23777,7 +23710,7 @@ PrefabInstance:
     - target: {fileID: 8781370842952158969, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Name
-      value: Town1
+      value: Trinidad
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25716,7 +25649,6 @@ SceneRoots:
   - {fileID: 136673567}
   - {fileID: 753358948}
   - {fileID: 1439832475}
-  - {fileID: 1415072089}
   - {fileID: 1252930511}
   - {fileID: 481727674}
   - {fileID: 667089507}

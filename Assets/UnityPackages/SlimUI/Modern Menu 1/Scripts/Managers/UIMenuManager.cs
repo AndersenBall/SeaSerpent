@@ -94,7 +94,7 @@ namespace SlimUI.ModernMenu{
 			CameraObject = transform.GetComponent<Animator>();
 
 			playMenu.SetActive(false);
-			exitMenu.SetActive(false);
+
 			if(extrasMenu) extrasMenu.SetActive(false);
 			firstMenu.SetActive(true);
 			mainMenu.SetActive(true);
