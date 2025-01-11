@@ -23,8 +23,8 @@ public class UITownManager : MonoBehaviour {
     [Tooltip("THe first list of buttons")]
     public GameObject firstMenu;
     [Tooltip("The Menu for when the PLAY button is clicked")]
-    public GameObject playMenu;
 
+    public GameObject shipSelect;
 
     public enum Theme {custom1, custom2, custom3};
     [Header("THEME SETTINGS")]
@@ -46,9 +46,9 @@ public class UITownManager : MonoBehaviour {
 	void Start(){
 		CameraObject = transform.GetComponent<Animator>();
 
-		playMenu.SetActive(false);
 		firstMenu.SetActive(true);
 		mainMenu.SetActive(true);
+        LoadBoats();
 
 		SetThemeColors();
 	}
@@ -78,58 +78,42 @@ public class UITownManager : MonoBehaviour {
 		}
 	}
 
-	public void PlayCampaign(){
-
-		playMenu.SetActive(true);
-	}
-
-  //  public void PlayLoadCampaign()
-  //  {
 
 
-		//Transform verticalLayoutParent = loadGameMenu.transform.Find("VerticalLayout");
- 
-  //      // Clear existing buttons
-  //      foreach (Transform child in verticalLayoutParent)
-  //      {
-  //          Destroy(child.gameObject);
-  //      }
+    public void LoadBoats()
+    {
+        Transform verticalLayoutParent = shipSelect.transform.Find("VerticalLayout");
 
-  //      // Get all directories in the save folder
-  //      string fullPath = Application.persistentDataPath + saveFolderPath;
-  //      if (Directory.Exists(fullPath))
-  //      {
-  //          string[] folderNames = Directory.GetDirectories(fullPath);
+        
 
-  //          foreach (string folderPath in folderNames)
-  //          {
-  //              // Extract the folder name
-  //              string folderName = Path.GetFileName(folderPath);
+        // Iterate through each value in the BoatType enum
+        foreach (BoatType boatType in System.Enum.GetValues(typeof(BoatType)))
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + boatType;
 
-  //              // Create a new button
-  //              GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
-  //              newButton.name = "Btn_" + folderName;
+            // Set the button text to the boat type name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = boatType.ToString();
+            }
 
-  //              // Set the button text to the folder name
-  //              TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
-  //              if (buttonText != null)
-  //              {
-  //                  buttonText.text = folderName;
-  //              }
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnBoatTypeButtonClicked(boatType));
+            }
+        }
+    }
 
-  //              // Optionally, add a click listener to the button
-  //              Button button = newButton.GetComponent<Button>();
-  //              if (button != null)
-  //              {
-  //                  button.onClick.AddListener(() => OnLoadGameButtonClicked(folderName));
-  //              }
-  //          }
-  //      }
-  //      else
-  //      {
-  //          Debug.LogWarning("Save folder not found: " + fullPath);
-  //      }
-  //  }
+    private void OnBoatTypeButtonClicked(BoatType boatType)
+{
+    Debug.Log($"Selected boat type: {boatType}");
+    // Perform additional logic here, such as spawning a boat or loading details for the selected boat type
+}
 
     private void OnLoadGameButtonClicked(string folderName)
     {
@@ -144,7 +128,6 @@ public class UITownManager : MonoBehaviour {
 
     public void PlayCampaignMobile(){
 
-		playMenu.SetActive(true);
 		mainMenu.SetActive(false);
 	}
 
@@ -155,14 +138,8 @@ public class UITownManager : MonoBehaviour {
 		}
 	}
 
-	public void  DisablePlayCampaign(){
-		playMenu.SetActive(false);
-	}
 
-	public void Position2(){
-		DisablePlayCampaign();
-		CameraObject.SetFloat("Animate",1);
-	}
+
 
 	public void Position1(){
 		CameraObject.SetFloat("Animate",0);
