@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,49 +8,43 @@ using UnityEngine;
 public class Boat
 {
     public string boatName;
-    string boatType;
+    public BoatType boatType { get; private set; }
+    private BoatStats baseStats;
     float boatSpeed;
     float turnSpeed;
     int boatHealth;
-    IDictionary<string, int> supplies = new Dictionary<string,int>();
-    
-    int cargoCurrent =0;
+
+    int cargoCurrent = 0;
     int cargoMax;
+    IDictionary<string, int> supplies = new Dictionary<string,int>();
     List<Sailor> sailors = new List<Sailor>();
     int maxSailorCount;
-   
-    
-    public Boat(string name, string type ) {
+
+
+    public Boat(string name, BoatType type)
+    {
         boatName = name;
         boatType = type;
-        if (type == "ManOfWar") {
-            boatSpeed = 5f;
-            turnSpeed = .2f;
-            boatHealth = 900;
-            cargoMax = 1000;
-            maxSailorCount = 70;
-        }
-        else if (type == "Frigate") {
-            boatSpeed = 8f;
-            turnSpeed = .3f;
-            boatHealth = 100;
-            cargoMax = 50;
-            maxSailorCount = 10;
-            for (int i = 0; i < 6; i++) {
-                AddSailor(new Sailor("tom"+ name +i));
-            }
-        }
-        else if (type == "TradeShip") {
-            boatSpeed = 4;
-            turnSpeed = .2f;
-            boatHealth = 50;
-            cargoMax = 100;
-            maxSailorCount = 6;
+
+        // Fetch stats from the database
+        if (BoatStatsDatabase.BaseStats.TryGetValue(type, out BoatStats boatStats))
+        {
+            baseStats = boatStats;
+            boatSpeed = boatStats.speed;
+            turnSpeed = boatStats.turnSpeed;
+            boatHealth = boatStats.health;
+            cargoMax = boatStats.cargoMax;
+            maxSailorCount = boatStats.maxSailorCount;
             AddSailor(new Sailor("tom"));
             AddSailor(new Sailor("jerry"));
+
         }
-       
+        else
+        {
+            Debug.LogError($"No stats found for BoatType {type}");
+        }
     }
+
     public int AddCargo(string item, int amount)
     {
         if (amount + cargoCurrent <= cargoMax) {

@@ -20,6 +20,7 @@ public class MapControlMode : ControlMode
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         cam.enabled = true;
+        cam.GetComponent<AudioListener>().enabled = true;
         boxSelection.enabled = true;
     }
 
@@ -32,6 +33,7 @@ public class MapControlMode : ControlMode
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        cam.GetComponent<AudioListener>().enabled = false;
         cam.enabled = false;
         boxSelection.enabled = false;
     }

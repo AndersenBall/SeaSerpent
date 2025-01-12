@@ -17,12 +17,12 @@ public class TestSceneSwap : MonoBehaviour
         if (Input.GetKeyDown("j")) {
             Fleet enemy = new Fleet("Spain","The Strong");
             for (int i = 0; i < 10; i++) {
-                enemy.AddBoat(new Boat("Gust"+i, "Frigate"));
+                enemy.AddBoat(new Boat("Gust"+i, BoatType.Frigate));
             }
             
             Fleet player = new Fleet("The Nameless", "Ball");
             for (int i = 0; i < 10; i++) {
-                player.AddBoat(new Boat("Gust" + i, "Frigate"));
+                player.AddBoat(new Boat("Gust" + i, BoatType.Frigate));
             }
             SceneTransfer.enemyFleet = enemy;
             SceneTransfer.playerFleet = player;

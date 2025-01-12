@@ -42,11 +42,11 @@ public class PlayerFleetMapController : MonoBehaviour
 
         //UpdateBoatNames();
         fleet = new Fleet("House Of Ball","Andersen");
-        fleet.AddBoat(new Boat("Hogger2", "Frigate"));
-        fleet.AddBoat(new Boat("Hogger3", "Frigate"));
-        fleet.AddBoat(new Boat("Hogger4", "Frigate"));
-        fleet.AddBoat(new Boat("Floater", "TradeShip"));
-        PlayerGlobal.playerBoat = new Boat("Serpent", "Frigate");
+        fleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
+        fleet.AddBoat(new Boat("Hogger3", BoatType.Frigate));
+        fleet.AddBoat(new Boat("Hogger4", BoatType.Frigate));
+        fleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
+        PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
         PlayerGlobal.money = 100000;
 
         BoatAILead.RemoveID(fleet.FleetID);
@@ -84,8 +84,8 @@ public class PlayerFleetMapController : MonoBehaviour
         else if (town != null) {
             //           Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
             //           townUI.DisplayTownUI(other.GetComponent<Town>(), fleet);
-            townOptionsUI.DisplayOptionsMenu(other.GetComponent<Town>());
-            currentTown = other.GetComponent<Town>();
+            townOptionsUI.DisplayOptionsMenu(town);
+            currentTown = town;
         }
     }
     #endregion

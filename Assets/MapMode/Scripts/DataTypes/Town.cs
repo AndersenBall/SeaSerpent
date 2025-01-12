@@ -70,7 +70,11 @@ public class Town : MonoBehaviour
         townManager = GetComponentInParent<TownManager>();
         townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
 
-
+        productionAmount = new float[10]; // Ensure the array has at least 10 elements
+        for (int i = 0; i < 10; i++)
+        {
+            productionAmount[i] = Random.Range(0.5f, 1.5f);
+        }
 
         for (int i = 0; i < 10; i++) {
             supplies.Add(setupSupplyItems[i], setupSupplyCount[i]);
@@ -137,7 +141,7 @@ public class Town : MonoBehaviour
         Fleet f1 = new Fleet(nationality, "Trader");
         for (int i = 0; i < numberOfBoats; i++)
         {
-            f1.AddBoat(new Boat(name+"HMS V" + i, "TradeShip"));
+            f1.AddBoat(new Boat(name+"HMS V" + i, BoatType.TradeShip));
         }
         FillCargo(f1, resource, amount);
         //Debug.Log("Boats in new trade fleet:" + f1.boats.Count);

@@ -68,7 +68,7 @@ public class Fleet
              count += 1;
         
          }
-         fleetSpeed = total / count;
+         fleetSpeed = 6*total / count;
         
          return fleetSpeed;
     }

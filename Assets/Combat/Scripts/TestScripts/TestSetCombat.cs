@@ -13,14 +13,14 @@ public class TestSetCombat : MonoBehaviour
 
         Fleet playerFleet = new Fleet("england", "jalapeno");
         for (int i = 0; i < ShipNumber; i++){
-            playerFleet.AddBoat(new Boat("p"+i, "Frigate"));
+            playerFleet.AddBoat(new Boat("p"+i, BoatType.Frigate));
         }
-        PlayerGlobal.playerBoat = new Boat("Serpent", "Frigate");
+        PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
         PlayerGlobal.playerBoat.SetBoatHealth(110);
 
         Fleet enemFleet = new Fleet("france", "loser");
         for (int i=0; i< enemyShipNumber; i++){
-            enemFleet.AddBoat(new Boat("e"+i, "Frigate"));
+            enemFleet.AddBoat(new Boat("e"+i, BoatType.Frigate));
         }
         
         //enemFleet.AddBoat(new Boat("e3", "TradeShip"));
