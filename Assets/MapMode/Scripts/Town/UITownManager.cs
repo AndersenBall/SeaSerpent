@@ -33,8 +33,6 @@ public class UITownManager : MonoBehaviour {
     public ThemedUIData themeController;
 
 
-
-
 	[Header("SFX")]
     [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
     public AudioSource hoverSound;
@@ -78,7 +76,14 @@ public class UITownManager : MonoBehaviour {
 		}
 	}
 
-
+    public void BuyBoat() {
+        float cost = 1;
+        Boat b = new("cool", BoatType.Frigate);
+        if (PlayerGlobal.BuyItem(cost)){
+            SceneTransfer.playerFleet.AddBoat(b);
+        }
+        return;
+    }
 
     public void LoadBoats()
     {

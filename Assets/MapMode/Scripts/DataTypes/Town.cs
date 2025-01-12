@@ -141,7 +141,7 @@ public class Town : MonoBehaviour
         Fleet f1 = new Fleet(nationality, "Trader");
         for (int i = 0; i < numberOfBoats; i++)
         {
-            f1.AddBoat(new Boat(name+"HMS V" + i, "TradeShip"));
+            f1.AddBoat(new Boat(name+"HMS V" + i, BoatType.TradeShip));
         }
         FillCargo(f1, resource, amount);
         //Debug.Log("Boats in new trade fleet:" + f1.boats.Count);

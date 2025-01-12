@@ -8,7 +8,7 @@ using UnityEngine;
 public class Boat
 {
     public string boatName;
-    string boatType;
+    BoatType boatType { get; set; }
     float boatSpeed;
     float turnSpeed;
     int boatHealth;
@@ -20,17 +20,17 @@ public class Boat
     int maxSailorCount;
    
     
-    public Boat(string name, string type ) {
+    public Boat(string name, BoatType type ) {
         boatName = name;
         boatType = type;
-        if (type == "ManOfWar") {
+        if (type == BoatType.ManOfWar) {
             boatSpeed = 5f;
             turnSpeed = .2f;
             boatHealth = 900;
             cargoMax = 1000;
             maxSailorCount = 70;
         }
-        else if (type == "Frigate") {
+        else if (type == BoatType.Frigate) {
             boatSpeed = 8f;
             turnSpeed = .3f;
             boatHealth = 100;
@@ -40,7 +40,7 @@ public class Boat
                 AddSailor(new Sailor("tom"+ name +i));
             }
         }
-        else if (type == "TradeShip") {
+        else if (type == BoatType.TradeShip) {
             boatSpeed = 4;
             turnSpeed = .2f;
             boatHealth = 50;
