@@ -8,7 +8,8 @@ using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
 
 public class UITownManager : MonoBehaviour {
-	private Animator CameraObject;
+    
+    private Animator CameraObject;
 
 	[Header("LoadScreen")]
 	[Tooltip("Button prefab for loads")]
@@ -20,18 +21,27 @@ public class UITownManager : MonoBehaviour {
     [Header("MENUS")]
     [Tooltip("The Menu for when the MAIN menu buttons")]
     public GameObject mainMenu;
-    [Tooltip("THe first list of buttons")]
-    public GameObject firstMenu;
-    [Tooltip("The Menu for when the PLAY button is clicked")]
 
+ 
+    public enum Theme {custom1, custom2, custom3};
+    [Header("Ship Select")]
+
+    [Tooltip("The list of ships to select from")]
     public GameObject shipSelect;
 
-    public enum Theme {custom1, custom2, custom3};
+    [SerializeField]
+    private TMP_Text moneyField;
+
+    [SerializeField]
+    private BoatType selectedBoat = BoatType.Frigate;
+
+    [SerializeField]
+    private TMP_Text selectedShipField;
+
     [Header("THEME SETTINGS")]
     public Theme theme;
     private int themeIndex;
     public ThemedUIData themeController;
-
 
 	[Header("SFX")]
     [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
@@ -44,11 +54,11 @@ public class UITownManager : MonoBehaviour {
 	void Start(){
 		CameraObject = transform.GetComponent<Animator>();
 
-		firstMenu.SetActive(true);
 		mainMenu.SetActive(true);
         LoadBoats();
+        UpdateMoney();
 
-		SetThemeColors();
+        SetThemeColors();
 	}
 
 	void SetThemeColors()
@@ -77,9 +87,9 @@ public class UITownManager : MonoBehaviour {
 	}
 
     public void BuyBoat() {
-        float cost = 1;
-        Boat b = new("cool", BoatType.Frigate);
-        if (PlayerGlobal.BuyItem(cost)){
+
+        Boat b = new("cool", selectedBoat);
+        if (PlayerGlobal.BuyItem(b.baseStats.boatCost)){
             SceneTransfer.playerFleet.AddBoat(b);
         }
         return;
@@ -115,10 +125,12 @@ public class UITownManager : MonoBehaviour {
     }
 
     private void OnBoatTypeButtonClicked(BoatType boatType)
-{
-    Debug.Log($"Selected boat type: {boatType}");
-    // Perform additional logic here, such as spawning a boat or loading details for the selected boat type
-}
+    {
+        Debug.Log($"Selected boat type: {boatType}");
+        selectedBoat = boatType;
+        selectedShipField.text = boatType.ToString().ToUpper();
+        //TODO change the current modal being displayed 
+    }
 
     private void OnLoadGameButtonClicked(string folderName)
     {
@@ -136,21 +148,11 @@ public class UITownManager : MonoBehaviour {
 		mainMenu.SetActive(false);
 	}
 
-
 	public void LoadScene(string scene){
 		if(scene != ""){
 			StartCoroutine(LoadAsynchronously(scene));
 		}
 	}
-
-
-
-
-	public void Position1(){
-		CameraObject.SetFloat("Animate",0);
-	}
-
-
 
 
 	public void PlayHover(){
@@ -165,9 +167,23 @@ public class UITownManager : MonoBehaviour {
 		swooshSound.Play();
 	}
 
+    public void UpdateMoney() { 
+        moneyField.text = "Gold: " + PlayerGlobal.money;
+    }
+
+    public void Position2()
+    {
+
+        CameraObject.SetFloat("Animate", 1);
+    }
+
+    public void Position1()
+    {
+        CameraObject.SetFloat("Animate", 0);
+    }
 
 
-	public void QuitGame(){
+    public void QuitGame(){
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#else

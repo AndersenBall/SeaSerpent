@@ -9,7 +9,7 @@ public class Boat
 {
     public string boatName;
     public BoatType boatType { get; private set; }
-    private BoatStats baseStats;
+    public BoatStats baseStats { get; private set; }
     float boatSpeed;
     float turnSpeed;
     int boatHealth;
