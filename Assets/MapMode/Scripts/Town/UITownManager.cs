@@ -38,6 +38,20 @@ public class UITownManager : MonoBehaviour {
     [SerializeField]
     private TMP_Text selectedShipField;
 
+    [Header("Ship Select")]
+
+    [Tooltip("The list of ships to select from")]
+    public GameObject sailorSelect;
+
+    [SerializeField]
+    private TMP_Text moneyFieldSailor;
+
+    [SerializeField]
+    private BoatType selectedSailor = BoatType.Frigate;
+
+    [SerializeField]
+    private TMP_Text selectedSailorField;
+
     [Header("THEME SETTINGS")]
     public Theme theme;
     private int themeIndex;
