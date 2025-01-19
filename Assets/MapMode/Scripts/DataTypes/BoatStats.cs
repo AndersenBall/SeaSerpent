@@ -18,4 +18,10 @@ public class BoatStats
         this.boatCost = boatCost;
 
     }
+
+    public override string ToString()
+    {
+        return $"Speed: {speed}, Turn Speed: {turnSpeed}, Health: {health}, " +
+               $"Cargo Max: {cargoMax}, Max Sailor Count: {maxSailorCount}, Boat Cost: {boatCost}";
+    }
 }

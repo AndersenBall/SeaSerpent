@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
+using UnityEditor.ShaderGraph.Internal;
 
 public class UITownManager : MonoBehaviour {
     
@@ -119,7 +120,7 @@ public class UITownManager : MonoBehaviour {
     {
         Transform verticalLayoutParent = shipSelect.transform.Find("VerticalLayout");
 
-        
+        OnBoatTypeButtonClicked(BoatType.Frigate);
 
         // Iterate through each value in the BoatType enum
         foreach (BoatType boatType in System.Enum.GetValues(typeof(BoatType)))
