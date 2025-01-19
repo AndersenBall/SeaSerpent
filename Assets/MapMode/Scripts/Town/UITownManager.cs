@@ -33,12 +33,17 @@ public class UITownManager : MonoBehaviour {
     private TMP_Text moneyField;
 
     [SerializeField]
-    private BoatType selectedBoat = BoatType.Frigate;
+    private TMP_Text selectedShipText;
+
+    [SerializeField]
+    private BoatType selectedBoatType = BoatType.Frigate;
+
+    private Boat selectedBoat;
 
     [SerializeField]
     private TMP_Text selectedShipField;
 
-    [Header("Ship Select")]
+    [Header("Sailor Select")]
 
     [Tooltip("The list of ships to select from")]
     public GameObject sailorSelect;
@@ -67,8 +72,9 @@ public class UITownManager : MonoBehaviour {
 
 	void Start(){
 		CameraObject = transform.GetComponent<Animator>();
+        Time.timeScale = 1;
 
-		mainMenu.SetActive(true);
+        mainMenu.SetActive(true);
         LoadBoats();
         UpdateMoney();
 
@@ -102,7 +108,7 @@ public class UITownManager : MonoBehaviour {
 
     public void BuyBoat() {
 
-        Boat b = new("cool", selectedBoat);
+        Boat b = new("cool", selectedBoatType);
         if (PlayerGlobal.BuyItem(b.baseStats.boatCost)){
             SceneTransfer.playerFleet.AddBoat(b);
         }
@@ -141,9 +147,11 @@ public class UITownManager : MonoBehaviour {
     private void OnBoatTypeButtonClicked(BoatType boatType)
     {
         Debug.Log($"Selected boat type: {boatType}");
-        selectedBoat = boatType;
+        selectedBoatType = boatType;
         selectedShipField.text = boatType.ToString().ToUpper();
-        //TODO change the current modal being displayed 
+        selectedBoat = new("cool", selectedBoatType);
+        selectedShipText.text = selectedBoat.ToString();
+        //TODO change the current modal bing displayed 
     }
 
 
