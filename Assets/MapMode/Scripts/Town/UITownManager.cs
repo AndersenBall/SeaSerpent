@@ -132,16 +132,6 @@ public class UITownManager : MonoBehaviour {
         //TODO change the current modal being displayed 
     }
 
-    private void OnLoadGameButtonClicked(string folderName)
-    {
-        Debug.Log("Selected save folder: " + folderName);
-
-        // Set the save folder
-        SceneTransferMainMenu.SetSaveFolder(folderName);
-
-        // Load the IslandView scene
-        StartCoroutine(LoadAsynchronously("IslandView"));
-    }
 
     public void PlayCampaignMobile(){
 

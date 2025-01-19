@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TownUI : MonoBehaviour
@@ -115,5 +116,47 @@ public class TownUI : MonoBehaviour
         CloseTownUI();
         DisplayTownUI(town, fleet);
     }
-    
+
+    public void LoadScene(string scene)
+    {
+        if (scene != "")
+        {
+            StartCoroutine(LoadAsynchronously(scene));
+        }
+    }
+
+    IEnumerator LoadAsynchronously(string sceneName)
+    {
+        Debug.Log("Loading scene: " + sceneName);
+
+        // Start loading the scene asynchronously
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        operation.allowSceneActivation = false; // Prevent automatic activation initially
+
+        // Adjust UI to show loading screen
+        //mainCanvas.SetActive(false); // Hide the main canvas
+        //loadingMenu.SetActive(true); // Show the loading menu
+
+        // Loop until the scene is loaded
+        while (!operation.isDone)
+        {
+            // Calculate loading progress (progress ranges from 0 to 0.9 before activation)
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            //loadingBar.value = progress;
+
+            Debug.Log($"Loading progress: {progress * 100}%");
+
+            // If loading is complete (operation.progress >= 0.9f), activate the scene
+            if (operation.progress >= 0.9f)
+            {
+                Debug.Log("Scene loading complete. Activating...");
+                operation.allowSceneActivation = true; // Allow scene activation
+            }
+
+            yield return null; // Wait for the next frame
+        }
+
+        Debug.Log($"Scene {sceneName} loaded and activated.");
+    }
+
 }
