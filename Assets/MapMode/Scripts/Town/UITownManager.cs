@@ -84,16 +84,27 @@ public class UITownManager : MonoBehaviour {
     #region Monobehaviours
     public void Awake()
     {
-        LoadPlayerFleet();
+
+        GameEvents.SaveInitiated += SavePlayerFleet;
+        GameEvents.LoadInitiated += LoadPlayerFleet;
     }
     void Start(){
+        
 		CameraObject = transform.GetComponent<Animator>();
 
         mainMenu.SetActive(true);
-        RefreshUi();
-
+        
         SetThemeColors();
-	}
+        GameEvents.LoadGame();
+        RefreshUi();
+    }
+
+    private void OnDestroy()
+    {
+        GameEvents.SaveInitiated -= SavePlayerFleet;
+        GameEvents.LoadInitiated -= LoadPlayerFleet;
+    }
+
     #endregion
 
     #region Methods
@@ -138,7 +149,7 @@ public class UITownManager : MonoBehaviour {
         }
     }
 
-    private void SaveFleet()
+    private void SavePlayerFleet()
     {
         PlayerFleetData updatedFleetData = new PlayerFleetData
         {
@@ -160,7 +171,7 @@ public class UITownManager : MonoBehaviour {
         {
             SceneTransfer.playerFleet.AddBoat(newBoat);
             Debug.Log("Boat purchased successfully.");
-            SaveFleet(); 
+            GameEvents.SaveGame();
             RefreshUi(); 
         }
         else
@@ -261,7 +272,10 @@ public class UITownManager : MonoBehaviour {
 	}
 
 	public void LoadScene(string scene){
-		if(scene != ""){
+        if (scene == "IslandView") {
+            SceneTransfer.TransferToMap();
+        }
+        else if (scene != ""){
 			StartCoroutine(LoadAsynchronously(scene));
 		}
 	}

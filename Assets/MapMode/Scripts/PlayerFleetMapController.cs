@@ -33,13 +33,12 @@ public class PlayerFleetMapController : MonoBehaviour
     {
 
         navAgent = gameObject.GetComponent<NavMeshAgent>();
+        GameEvents.SaveInitiated += SaveFleet;
+        GameEvents.LoadInitiated += LoadFleet;
     }
 
     void Start()
     {
-
-        GameEvents.SaveInitiated += SaveFleet;// add events to happen when save and load is called
-        GameEvents.LoadInitiated += LoadFleet;
 
         //UpdateBoatNames();
         SceneTransfer.playerFleet = new Fleet("House Of Ball","Andersen");
@@ -48,7 +47,7 @@ public class PlayerFleetMapController : MonoBehaviour
         SceneTransfer.playerFleet.AddBoat(new Boat("Hogger4", BoatType.Frigate));
         SceneTransfer.playerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
         PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
-        PlayerGlobal.money = 100000;
+        PlayerGlobal.money = 5000000;
 
         BoatAILead.RemoveID(SceneTransfer.playerFleet.FleetID);
         

@@ -14,6 +14,12 @@ public class SceneTransfer : MonoBehaviour
         playerFleet = null;
         enemyFleet = null;
     }
+    public static void TransferToTownUI() {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("TownMenu");
+        GameEvents.ClearActions();
+    }
 
     public static void TransferToMap() {
         Cursor.lockState = CursorLockMode.None;
