@@ -36,14 +36,14 @@ public class MissionSystem : MonoBehaviour
     //to delete
     private void Start()
     {
-        // Create a basic mission to kill 5 goblins
-        var goblinKillTask = new EnemyKillTask("Kill 5 Goblins", 0, 5, "Goblin");
-        var humanKillTask = new EnemyKillTask("Kill 5 Humans", 0, 5, "Human");
-        var goblinKillTask2 = new EnemyKillTask("Kill 5 Goblins", 1, 5, "Goblin");
-        var mission = new Mission("M001", "Goblin Slayer", "Defeat 5 goblins.", new List<MissionTask> { goblinKillTask, humanKillTask, goblinKillTask2 });
-        AddMission(mission);
+        //// Create a basic mission to kill 5 goblins
+        //var goblinKillTask = new EnemyKillTask("Kill 5 Goblins", 0, 5, "Goblin");
+        //var humanKillTask = new EnemyKillTask("Kill 5 Humans", 0, 5, "Human");
+        //var goblinKillTask2 = new EnemyKillTask("Kill 5 Goblins", 1, 5, "Goblin");
+        //var mission = new Mission("M001", "Goblin Slayer", "Defeat 5 goblins.", new List<MissionTask> { goblinKillTask, humanKillTask, goblinKillTask2 });
+        //AddMission(mission);
 
-        Debug.Log("Added basic mission: Kill 5 Goblins");
+        //Debug.Log("Added basic mission: Kill 5 Goblins");
     }
 
     private void Update()

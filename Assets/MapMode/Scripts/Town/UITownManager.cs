@@ -7,12 +7,18 @@ using System.IO;
 using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
 using UnityEditor.ShaderGraph.Internal;
+using static PlayerFleetMapController;
+
 
 public class UITownManager : MonoBehaviour {
-    
+
+    #region Variables
+
     private Animator CameraObject;
 
-	[Header("LoadScreen")]
+    private Vector3 loadedPosition;
+
+    [Header("LoadScreen")]
 	[Tooltip("Button prefab for loads")]
     public GameObject buttonPrefab;
 	[Tooltip("Folder For Saves")]
@@ -49,6 +55,9 @@ public class UITownManager : MonoBehaviour {
     [Tooltip("The list of ships to select from")]
     public GameObject sailorSelect;
 
+    [Tooltip("The list of ships to select from")]
+    public GameObject sailorBoatInsertSelect;
+
     [SerializeField]
     private TMP_Text moneyFieldSailor;
 
@@ -70,19 +79,26 @@ public class UITownManager : MonoBehaviour {
     public AudioSource sliderSound;
     [Tooltip("The GameObject holding the Audio Source component for the SWOOSH SOUND when switching to the Settings Screen")]
     public AudioSource swooshSound;
+    #endregion
 
-	void Start(){
+    #region Monobehaviours
+    public void Awake()
+    {
+        LoadPlayerFleet();
+    }
+    void Start(){
 		CameraObject = transform.GetComponent<Animator>();
-        Time.timeScale = 1;
 
         mainMenu.SetActive(true);
-        LoadBoats();
-        UpdateMoney();
+        RefreshUi();
 
         SetThemeColors();
 	}
+    #endregion
 
-	void SetThemeColors()
+    #region Methods
+
+    void SetThemeColors()
 	{
 		switch (theme)
 		{
@@ -107,19 +123,102 @@ public class UITownManager : MonoBehaviour {
 		}
 	}
 
-    public void BuyBoat() {
-
-        Boat b = new("cool", selectedBoatType);
-        if (PlayerGlobal.BuyItem(b.baseStats.boatCost)){
-            SceneTransfer.playerFleet.AddBoat(b);
+    private void LoadPlayerFleet()
+    {
+        if (SaveLoad.SaveExists("Player"))
+        {
+            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
+            SceneTransfer.playerFleet = playerData.fleet;
+            loadedPosition = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+            Debug.Log("Player fleet loaded successfully.");
         }
-        return;
+        else
+        {
+            Debug.LogWarning("No saved player fleet data found.");
+        }
     }
+
+    private void SaveFleet()
+    {
+        PlayerFleetData updatedFleetData = new PlayerFleetData
+        {
+            fleet = SceneTransfer.playerFleet,
+            pos = new float[] { loadedPosition.x, loadedPosition.y, loadedPosition.z }
+        };
+
+        SaveLoad.Save(updatedFleetData, "Player");
+        Debug.Log("Player fleet saved successfully.");
+    }
+
+
+    public void BuyBoat()
+    {
+        Boat newBoat = new Boat("cool", selectedBoatType);
+
+        Debug.Log($"Attempting to buy: {PlayerGlobal.money} : {newBoat.baseStats.boatCost}");
+        if (PlayerGlobal.BuyItem(newBoat.baseStats.boatCost))
+        {
+            SceneTransfer.playerFleet.AddBoat(newBoat);
+            Debug.Log("Boat purchased successfully.");
+            SaveFleet(); 
+            RefreshUi(); 
+        }
+        else
+        {
+            Debug.Log("Not enough money to buy the boat.");
+        }
+    }
+
+    public void RefreshUi() {
+        LoadBoatsSailor();
+        LoadBoats();
+        UpdateMoney();
+    }
+    public void LoadBoatsSailor()
+    {
+        Transform verticalLayoutParent = sailorBoatInsertSelect.transform.Find("VerticalLayout");
+
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+        // Iterate through the boats in the playerFleet
+        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats())
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + boat.boatName;
+
+            // Set the button text to the boat name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+
+            buttonText.text = $"{boat.boatName} ({boat.GetSailors().Count}/{boat.baseStats.maxSailorCount} sailors)";
+
+
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnBoatButtonClickedSailor(boat));
+            }
+        }
+    }
+
+    private void OnBoatButtonClickedSailor(Boat boat)
+    {
+        Debug.Log($"Selected boat: {boat.boatName}");
+        
+    }
+
+
 
     public void LoadBoats()
     {
         Transform verticalLayoutParent = shipSelect.transform.Find("VerticalLayout");
-
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
         OnBoatTypeButtonClicked(BoatType.Frigate);
 
         // Iterate through each value in the BoatType enum
@@ -239,4 +338,5 @@ public class UITownManager : MonoBehaviour {
         Debug.Log($"Scene {sceneName} loaded and activated.");
     }
 
+    #endregion
 }

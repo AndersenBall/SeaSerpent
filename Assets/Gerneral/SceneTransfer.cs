@@ -43,9 +43,9 @@ public class SceneTransfer : MonoBehaviour
 
         if (playerFleet != null) {
             GameObject player = GameObject.Find("PlayerBoat");
-            player.GetComponent<PlayerFleetMapController>().SetFleet(playerFleet);
+         
             Debug.Log(playerFleet.GetBoats()[0].GetBoatHealth()+ playerFleet.GetBoats()[0].boatName);
-            playerFleet = null;
+
         }
 
         
