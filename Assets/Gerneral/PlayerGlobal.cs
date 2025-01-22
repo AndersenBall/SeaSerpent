@@ -8,7 +8,8 @@ public class PlayerGlobal : MonoBehaviour
     public static float money { get; set; }
 
     public static bool BuyItem(float amount) {
-        if (money - amount > 0) { 
+
+        if (money - amount >= 0) { 
             money -= amount;
             return true;
         }

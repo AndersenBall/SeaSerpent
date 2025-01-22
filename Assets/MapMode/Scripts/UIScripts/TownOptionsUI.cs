@@ -20,7 +20,7 @@ public class TownOptionsUI : MonoBehaviour
     }
     public void DisplayOptionsMenu(Town t)
     {
-        Time.timeScale = .000f;
+        Time.timeScale = .001f;
 
         town = t;
         string townName = t.name;

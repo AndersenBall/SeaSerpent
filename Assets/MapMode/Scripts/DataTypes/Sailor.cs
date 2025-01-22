@@ -5,31 +5,30 @@ using UnityEngine;
 [System.Serializable]
 public class Sailor
 {
-    public string name;
-    int hp;
+    public string name { get; private set; }
+    public int hp { get; private set; }
+
     List<string> weapons;
-    int moveSpeed;
-    int reloadSpeed;
-    int commandStrength;
-    int sailorStrength;
+    public int moveSpeed { get; private set; }
+    public int cannonReloadSpeed { get; private set; }
+    public int sailorStrength { get; private set; }
     public Sailor(string n)
     {
         name = n;
         hp = 10;
         weapons = new List<string>();
-        reloadSpeed = 5;
+        cannonReloadSpeed = 5;
         moveSpeed = 5;
-        commandStrength = 3;
+
         sailorStrength = 5;
     }
-    public Sailor(int h, List<string> weap, int move, int reload, int command, int sail)
+    public Sailor(int h, List<string> weap, int move, int reload, int sail)
     {
         name = "base";
         hp = h;
         weapons = weap;
-        reloadSpeed = reload;
+        cannonReloadSpeed = reload;
         moveSpeed = move;
-        commandStrength = command;
         sailorStrength = sail;
     }
 }

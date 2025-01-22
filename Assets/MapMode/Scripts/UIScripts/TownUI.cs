@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TownUI : MonoBehaviour
@@ -115,5 +116,14 @@ public class TownUI : MonoBehaviour
         CloseTownUI();
         DisplayTownUI(town, fleet);
     }
+
+    public void LoadSceneBoatShop()
+    {
+        SceneTransfer.TransferToTownUI();
+        
+        
+    }
+
     
+
 }

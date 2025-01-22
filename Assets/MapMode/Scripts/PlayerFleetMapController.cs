@@ -22,37 +22,39 @@ public class PlayerFleetMapController : MonoBehaviour
     public NavMeshAgent navAgent;
     public Transform target;
     public static Town currentTown;
-    Fleet fleet;
     
     [TextArea]
-    public string boatNames = "";
+    public string _boatNames = "";
+    public string boatNames{get => _boatNames; set => _boatNames = value;}
     #endregion
 
     #region Monobehaviours
     private void Awake()
     {
+
         navAgent = gameObject.GetComponent<NavMeshAgent>();
+        GameEvents.SaveInitiated += SaveFleet;
+        GameEvents.LoadInitiated += LoadFleet;
     }
 
     void Start()
     {
 
-        GameEvents.SaveInitiated += SaveFleet;// add events to happen when save and load is called
-        GameEvents.LoadInitiated += LoadFleet;
-
         //UpdateBoatNames();
-        fleet = new Fleet("House Of Ball","Andersen");
-        fleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
-        fleet.AddBoat(new Boat("Hogger3", BoatType.Frigate));
-        fleet.AddBoat(new Boat("Hogger4", BoatType.Frigate));
-        fleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
+        SceneTransfer.playerFleet = new Fleet("House Of Ball","Andersen");
+        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
+        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger3", BoatType.Frigate));
+        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger4", BoatType.Frigate));
+        SceneTransfer.playerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
         PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
-        PlayerGlobal.money = 100000;
+        PlayerGlobal.money = 5000000;
 
-        BoatAILead.RemoveID(fleet.FleetID);
-        
-        navAgent.speed = fleet.CalculateSpeed();
-        
+        BoatAILead.RemoveID(SceneTransfer.playerFleet.FleetID);
+
+        (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
+        navAgent.speed = fleetSpeed;
+        navAgent.acceleration = fleetAcceleration;
+
         UpdateBoatNames();
 
         meetShipUI = Canvas.transform.Find("MeetShip").GetComponent<MeetShipUI>();
@@ -63,7 +65,7 @@ public class PlayerFleetMapController : MonoBehaviour
     private void Update()
     {
         // TODO 12/28 performance improvement is possible here. Does not need to be on every frame. Can be on event. 
-        UpdateBoatNames();
+        //UpdateBoatNames();
         
         if (target != null)
         {
@@ -78,7 +80,7 @@ public class PlayerFleetMapController : MonoBehaviour
         FleetMapController otherFleet = other.GetComponent<FleetMapController>();
         if (otherFleet != null) {
             meetShipUI.ContactShip(otherFleet.GetFleet());
-            Debug.Log("Fleet: " + fleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
+            Debug.Log("Fleet: " + SceneTransfer.playerFleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
 
         }
         else if (town != null) {
@@ -86,21 +88,19 @@ public class PlayerFleetMapController : MonoBehaviour
             //           townUI.DisplayTownUI(other.GetComponent<Town>(), fleet);
             townOptionsUI.DisplayOptionsMenu(town);
             currentTown = town;
+            GameEvents.SaveGame();
         }
     }
     #endregion
 
     #region Methods
-    public Fleet GetFleet() { return fleet; }
+    public Fleet GetFleet() { return SceneTransfer.playerFleet; }
 
-    public void SetFleet(Fleet f) { 
-        fleet = f;
-        UpdateBoatNames();
-    }
+
 
     public void DockFleet(Town town)
     {
-        town.DockFleet(fleet);
+        town.DockFleet(SceneTransfer.playerFleet);
         Destroy(gameObject, 1);
     }
 
@@ -109,23 +109,17 @@ public class PlayerFleetMapController : MonoBehaviour
     #region Developer methods
     public void UpdateBoatNames()
     {
-        boatNames = ""+ fleet.commander;
-        boatNames += " FleetID: " + fleet.FleetID+"\n";
-        boatNames += "Flag ship:" + PlayerGlobal.playerBoat.boatName + " hp:" + PlayerGlobal.playerBoat.GetBoatHealth();
-        boatNames += "\n";
-        foreach (Boat b in fleet.GetBoats()) {
-            boatNames += b.boatName + " hp:"+b.GetBoatHealth() +" iteams: ";
-            foreach (KeyValuePair<string, int> iteam in b.getSupplies()) {
-                boatNames += iteam.Key + iteam.Value + ",";
-            }
-            boatNames += "\n";
-        }
+
+        boatNames = "\nFlagship: " + PlayerGlobal.playerBoat.boatName +
+                     " | HP: " + PlayerGlobal.playerBoat.GetBoatHealth();
+        boatNames += SceneTransfer.playerFleet.ToString();
+
     }
 
-    public void SaveFleet()
+    public void SaveFleet() 
     {
         PlayerFleetData saveFleet = new PlayerFleetData();
-        saveFleet.fleet = fleet;
+        saveFleet.fleet = SceneTransfer.playerFleet;
         Vector3 place = gameObject.transform.position;
         saveFleet.pos = new float[] { place.x, place.y, place.z };
         SaveLoad.Save(saveFleet, "Player");
@@ -134,8 +128,10 @@ public class PlayerFleetMapController : MonoBehaviour
     {
         if (SaveLoad.SaveExists("Player")) {
             PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
-            fleet = playerData.fleet;
-            navAgent.speed = fleet.CalculateSpeed();
+            SceneTransfer.playerFleet = playerData.fleet;
+            (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
+            navAgent.speed = fleetSpeed;
+            navAgent.acceleration = fleetAcceleration;
             Vector3 targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
             gameObject.transform.position = targetPosition;
             navAgent.Warp(targetPosition);
@@ -143,6 +139,13 @@ public class PlayerFleetMapController : MonoBehaviour
         }
         UpdateBoatNames();
     }
+
+    private void OnDestroy()
+    {
+        GameEvents.SaveInitiated -= SaveFleet;
+        GameEvents.LoadInitiated -= LoadFleet;
+    }
+
 
     #endregion
 

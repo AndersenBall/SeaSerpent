@@ -6,11 +6,30 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
+using UnityEditor.ShaderGraph.Internal;
+using static PlayerFleetMapController;
+
 
 public class UITownManager : MonoBehaviour {
-	private Animator CameraObject;
 
-	[Header("LoadScreen")]
+    #region Variables
+
+    private Animator CameraObject;
+
+    private Vector3 loadedPosition;
+
+    public string[] pirateAdjectives =
+    {
+        "Black", "Bloody", "Crimson", "Golden", "Iron", "Salty", "Stormy", "Vengeful", "Wicked", "Ghostly"
+    };
+
+    // List of pirate-themed ship nouns
+    public string[] pirateShipNouns =
+    {
+        "Galleon", "Raven", "Corsair", "Buccaneer", "Leviathan", "Voyager", "Cutlass", "Siren", "Wraith", "Tempest"
+    };
+
+    [Header("LoadScreen")]
 	[Tooltip("Button prefab for loads")]
     public GameObject buttonPrefab;
 	[Tooltip("Folder For Saves")]
@@ -20,18 +39,52 @@ public class UITownManager : MonoBehaviour {
     [Header("MENUS")]
     [Tooltip("The Menu for when the MAIN menu buttons")]
     public GameObject mainMenu;
-    [Tooltip("THe first list of buttons")]
-    public GameObject firstMenu;
-    [Tooltip("The Menu for when the PLAY button is clicked")]
 
+ 
+    public enum Theme {custom1, custom2, custom3};
+    [Header("Ship Select")]
+
+    [Tooltip("The list of ships to select from")]
     public GameObject shipSelect;
 
-    public enum Theme {custom1, custom2, custom3};
+    [SerializeField]
+    private TMP_Text moneyField;
+
+    [SerializeField]
+    private TMP_Text selectedShipText;
+    
+    [SerializeField]
+    public TMP_InputField inputField;
+
+    [SerializeField]
+    private BoatType selectedBoatType = BoatType.Frigate;
+
+    private Boat selectedBoat;
+
+    [SerializeField]
+    private TMP_Text selectedShipField;
+
+    [Header("Sailor Select")]
+
+    [Tooltip("The list of ships to select from")]
+    public GameObject sailorSelect;
+
+    [Tooltip("The list of ships to select from")]
+    public GameObject sailorBoatInsertSelect;
+
+    [SerializeField]
+    private TMP_Text moneyFieldSailor;
+
+    [SerializeField]
+    private BoatType selectedSailor = BoatType.Frigate;
+
+    [SerializeField]
+    private TMP_Text selectedSailorField;
+
     [Header("THEME SETTINGS")]
     public Theme theme;
     private int themeIndex;
     public ThemedUIData themeController;
-
 
 	[Header("SFX")]
     [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
@@ -40,18 +93,39 @@ public class UITownManager : MonoBehaviour {
     public AudioSource sliderSound;
     [Tooltip("The GameObject holding the Audio Source component for the SWOOSH SOUND when switching to the Settings Screen")]
     public AudioSource swooshSound;
+    #endregion
 
-	void Start(){
+    #region Monobehaviours
+    public void Awake()
+    {
+
+        GameEvents.SaveInitiated += SavePlayerFleet;
+        GameEvents.LoadInitiated += LoadPlayerFleet;
+    }
+    void Start(){
+        
 		CameraObject = transform.GetComponent<Animator>();
 
-		firstMenu.SetActive(true);
-		mainMenu.SetActive(true);
-        LoadBoats();
+        mainMenu.SetActive(true);
+        
+        SetThemeColors();
+        GameEvents.LoadGame();
+        RefreshUi();
 
-		SetThemeColors();
-	}
+        
+    }
 
-	void SetThemeColors()
+    private void OnDestroy()
+    {
+        GameEvents.SaveInitiated -= SavePlayerFleet;
+        GameEvents.LoadInitiated -= LoadPlayerFleet;
+    }
+
+    #endregion
+
+    #region Methods
+
+    void SetThemeColors()
 	{
 		switch (theme)
 		{
@@ -76,20 +150,112 @@ public class UITownManager : MonoBehaviour {
 		}
 	}
 
-    public void BuyBoat() {
-        float cost = 1;
-        Boat b = new("cool", BoatType.Frigate);
-        if (PlayerGlobal.BuyItem(cost)){
-            SceneTransfer.playerFleet.AddBoat(b);
+    private void LoadPlayerFleet()
+    {
+        if (SaveLoad.SaveExists("Player"))
+        {
+            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
+            SceneTransfer.playerFleet = playerData.fleet;
+            loadedPosition = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+            Debug.Log("Player fleet loaded successfully.");
         }
-        return;
+        else
+        {
+            Debug.LogWarning("No saved player fleet data found.");
+        }
     }
+
+    private void SavePlayerFleet()
+    {
+        PlayerFleetData updatedFleetData = new PlayerFleetData
+        {
+            fleet = SceneTransfer.playerFleet,
+            pos = new float[] { loadedPosition.x, loadedPosition.y, loadedPosition.z }
+        };
+
+        SaveLoad.Save(updatedFleetData, "Player");
+        Debug.Log("Player fleet saved successfully.");
+    }
+
+
+    public void BuyBoat()
+    {
+        Boat newBoat = new Boat(inputField.text, selectedBoatType);
+
+        Debug.Log($"Attempting to buy: {PlayerGlobal.money} : {newBoat.baseStats.boatCost}");
+
+        if (SceneTransfer.playerFleet.HasBoatWithName(inputField.text) || inputField.text.Length > inputField.characterLimit || inputField.text.Length < 3 || inputField.text.Contains("does not work"))
+        {
+            Debug.Log($"A boat named '{inputField.text}' already exists in your fleet.");
+            inputField.text = $"{inputField.text} does not work.";
+            return; // Exit the method to prevent purchase
+        }
+
+        if (PlayerGlobal.BuyItem(newBoat.baseStats.boatCost))
+        {
+            SceneTransfer.playerFleet.AddBoat(newBoat);
+            Debug.Log("Boat purchased successfully.");
+            GameEvents.SaveGame();
+            RefreshUi(); 
+        }
+        else
+        {
+            Debug.Log("Not enough money to buy the boat.");
+        }
+    }
+
+    public void RefreshUi() {
+        LoadBoatsSailor();
+        LoadBoats();
+        UpdateMoney();
+        RandomBoatName();
+    }
+    public void LoadBoatsSailor()
+    {
+        Transform verticalLayoutParent = sailorBoatInsertSelect.transform.Find("VerticalLayout");
+
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+        // Iterate through the boats in the playerFleet
+        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats())
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + boat.boatName;
+
+            // Set the button text to the boat name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+
+            buttonText.text = $"{boat.boatName} ({boat.GetSailors().Count}/{boat.baseStats.maxSailorCount} sailors)";
+
+
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnBoatButtonClickedSailor(boat));
+            }
+        }
+    }
+
+    private void OnBoatButtonClickedSailor(Boat boat)
+    {
+        Debug.Log($"Selected boat: {boat.boatName}");
+        
+    }
+
+
 
     public void LoadBoats()
     {
         Transform verticalLayoutParent = shipSelect.transform.Find("VerticalLayout");
-
-        
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+        OnBoatTypeButtonClicked(BoatType.Frigate);
 
         // Iterate through each value in the BoatType enum
         foreach (BoatType boatType in System.Enum.GetValues(typeof(BoatType)))
@@ -115,42 +281,43 @@ public class UITownManager : MonoBehaviour {
     }
 
     private void OnBoatTypeButtonClicked(BoatType boatType)
-{
-    Debug.Log($"Selected boat type: {boatType}");
-    // Perform additional logic here, such as spawning a boat or loading details for the selected boat type
-}
-
-    private void OnLoadGameButtonClicked(string folderName)
     {
-        Debug.Log("Selected save folder: " + folderName);
-
-        // Set the save folder
-        SceneTransferMainMenu.SetSaveFolder(folderName);
-
-        // Load the IslandView scene
-        StartCoroutine(LoadAsynchronously("IslandView"));
+        Debug.Log($"Selected boat type: {boatType}");
+        selectedBoatType = boatType;
+        selectedShipField.text = boatType.ToString().ToUpper();
+        selectedBoat = new("cool", selectedBoatType);
+        selectedShipText.text = selectedBoat.ToString();
+        //TODO change the current modal bing displayed 
     }
+
 
     public void PlayCampaignMobile(){
 
 		mainMenu.SetActive(false);
 	}
 
-
 	public void LoadScene(string scene){
-		if(scene != ""){
+        if (scene == "IslandView") {
+            SceneTransfer.TransferToMap();
+        }
+        else if (scene != ""){
 			StartCoroutine(LoadAsynchronously(scene));
 		}
 	}
 
+    public void RandomBoatName()
+    {
+        if (pirateAdjectives.Length > 0 && pirateShipNouns.Length > 0 && inputField != null)
+        {
+            string randomAdjective = pirateAdjectives[Random.Range(0, pirateAdjectives.Length)];
+            string randomNoun = pirateShipNouns[Random.Range(0, pirateShipNouns.Length)];
+            string pirateShipName = $"{randomAdjective} {randomNoun}";
 
+            inputField.text = pirateShipName;
+            Debug.Log("Assigned pirate-themed ship name: " + pirateShipName);
+        }
 
-
-	public void Position1(){
-		CameraObject.SetFloat("Animate",0);
-	}
-
-
+    }
 
 
 	public void PlayHover(){
@@ -165,9 +332,23 @@ public class UITownManager : MonoBehaviour {
 		swooshSound.Play();
 	}
 
+    public void UpdateMoney() { 
+        moneyField.text = "Gold: " + PlayerGlobal.money;
+    }
+
+    public void Position2()
+    {
+
+        CameraObject.SetFloat("Animate", 1);
+    }
+
+    public void Position1()
+    {
+        CameraObject.SetFloat("Animate", 0);
+    }
 
 
-	public void QuitGame(){
+    public void QuitGame(){
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#else
@@ -210,4 +391,5 @@ public class UITownManager : MonoBehaviour {
         Debug.Log($"Scene {sceneName} loaded and activated.");
     }
 
+    #endregion
 }

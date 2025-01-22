@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -9,7 +10,7 @@ public class Boat
 {
     public string boatName;
     public BoatType boatType { get; private set; }
-    private BoatStats baseStats;
+    public BoatStats baseStats { get; private set; }
     float boatSpeed;
     float turnSpeed;
     int boatHealth;
@@ -44,6 +45,7 @@ public class Boat
             Debug.LogError($"No stats found for BoatType {type}");
         }
     }
+
 
     public int AddCargo(string item, int amount)
     {
@@ -113,6 +115,15 @@ public class Boat
     public void SetBoatHealth(int hp) {
         boatHealth = hp;
     }
+    public override string ToString()
+    {
+        return $"Boat Name: {boatName}\n" +
+               $"Boat Type: {boatType}\n" +
+               $"Base Stats: [{baseStats}]\n" +
+               $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {boatHealth}, " +
+               $"Cargo Current: {cargoCurrent}/{cargoMax}]\n";
+    }
+
 
 }
 

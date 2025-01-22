@@ -438,7 +438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 255, y: -275}
+  m_AnchoredPosition: {x: 255, y: -275.16113}
   m_SizeDelta: {x: 510, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &30604545
@@ -484,7 +484,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 30604546}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1978517587}
+        m_TargetAssemblyTypeName: TownUI, Assembly-CSharp
+        m_MethodName: LoadSceneBoatShop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: TownMenu
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &30604546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6435,7 +6447,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 770, y: -275}
+  m_AnchoredPosition: {x: 770, y: -275.16113}
   m_SizeDelta: {x: 510, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &595459465
@@ -7260,6 +7272,7 @@ GameObject:
   - component: {fileID: 667089508}
   - component: {fileID: 667089509}
   - component: {fileID: 667089510}
+  - component: {fileID: 667089511}
   m_Layer: 0
   m_Name: GameInputs
   m_TagString: Untagged
@@ -7328,6 +7341,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01d6e4493da980a4d9c5e1ed346afd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &667089511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667089505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2e1179712de8e4f9bc0afa443db1b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &677178068
@@ -17002,7 +17027,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1285, y: -275}
+  m_AnchoredPosition: {x: 1285, y: -275.16113}
   m_SizeDelta: {x: 510, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1410948570
@@ -17835,7 +17860,7 @@ MonoBehaviour:
   Canvas: {fileID: 481727670}
   navAgent: {fileID: 1439832478}
   target: {fileID: 753358948}
-  boatNames: 
+  _boatNames: 
 --- !u!195 &1439832478
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -22189,7 +22214,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1800, y: -275}
+  m_AnchoredPosition: {x: 1800, y: -275.16113}
   m_SizeDelta: {x: 510, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1834743322

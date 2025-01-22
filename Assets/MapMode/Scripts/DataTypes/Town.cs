@@ -63,12 +63,17 @@ public class Town : MonoBehaviour
     #endregion
 
     #region Monobehaviour
+
+    private void Awake()
+    {
+        townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
+    }
     void Start()
     {
         GameEvents.SaveInitiated += Save;// add events to happen when save and load is called
         GameEvents.LoadInitiated += Load;
         townManager = GetComponentInParent<TownManager>();
-        townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
+        
 
         productionAmount = new float[10]; // Ensure the array has at least 10 elements
         for (int i = 0; i < 10; i++)
@@ -529,7 +534,15 @@ public class Town : MonoBehaviour
             }
         }
 
+        
 
+
+    }
+    private void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        GameEvents.SaveInitiated -= Save;
+        GameEvents.LoadInitiated -= Load;
     }
     #endregion
 }
