@@ -18,6 +18,17 @@ public class UITownManager : MonoBehaviour {
 
     private Vector3 loadedPosition;
 
+    public string[] pirateAdjectives =
+    {
+        "Black", "Bloody", "Crimson", "Golden", "Iron", "Salty", "Stormy", "Vengeful", "Wicked", "Ghostly"
+    };
+
+    // List of pirate-themed ship nouns
+    public string[] pirateShipNouns =
+    {
+        "Galleon", "Raven", "Corsair", "Buccaneer", "Leviathan", "Voyager", "Cutlass", "Siren", "Wraith", "Tempest"
+    };
+
     [Header("LoadScreen")]
 	[Tooltip("Button prefab for loads")]
     public GameObject buttonPrefab;
@@ -41,6 +52,9 @@ public class UITownManager : MonoBehaviour {
 
     [SerializeField]
     private TMP_Text selectedShipText;
+    
+    [SerializeField]
+    public TMP_InputField inputField;
 
     [SerializeField]
     private BoatType selectedBoatType = BoatType.Frigate;
@@ -97,6 +111,8 @@ public class UITownManager : MonoBehaviour {
         SetThemeColors();
         GameEvents.LoadGame();
         RefreshUi();
+
+        
     }
 
     private void OnDestroy()
@@ -164,9 +180,17 @@ public class UITownManager : MonoBehaviour {
 
     public void BuyBoat()
     {
-        Boat newBoat = new Boat("cool", selectedBoatType);
+        Boat newBoat = new Boat(inputField.text, selectedBoatType);
 
         Debug.Log($"Attempting to buy: {PlayerGlobal.money} : {newBoat.baseStats.boatCost}");
+
+        if (SceneTransfer.playerFleet.HasBoatWithName(inputField.text) || inputField.text.Length > inputField.characterLimit || inputField.text.Length < 3 || inputField.text.Contains("does not work"))
+        {
+            Debug.Log($"A boat named '{inputField.text}' already exists in your fleet.");
+            inputField.text = $"{inputField.text} does not work.";
+            return; // Exit the method to prevent purchase
+        }
+
         if (PlayerGlobal.BuyItem(newBoat.baseStats.boatCost))
         {
             SceneTransfer.playerFleet.AddBoat(newBoat);
@@ -184,6 +208,7 @@ public class UITownManager : MonoBehaviour {
         LoadBoatsSailor();
         LoadBoats();
         UpdateMoney();
+        RandomBoatName();
     }
     public void LoadBoatsSailor()
     {
@@ -279,6 +304,20 @@ public class UITownManager : MonoBehaviour {
 			StartCoroutine(LoadAsynchronously(scene));
 		}
 	}
+
+    public void RandomBoatName()
+    {
+        if (pirateAdjectives.Length > 0 && pirateShipNouns.Length > 0 && inputField != null)
+        {
+            string randomAdjective = pirateAdjectives[Random.Range(0, pirateAdjectives.Length)];
+            string randomNoun = pirateShipNouns[Random.Range(0, pirateShipNouns.Length)];
+            string pirateShipName = $"{randomAdjective} {randomNoun}";
+
+            inputField.text = pirateShipName;
+            Debug.Log("Assigned pirate-themed ship name: " + pirateShipName);
+        }
+
+    }
 
 
 	public void PlayHover(){

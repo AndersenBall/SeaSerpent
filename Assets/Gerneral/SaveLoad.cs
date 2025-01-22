@@ -8,7 +8,7 @@ using System;
 
 public class SaveLoad : MonoBehaviour
 {
-    private static string currentFolder = "New"; // Default save folder
+    private static string currentFolder = "Default"; // Default save folder
 
     public static void SetSaveFolder(string folder)
     {

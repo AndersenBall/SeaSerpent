@@ -40,7 +40,9 @@ public class FleetMapController : MonoBehaviour
         gameObject.name = "fleet" + fleet.FleetID;
         GameEvents.SaveInitiated += SaveNPCFleet;
         navAgent = gameObject.GetComponent<NavMeshAgent>();
-        navAgent.speed = fleet.CalculateSpeed();
+        (float fleetSpeed, float fleetAcceleration) = fleet.CalculateSpeed();
+        navAgent.speed = fleetSpeed;
+        navAgent.acceleration = fleetAcceleration;
         UpdateBoatNames();
     }
 
@@ -154,16 +156,9 @@ public class FleetMapController : MonoBehaviour
         }
     }
     public void UpdateBoatNames() {
-        boatNames = "";
-        boatNames += "FleetID: " + fleet.FleetID + "\n";
-        foreach (Boat b in fleet.GetBoats()) {
-            boatNames += b.boatName + " hp:" + b.GetBoatHealth() + " iteams: ";
-            foreach (KeyValuePair<string, int> iteam in b.getSupplies()) {
-                boatNames += iteam.Key + iteam.Value + ",";
-
-            }
-            boatNames += "\n";
-        }
+        
+        boatNames = fleet.ToString();
     }
+
     #endregion
 }

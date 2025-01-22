@@ -50,9 +50,11 @@ public class PlayerFleetMapController : MonoBehaviour
         PlayerGlobal.money = 5000000;
 
         BoatAILead.RemoveID(SceneTransfer.playerFleet.FleetID);
-        
-        navAgent.speed = SceneTransfer.playerFleet.CalculateSpeed();
-        
+
+        (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
+        navAgent.speed = fleetSpeed;
+        navAgent.acceleration = fleetAcceleration;
+
         UpdateBoatNames();
 
         meetShipUI = Canvas.transform.Find("MeetShip").GetComponent<MeetShipUI>();
@@ -107,17 +109,11 @@ public class PlayerFleetMapController : MonoBehaviour
     #region Developer methods
     public void UpdateBoatNames()
     {
-        boatNames = ""+ SceneTransfer.playerFleet.commander;
-        boatNames += " FleetID: " + SceneTransfer.playerFleet.FleetID+"\n";
-        boatNames += "Flag ship:" + PlayerGlobal.playerBoat.boatName + " hp:" + PlayerGlobal.playerBoat.GetBoatHealth();
-        boatNames += "\n";
-        foreach (Boat b in SceneTransfer.playerFleet.GetBoats()) {
-            boatNames += b.boatName + " hp:"+b.GetBoatHealth() +" iteams: ";
-            foreach (KeyValuePair<string, int> iteam in b.getSupplies()) {
-                boatNames += iteam.Key + iteam.Value + ",";
-            }
-            boatNames += "\n";
-        }
+
+        boatNames = "\nFlagship: " + PlayerGlobal.playerBoat.boatName +
+                     " | HP: " + PlayerGlobal.playerBoat.GetBoatHealth();
+        boatNames += SceneTransfer.playerFleet.ToString();
+
     }
 
     public void SaveFleet() 
@@ -133,7 +129,9 @@ public class PlayerFleetMapController : MonoBehaviour
         if (SaveLoad.SaveExists("Player")) {
             PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
             SceneTransfer.playerFleet = playerData.fleet;
-            navAgent.speed = SceneTransfer.playerFleet.CalculateSpeed();
+            (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
+            navAgent.speed = fleetSpeed;
+            navAgent.acceleration = fleetAcceleration;
             Vector3 targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
             gameObject.transform.position = targetPosition;
             navAgent.Warp(targetPosition);

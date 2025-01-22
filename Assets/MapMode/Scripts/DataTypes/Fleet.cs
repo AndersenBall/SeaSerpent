@@ -1,13 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
 public class Fleet 
 {
     public string commander;
+    public int FleetSizeLimit = 3;// how many boats someone can control before they get penalized
+
     public string Nationality = "British";
     public float fleetSpeed = 10;
+    public float fleetAcceleration = 10;
+    public float diminishingFactorSpeed = 1;
+    public float diminishingFactorAcceleration = 1;
+
+
     private List<Boat> boats = new List<Boat>();
     private int fleetID;
   
@@ -60,19 +68,53 @@ public class Fleet
         CalculateSpeed();
     }
 
-    public float CalculateSpeed() {
-        float total = 0;
-        int count = 0;
-         foreach(Boat boat in boats) {
-            total += boat.GetSpeed();
-             count += 1;
-        
-         }
-         fleetSpeed = 6*total / count;
-        
-         return fleetSpeed;
+    public bool HasBoatWithName(string name)
+    {
+        return boats.Exists(boat => boat.boatName == name); // Assuming Boat has a 'Name' property
     }
- 
+
+    public (float fleetSpeed, float fleetAcceleration) CalculateSpeed()
+    {
+        // Reset diminishing factor
+        diminishingFactorSpeed = 1;
+
+        // Calculate fleet penalty if over the size limit
+        int effectiveFleetPenaltySize = boats.Count - FleetSizeLimit;
+
+        if (effectiveFleetPenaltySize > 0)
+        {
+            diminishingFactorSpeed = Mathf.Max(0.1f, -Mathf.Pow(effectiveFleetPenaltySize / 16f, 2) + 1f);
+            diminishingFactorAcceleration = Mathf.Max(0.075f, -Mathf.Pow(effectiveFleetPenaltySize / 8f, 2) + 1f);
+        }
+
+        float slowestSpeed = float.MaxValue;
+        float slowestAcceleration = float.MaxValue;
+
+        // Determine the slowest speed and acceleration in the fleet
+        foreach (Boat boat in boats)
+        {
+            float boatSpeed = boat.baseStats.speed;
+            float boatAcceleration = boat.baseStats.turnSpeed; // Assume Boat class has a GetAcceleration method
+
+            if (boatSpeed < slowestSpeed)
+            {
+                slowestSpeed = boatSpeed;
+            }
+
+            if (boatAcceleration < slowestAcceleration)
+            {
+                slowestAcceleration = boatAcceleration;
+            }
+        }
+
+        // Calculate fleet speed and acceleration
+        fleetSpeed = 6 * slowestSpeed * diminishingFactorSpeed;
+        fleetAcceleration = 90 * slowestAcceleration * diminishingFactorAcceleration;
+
+        return (fleetSpeed, fleetAcceleration); // Return both as a tuple
+    }
+
+
     public string ItemBeingCarried() {
         foreach (Boat b in boats) {
             IDictionary<string, int> sup = b.getSupplies();
@@ -111,6 +153,21 @@ public class Fleet
         boats = b;
     }
 
-  
+    public override string ToString()
+    {
+        // Create a string representation of the boats
+        string boatsString = string.Join(", ", boats.Select(boat => boat.boatName));
+
+        // Construct the Fleet string
+        return $"Fleet Information:\n" +
+               $"- Commander: {commander}\n" +
+               $"- Nationality: {Nationality}\n" +
+               $"- Fleet Speed: {fleetSpeed:F2}\n" +
+               $"- Diminishing Factor: {diminishingFactorSpeed:F2}\n" +
+               $"- Diminishing Acc Factor: {diminishingFactorAcceleration:F2}\n" +
+               $"- Fleet Size Limit: {FleetSizeLimit}\n" +
+               $"- Boats: [{boatsString}]";
+    }
+
 
 }
