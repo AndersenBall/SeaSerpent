@@ -40,8 +40,6 @@ public class Town : MonoBehaviour
     [SerializeField]
     float[] consumptionAmount;
     
-    float timerOne = 0;
-    float timerTwo = 0;
 
     public GameObject prefabFleet;
     
@@ -97,19 +95,8 @@ public class Town : MonoBehaviour
     void Update()
     {
         UpdateDebugText();
-        timerOne += Time.deltaTime;
-        timerTwo += Time.deltaTime;
-        if (timerOne > 1) {
-            RunProduction();
-            //RequestGoods();
-            timerOne = 0;
-        }
-        //Verify if the timer is greater than delay:
-        if (timerTwo > 5) {
-            RequestGoods();
-            //SendOutFleet(MakeTradeFleet("sugar"), townManager.towns[1].transform);
-            timerTwo = 0;
-        }
+
+
     }
     #endregion
 
@@ -505,6 +492,7 @@ public class Town : MonoBehaviour
             productionAmount = productionAmount,
             consumptionAmount = consumptionAmount,
             nationality = nationality,
+            townDescription = townDescription,
             supplies = supplies,
             predictedSupplies = predictedSupplies,
             demand = demand,
@@ -523,6 +511,7 @@ public class Town : MonoBehaviour
             productionAmount = data.productionAmount;
             consumptionAmount = data.consumptionAmount;
             nationality = data.nationality;
+            townDescription = data.townDescription;
             supplies = data.supplies;
             predictedSupplies = data.predictedSupplies;
             demand = data.demand;
@@ -533,9 +522,6 @@ public class Town : MonoBehaviour
                 StartCoroutine( RestartExpected(id));
             }
         }
-
-        
-
 
     }
     private void OnDestroy()

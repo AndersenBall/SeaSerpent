@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 
 public class SaveLoad : MonoBehaviour
@@ -26,19 +26,27 @@ public class SaveLoad : MonoBehaviour
         string path = GetSaveDirectory();
         Directory.CreateDirectory(path);
 
-        BinaryFormatter formatter = new BinaryFormatter();
-        formatter.Binder = new PolymorphicBinder(); // Add support for polymorphic types
-
-        using (FileStream fileStream = new FileStream(path + key + ".txt", FileMode.Create))
+        var settings = new JsonSerializerSettings
         {
-            formatter.Serialize(fileStream, objectToSave);
-        }
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented,
+            ContractResolver = new DefaultContractResolver
+            {
+                DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic |
+                                        System.Reflection.BindingFlags.Public |
+                                        System.Reflection.BindingFlags.Instance
+            }
+        };
+
+        string json = JsonConvert.SerializeObject(objectToSave, settings);
+
+        File.WriteAllText(path + key + ".json", json);
         Debug.Log("Saved: " + key);
     }
 
     public static T Load<T>(string key)
     {
-        string path = GetSaveDirectory() + key + ".txt";
+        string path = GetSaveDirectory() + key + ".json";
 
         if (!File.Exists(path))
         {
@@ -46,15 +54,14 @@ public class SaveLoad : MonoBehaviour
             return default;
         }
 
-        BinaryFormatter formatter = new BinaryFormatter();
-        formatter.Binder = new PolymorphicBinder(); // Add support for polymorphic types
+        string json = File.ReadAllText(path);
 
-        T returnValue;
-
-        using (FileStream fileStream = new FileStream(path, FileMode.Open))
+        var settings = new JsonSerializerSettings
         {
-            returnValue = (T)formatter.Deserialize(fileStream);
-        }
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
+        T returnValue = JsonConvert.DeserializeObject<T>(json, settings);
 
         Debug.Log("Loaded: " + key);
         return returnValue;
@@ -62,7 +69,7 @@ public class SaveLoad : MonoBehaviour
 
     public static void DeleteSave(string key)
     {
-        string path = GetSaveDirectory() + key + ".txt";
+        string path = GetSaveDirectory() + key + ".json";
         if (SaveExists(key))
         {
             File.Delete(path);
@@ -76,7 +83,7 @@ public class SaveLoad : MonoBehaviour
 
     public static bool SaveExists(string key)
     {
-        string path = GetSaveDirectory() + key + ".txt";
+        string path = GetSaveDirectory() + key + ".json";
         return File.Exists(path);
     }
 
@@ -89,19 +96,5 @@ public class SaveLoad : MonoBehaviour
         }
         Directory.CreateDirectory(path);
         Debug.Log("All save files deleted.");
-    }
-
-    // Custom binder to support polymorphic serialization
-    private sealed class PolymorphicBinder : SerializationBinder
-    {
-        public override Type BindToType(string assemblyName, string typeName)
-        {
-            var type = Type.GetType($"{typeName}, {assemblyName}");
-            if (type == null)
-            {
-                Debug.LogError($"Failed to bind type: {typeName}, {assemblyName}");
-            }
-            return type;
-        }
     }
 }
