@@ -116,22 +116,31 @@ public class PlayerFleetMapController : MonoBehaviour
 
     }
 
-    public void SaveFleet() 
+    public void SaveFleet()
     {
-        PlayerFleetData saveFleet = new PlayerFleetData();
-        saveFleet.fleet = SceneTransfer.playerFleet;
-        Vector3 place = gameObject.transform.position;
-        saveFleet.pos = new float[] { place.x, place.y, place.z };
+        SceneTransfer.playerFleet.CalculateSpeed();
+        PlayerFleetData saveFleet = new PlayerFleetData
+        {
+            fleet = SceneTransfer.playerFleet, 
+            pos = new float[] 
+            {
+            transform.position.x,
+            transform.position.y,
+            transform.position.z
+            }
+        };
         SaveLoad.Save(saveFleet, "Player");
+        Debug.Log("Player Fleet saved successfully.");
     }
     public void LoadFleet()
     {
         if (SaveLoad.SaveExists("Player")) {
             PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
+            
             SceneTransfer.playerFleet = playerData.fleet;
-            (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
-            navAgent.speed = fleetSpeed;
-            navAgent.acceleration = fleetAcceleration;
+
+            navAgent.speed = SceneTransfer.playerFleet.fleetSpeed;
+            navAgent.acceleration = SceneTransfer.playerFleet.fleetAcceleration;
             Vector3 targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
             gameObject.transform.position = targetPosition;
             navAgent.Warp(targetPosition);

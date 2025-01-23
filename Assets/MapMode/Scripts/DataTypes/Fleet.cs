@@ -15,17 +15,16 @@ public class Fleet
     public float diminishingFactorSpeed = 1;
     public float diminishingFactorAcceleration = 1;
 
-
+    [SerializeField]
     private List<Boat> boats = new List<Boat>();
-    private int fleetID;
-  
 
-    public int FleetID { get { return fleetID; } }
+    public int FleetID { get; private set; }
+
 
     public Fleet(string Natio,string command) {
         Nationality = Natio;
         commander = command;
-        fleetID = BoatAILead.AssignID();
+        FleetID = BoatAILead.AssignID();
     }
 
     public int getNumberBoats() {
@@ -47,7 +46,6 @@ public class Fleet
             if (a.boatName == b.boatName) {
                 toRemove = a;
                 Debug.Log("boat removed. Fleet:" + commander + " boat:" + b.boatName);
-                CalculateSpeed();
                 break;
             }
         }
