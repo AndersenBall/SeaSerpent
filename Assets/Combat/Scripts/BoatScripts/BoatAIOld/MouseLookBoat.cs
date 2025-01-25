@@ -10,6 +10,8 @@ public class MouseLookBoat : MonoBehaviour
     public Transform playerBody;
     public Transform lookLocation;
     public Camera cam;
+    public BoatAI boatAi;
+
     private float mouseX;
     private float mouseY;
     private float xRotation = 0f;
@@ -68,6 +70,12 @@ public class MouseLookBoat : MonoBehaviour
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask)){
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 cam.fieldOfView = ZoomToTarget(hit.distance);
+                Debug.Log("hit: " + hit.transform.gameObject.layer);
+                if (hit.transform.GetComponentInParent<BoatAI>() != null && hit.transform.gameObject.layer == LayerMask.NameToLayer("Team2"))
+                {
+                    boatAi.targetEnemy = hit.transform.GetComponentInParent<BoatAI>();
+                }
+                
             } else{
                 if (cam.fieldOfView < 70) {
                     cam.fieldOfView = 80;

@@ -993,7 +993,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 362572918}
-  - component: {fileID: 362572919}
   - component: {fileID: 362572920}
   m_Layer: 10
   m_Name: CameraWrapper
@@ -1018,19 +1017,6 @@ Transform:
   - {fileID: 608410681497060665}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &362572919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362572917}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4db47d14c1acad04a9043c4905e658bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 7804811554085121173}
 --- !u!114 &362572920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2322,6 +2308,7 @@ MonoBehaviour:
   playerBody: {fileID: 8170715022971959208}
   lookLocation: {fileID: 0}
   cam: {fileID: 0}
+  boatAi: {fileID: 0}
 --- !u!1 &840777601
 GameObject:
   m_ObjectHideFlags: 0
@@ -2627,6 +2614,7 @@ MonoBehaviour:
   playerBody: {fileID: 362572918}
   lookLocation: {fileID: 2421843088458175631}
   cam: {fileID: 0}
+  boatAi: {fileID: 0}
 --- !u!1001 &925381863
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6123,6 +6111,7 @@ GameObject:
   - component: {fileID: 913511133}
   - component: {fileID: 913511139}
   - component: {fileID: 2325094822611616359}
+  - component: {fileID: 3916598212442531245}
   m_Layer: 10
   m_Name: BoatCam
   m_TagString: MainCamera
@@ -11074,6 +11063,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gui: 1
+--- !u!81 &3916598212442531245
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608410681497060670}
+  m_Enabled: 0
 --- !u!114 &3935029401129213905
 MonoBehaviour:
   m_ObjectHideFlags: 0

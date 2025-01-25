@@ -33,6 +33,7 @@ public class HUDController : MonoBehaviour
         firstPersonCamera.enabled = false;
         mapCamera.enabled = false;
         overheadCamera.enabled = true;
+
     }
 
     public void ShowMapView()
