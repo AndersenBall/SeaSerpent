@@ -56,6 +56,9 @@ public class UITownManager : MonoBehaviour {
     [SerializeField]
     public TMP_InputField inputField;
 
+    [Tooltip("The list of player ships to select from")]
+    public GameObject playerBoats;
+
     [SerializeField]
     private BoatType selectedBoatType = BoatType.Frigate;
 
@@ -75,10 +78,10 @@ public class UITownManager : MonoBehaviour {
     [SerializeField]
     private Boat selectedPlayerShip { get; set; }
 
-    [Tooltip("The list of ships to select from")]
+    [Tooltip("The list of sailors to select from")]
     public GameObject sailorSelect;
 
-    [Tooltip("The list of ships to select from")]
+    [Tooltip("The list of player ships to select from")]
     public GameObject sailorBoatInsertSelect;
 
     [SerializeField]
@@ -219,7 +222,41 @@ public class UITownManager : MonoBehaviour {
         LoadSailors();
         UpdateMoney();
         RandomBoatName();
+        LoadBoatsPlayer();
     }
+
+    public void LoadBoatsPlayer()
+    {
+        Transform verticalLayoutParent = playerBoats.transform.Find("VerticalLayout");
+
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+        // Iterate through the boats in the playerFleet
+        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats())
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + boat.boatName;
+
+            // Set the button text to the boat name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+
+            buttonText.text = $"{boat.boatName} ({boat.GetSailors().Count}/{boat.baseStats.maxSailorCount} sailors)";
+
+
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnBoatButtonClickedSailor(boat));
+            }
+        }
+    }
+
+
+
     public void LoadBoatsSailor()
     {
         Transform verticalLayoutParent = sailorBoatInsertSelect.transform.Find("VerticalLayout");
@@ -362,7 +399,7 @@ public class UITownManager : MonoBehaviour {
         {
             int sailorCost = selectedSailor.SailorStats.baseCost;
 
-            if (PlayerGlobal.BuyItem(sailorCost))
+            if (PlayerGlobal.BuyItem(sailorCost) && selectedPlayerShip.sailors.Count < selectedPlayerShip.maxSailorCount )
             {
                 selectedPlayerShip.AddSailor(selectedSailor);
                 Debug.Log($"Added {selectedSailor.Name} to {selectedPlayerShip.boatName}. Cost: {sailorCost}");
