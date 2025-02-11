@@ -1,34 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Sailor
 {
-    public string name { get; private set; }
-    public int hp { get; private set; }
+    public string Name { get; private set; }
+    public SailorStats SailorStats { get; private set; }
 
-    List<string> weapons;
-    public int moveSpeed { get; private set; }
-    public int cannonReloadSpeed { get; private set; }
-    public int sailorStrength { get; private set; }
-    public Sailor(string n)
+    public Sailor(string n, SailorType type)
     {
-        name = n;
-        hp = 10;
-        weapons = new List<string>();
-        cannonReloadSpeed = 5;
-        moveSpeed = 5;
+        Name = n;
 
-        sailorStrength = 5;
+        // Fetch stats from the database
+        if (SailorStatsDatabase.BaseStats.TryGetValue(type, out SailorStats stats))
+        {
+            SailorStats = stats;
+        }
+        else
+        {
+            Debug.LogError($"No stats found for SailorType {type}");
+            
+        }
     }
-    public Sailor(int h, List<string> weap, int move, int reload, int sail)
+
+    public override string ToString()
     {
-        name = "base";
-        hp = h;
-        weapons = weap;
-        cannonReloadSpeed = reload;
-        moveSpeed = move;
-        sailorStrength = sail;
+        return $"name: {Name}" + SailorStats.ToString();
     }
 }

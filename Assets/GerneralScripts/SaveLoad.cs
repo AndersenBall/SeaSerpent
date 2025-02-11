@@ -58,7 +58,13 @@ public class SaveLoad : MonoBehaviour
 
         var settings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
+            ContractResolver = new DefaultContractResolver
+            {
+                DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic |
+                                        System.Reflection.BindingFlags.Public |
+                                        System.Reflection.BindingFlags.Instance
+            }
         };
 
         T returnValue = JsonConvert.DeserializeObject<T>(json, settings);

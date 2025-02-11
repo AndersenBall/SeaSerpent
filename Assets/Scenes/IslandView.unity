@@ -805,6 +805,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: nationality
+      value: England
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: townDescription
       value: This is the town descriptionsnskdnejkwnfwefjkwenfwejfknewfnweonfiweonalejflfjkenw
         crnjenjrkelnjt crenejrklrjtnrelktnrketnklc t erjklnrktj cntjkerlntjkrntc
@@ -23669,6 +23674,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townDescription
+      value: Town1 dwnjefjnew jbgjr fnewjlfnj ewnwejljf enjkewnjkf nejkwnfje fnewf
+        jkewnfkjew fnkjwenfjwekfn kjwe fnwefnjkwenfwejnf jwefjkwefw.
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: productionAmount.Array.data[3]
       value: 1
       objectReference: {fileID: 0}
@@ -25580,6 +25591,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: fbd62b85b632cc541ad78d0a775f955f,
         type: 3}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: nationality
+      value: Spain
+      objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: townDescription

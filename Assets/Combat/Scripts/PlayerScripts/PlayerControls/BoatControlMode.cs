@@ -25,6 +25,8 @@ public class BoatControlMode : ControlMode
         characterPositionInterface.SetFirstPerControllerActive(false);
         hud.ShowOverheadView();
         mouseLook.enabled = true;
+        mouseLook.GetComponent<AudioListener>().enabled = true;
+        mouseLook.boatAi = boatControls.GetComponent<BoatAI>();
     }
 
     public override void UpdateMode()
@@ -56,6 +58,7 @@ public class BoatControlMode : ControlMode
         Debug.Log("Exited Boat Control Mode");
         boatControls.SetIsPlayerDriving(false);
         mouseLook.enabled = false;
+        mouseLook.GetComponent<AudioListener>().enabled = false;
 
     }
 }

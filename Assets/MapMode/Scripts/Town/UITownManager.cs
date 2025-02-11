@@ -40,8 +40,8 @@ public class UITownManager : MonoBehaviour {
     [Tooltip("The Menu for when the MAIN menu buttons")]
     public GameObject mainMenu;
 
- 
     public enum Theme {custom1, custom2, custom3};
+
     [Header("Ship Select")]
 
     [Tooltip("The list of ships to select from")]
@@ -56,6 +56,9 @@ public class UITownManager : MonoBehaviour {
     [SerializeField]
     public TMP_InputField inputField;
 
+    [Tooltip("The list of player ships to select from")]
+    public GameObject playerBoats;
+
     [SerializeField]
     private BoatType selectedBoatType = BoatType.Frigate;
 
@@ -66,20 +69,29 @@ public class UITownManager : MonoBehaviour {
 
     [Header("Sailor Select")]
 
-    [Tooltip("The list of ships to select from")]
+    [SerializeField]
+    private Sailor selectedSailor;
+
+    [SerializeField]
+    private SailorType selectedSailorType = SailorType.Gunner;
+
+    [SerializeField]
+    private Boat selectedPlayerShip { get; set; }
+
+    [Tooltip("The list of sailors to select from")]
     public GameObject sailorSelect;
 
-    [Tooltip("The list of ships to select from")]
+    [Tooltip("The list of player ships to select from")]
     public GameObject sailorBoatInsertSelect;
 
     [SerializeField]
     private TMP_Text moneyFieldSailor;
 
     [SerializeField]
-    private BoatType selectedSailor = BoatType.Frigate;
+    private TMP_Text selectedSailorField;
 
     [SerializeField]
-    private TMP_Text selectedSailorField;
+    private TMP_Text selectedSailorDescription;
 
     [Header("THEME SETTINGS")]
     public Theme theme;
@@ -207,9 +219,44 @@ public class UITownManager : MonoBehaviour {
     public void RefreshUi() {
         LoadBoatsSailor();
         LoadBoats();
+        LoadSailors();
         UpdateMoney();
         RandomBoatName();
+        LoadBoatsPlayer();
     }
+
+    public void LoadBoatsPlayer()
+    {
+        Transform verticalLayoutParent = playerBoats.transform.Find("VerticalLayout");
+
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+        // Iterate through the boats in the playerFleet
+        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats())
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + boat.boatName;
+
+            // Set the button text to the boat name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+
+            buttonText.text = $"{boat.boatName} ({boat.GetSailors().Count}/{boat.baseStats.maxSailorCount} sailors)";
+
+
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnBoatButtonClickedSailor(boat));
+            }
+        }
+    }
+
+
+
     public void LoadBoatsSailor()
     {
         Transform verticalLayoutParent = sailorBoatInsertSelect.transform.Find("VerticalLayout");
@@ -243,6 +290,7 @@ public class UITownManager : MonoBehaviour {
     private void OnBoatButtonClickedSailor(Boat boat)
     {
         Debug.Log($"Selected boat: {boat.boatName}");
+        selectedPlayerShip = boat;
         
     }
 
@@ -290,6 +338,86 @@ public class UITownManager : MonoBehaviour {
         //TODO change the current modal bing displayed 
     }
 
+    public void LoadSailors()
+    {
+
+        Transform verticalLayoutParent = sailorSelect.transform.Find("VerticalLayout");
+
+        // Clear existing buttons
+        foreach (Transform child in verticalLayoutParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (SailorType sailorType in System.Enum.GetValues(typeof(SailorType)))
+        {
+            // Create a new button
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + sailorType;
+
+            // Set the button text to the sailor type name
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = sailorType.ToString();
+            }
+
+            // Optionally, add a click listener to the button
+            Button button = newButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnSailorTypeButtonClicked(sailorType));
+            }
+        }
+    }
+
+
+    private void OnSailorTypeButtonClicked(SailorType sailorType)
+    {
+        Debug.Log($"Selected sailor type: {sailorType}");
+        selectedSailorType = sailorType;
+        selectedSailorField.text = sailorType.ToString().ToUpper();
+
+        if (SailorStatsDatabase.BaseStats.TryGetValue(sailorType, out SailorStats stats))
+        {
+            selectedSailor = new Sailor("DefaultName", sailorType);
+            Debug.Log(selectedSailor.ToString());
+
+            selectedSailorDescription.text = selectedSailor.ToString();
+        }
+        else
+        {
+            Debug.LogError($"No stats found for SailorType {sailorType}");
+        }
+
+        // TODO: Change the current modal being displayed (if applicable)
+    }
+
+    public void AddSailorToSelectedShip()
+    {
+        if (selectedSailor != null && selectedPlayerShip != null)
+        {
+            int sailorCost = selectedSailor.SailorStats.baseCost;
+
+            if (PlayerGlobal.BuyItem(sailorCost) && selectedPlayerShip.sailors.Count < selectedPlayerShip.maxSailorCount )
+            {
+                selectedPlayerShip.AddSailor(selectedSailor);
+                Debug.Log($"Added {selectedSailor.Name} to {selectedPlayerShip.boatName}. Cost: {sailorCost}");
+                LoadBoatsSailor();
+                GameEvents.SaveGame();
+                RefreshUi();
+            }
+            else
+            {
+                Debug.LogWarning("Not enough money to buy the sailor.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No sailor or ship selected to add the sailor to.");
+        }
+    }
+
 
     public void PlayCampaignMobile(){
 
@@ -334,6 +462,7 @@ public class UITownManager : MonoBehaviour {
 
     public void UpdateMoney() { 
         moneyField.text = "Gold: " + PlayerGlobal.money;
+        moneyFieldSailor.text = "Gold: " + PlayerGlobal.money;
     }
 
     public void Position2()

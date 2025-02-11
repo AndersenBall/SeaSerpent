@@ -11,15 +11,15 @@ public class Boat
     public string boatName;
     public BoatType boatType { get; private set; }
     public BoatStats baseStats { get; private set; }
-    float boatSpeed;
-    float turnSpeed;
-    int boatHealth;
+    public float boatSpeed { get; private set; }
+    public float turnSpeed { get; private set; }
+    public int boatHealth { get; private set; }
 
-    int cargoCurrent = 0;
-    int cargoMax;
-    IDictionary<string, int> supplies = new Dictionary<string,int>();
-    List<Sailor> sailors = new List<Sailor>();
-    int maxSailorCount;
+    public int cargoCurrent { get; private set; } = 0;
+    public int cargoMax { get; private set; }
+    public IDictionary<string, int> supplies = new Dictionary<string,int>();
+    public List<Sailor> sailors = new List<Sailor>();
+    public int maxSailorCount { get; private set; }
 
 
     public Boat(string name, BoatType type)
@@ -36,8 +36,8 @@ public class Boat
             boatHealth = boatStats.health;
             cargoMax = boatStats.cargoMax;
             maxSailorCount = boatStats.maxSailorCount;
-            AddSailor(new Sailor("tom"));
-            AddSailor(new Sailor("jerry"));
+            AddSailor(new Sailor("tom",SailorType.Gunner));
+            AddSailor(new Sailor("jerry", SailorType.Gunner));
 
         }
         else
