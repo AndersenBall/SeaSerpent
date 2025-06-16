@@ -14,7 +14,7 @@ public class FaceAtCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (currentCameraTransform != null && currentCameraTransform.GetComponent<Camera>()?.enabled == true)
+        if (currentCameraTransform is not null && currentCameraTransform.GetComponent<Camera>()?.enabled == true)
         {
             transform.LookAt(transform.position + currentCameraTransform.rotation * Vector3.forward,
                              currentCameraTransform.rotation * Vector3.up);
@@ -30,11 +30,9 @@ public class FaceAtCamera : MonoBehaviour
         // Find the active camera in Display 1
         foreach (Camera cam in Camera.allCameras)
         {
-            if (cam != null && cam.targetDisplay == 0 && cam.enabled) // Check for not null and enabled
-            {
-                currentCameraTransform = cam.transform;
-                return;
-            }
+            if (cam is null || cam.targetDisplay != 0 || !cam.enabled) continue; // Check for not null and enabled
+            currentCameraTransform = cam.transform;
+            return;
         }
 
         Debug.LogWarning("No active camera found in Display 1!");
