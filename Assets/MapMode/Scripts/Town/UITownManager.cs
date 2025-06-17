@@ -465,15 +465,21 @@ public class UITownManager : MonoBehaviour {
         moneyFieldSailor.text = "Gold: " + PlayerGlobal.money;
     }
 
+    public void PositionDock()
+    {
+
+        CameraObject.SetFloat("Animate", 2);
+    }
+    
     public void Position2()
     {
 
-        CameraObject.SetFloat("Animate", 1);
+        CameraObject.SetFloat("Animate", 0);
     }
 
     public void Position1()
     {
-        CameraObject.SetFloat("Animate", 0);
+        CameraObject.SetFloat("Animate", 1);
     }
 
 
