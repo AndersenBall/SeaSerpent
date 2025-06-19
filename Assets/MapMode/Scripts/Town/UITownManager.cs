@@ -11,6 +11,7 @@ using static PlayerFleetMapController;
 
 
 public class UITownManager : MonoBehaviour {
+    private static readonly int Animate = Animator.StringToHash("Animate");
 
     #region Variables
 
@@ -468,18 +469,18 @@ public class UITownManager : MonoBehaviour {
     public void PositionDock()
     {
 
-        CameraObject.SetFloat("Animate", 2);
+        CameraObject.SetFloat(Animate, 2);
     }
     
-    public void Position2()
+    public void TavernCamView()
     {
 
-        CameraObject.SetFloat("Animate", 0);
+        CameraObject.SetFloat(Animate, 1);
     }
 
-    public void Position1()
+    public void ShipyardCamView()
     {
-        CameraObject.SetFloat("Animate", 1);
+        CameraObject.SetFloat(Animate, 0);
     }
 
 
