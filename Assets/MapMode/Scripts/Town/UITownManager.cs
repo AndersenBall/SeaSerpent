@@ -217,6 +217,10 @@ public class UITownManager : MonoBehaviour {
         }
     }
 
+    public void SellBoat()
+    {
+    }
+
     public void RefreshUi() {
         LoadBoatsSailor();
         LoadBoats();
@@ -294,8 +298,6 @@ public class UITownManager : MonoBehaviour {
         selectedPlayerShip = boat;
         PositionDock();
     }
-
-
 
     public void LoadBoats()
     {
@@ -404,7 +406,6 @@ public class UITownManager : MonoBehaviour {
             {
                 selectedPlayerShip.AddSailor(selectedSailor);
                 Debug.Log($"Added {selectedSailor.Name} to {selectedPlayerShip.boatName}. Cost: {sailorCost}");
-                LoadBoatsSailor();
                 GameEvents.SaveGame();
                 RefreshUi();
             }
@@ -417,6 +418,11 @@ public class UITownManager : MonoBehaviour {
         {
             Debug.LogWarning("No sailor or ship selected to add the sailor to.");
         }
+    }
+
+    public void SellSailor()
+    {
+        
     }
 
 
