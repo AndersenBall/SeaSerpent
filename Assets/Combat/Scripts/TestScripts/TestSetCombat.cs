@@ -17,6 +17,10 @@ public class TestSetCombat : MonoBehaviour
         }
         PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
         PlayerGlobal.playerBoat.SetBoatHealth(110);
+        PlayerGlobal.playerBoat.AddSailor(new Sailor("tod",SailorType.Gunner));
+        PlayerGlobal.playerBoat.AddSailor(new Sailor("tod",SailorType.Gunner));
+        PlayerGlobal.playerBoat.AddSailor(new Sailor("tod",SailorType.Gunner));
+        PlayerGlobal.playerBoat.AddSailor(new Sailor("tod",SailorType.Gunner));
 
         Fleet enemFleet = new Fleet("france", "loser");
         for (int i=0; i< enemyShipNumber; i++){
