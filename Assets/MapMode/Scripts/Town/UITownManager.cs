@@ -292,7 +292,7 @@ public class UITownManager : MonoBehaviour {
     {
         Debug.Log($"Selected boat: {boat.boatName}");
         selectedPlayerShip = boat;
-        
+        PositionDock();
     }
 
 
