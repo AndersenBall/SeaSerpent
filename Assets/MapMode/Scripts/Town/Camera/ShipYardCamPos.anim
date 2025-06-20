@@ -19,7 +19,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -0.95400006, y: 72.325005, z: 358.345}
+        value: {x: -0.95400006, y: 72.325005, z: 0}
         inSlope: {x: 0, y: -30.15538, z: 0}
         outSlope: {x: 0, y: -30.15538, z: 0}
         tangentMode: 0
@@ -28,16 +28,16 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.21363637, z: 0.33333334}
       - serializedVersion: 3
         time: 0.28333333
-        value: {x: -0.6698574, y: 40.008656, z: 358.83792}
-        inSlope: {x: 1.6870482, y: -238.16496, z: 2.9266875}
-        outSlope: {x: 1.6870482, y: -238.16496, z: 2.9266875}
+        value: {x: -0.6698574, y: 40.008656, z: 0}
+        inSlope: {x: 1.6870482, y: -238.16496, z: 0}
+        outSlope: {x: 1.6870482, y: -238.16496, z: 0}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.10984848, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.055252552, z: 0.33333334}
       - serializedVersion: 3
         time: 0.78333336
-        value: {x: 0, y: 0, z: 360}
+        value: {x: 0, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -207,17 +207,8 @@ AnimationClip:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 358.345
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
         time: 0.78333336
-        value: 360
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -352,7 +343,7 @@ AnimationClip:
     path: 
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   - serializedVersion: 2
     curve:
       serializedVersion: 2
@@ -364,7 +355,7 @@ AnimationClip:
     path: 
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   - serializedVersion: 2
     curve:
       serializedVersion: 2
@@ -376,7 +367,7 @@ AnimationClip:
     path: 
     classID: 4
     script: {fileID: 0}
-    flags: 16
+    flags: 0
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_Events: []
