@@ -21,7 +21,11 @@ public class Boat
     public List<Sailor> sailors = new List<Sailor>();
     public int maxSailorCount { get; private set; }
 
+    public Hull hull { get; private set; }
+    public Sails sails { get; private set; }
+    public Cannon cannon { get; private set; }
 
+    
     public Boat(string name, BoatType type)
     {
         boatName = name;
@@ -31,19 +35,54 @@ public class Boat
         if (BoatStatsDatabase.BaseStats.TryGetValue(type, out BoatStats boatStats))
         {
             baseStats = boatStats;
-            boatSpeed = boatStats.speed;
-            turnSpeed = boatStats.turnSpeed;
-            boatHealth = boatStats.health;
-            cargoMax = boatStats.cargoMax;
-            maxSailorCount = boatStats.maxSailorCount;
+            RecalculateStats();
             AddSailor(new Sailor("tom",SailorType.Gunner));
             AddSailor(new Sailor("jerry", SailorType.Gunner));
-
         }
         else
         {
             Debug.LogError($"No stats found for BoatType {type}");
         }
+    }
+
+    public void SetHull(Hull newHull)
+    {
+        hull = newHull;
+        RecalculateStats();
+    }
+
+    public void SetSails(Sails newSails)
+    {
+        sails = newSails;
+        RecalculateStats();
+    }
+
+    public void SetCannon(Cannon newCannon)
+    {
+        cannon = newCannon;
+        RecalculateStats();
+    }
+
+    private void RecalculateStats()
+    {
+        BoatStats modifiedStats = new BoatStats(
+            baseStats.speed,
+            baseStats.turnSpeed,
+            baseStats.health,
+            baseStats.cargoMax,
+            baseStats.maxSailorCount,
+            baseStats.boatCost
+        );
+
+        if (hull != null) hull.ApplyEffect(modifiedStats);
+        if (sails != null) sails.ApplyEffect(modifiedStats);
+        if (cannon != null) cannon.ApplyEffect(modifiedStats);
+
+        boatSpeed = modifiedStats.speed;
+        turnSpeed = modifiedStats.turnSpeed;
+        boatHealth = modifiedStats.health;
+        cargoMax = modifiedStats.cargoMax;
+        maxSailorCount = modifiedStats.maxSailorCount;
     }
 
 
