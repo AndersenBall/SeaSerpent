@@ -144,6 +144,14 @@ public class Boat
     public void AddSailor(Sailor s) {
         sailors.Add(s);
     }
+
+    public bool RemoveSailor(Sailor sailor) {
+        if (sailors.Contains(sailor)) {
+            sailors.Remove(sailor);
+            return true;
+        }
+        return false;
+    }
     public List<Sailor> GetSailors() {
         return sailors;
     }

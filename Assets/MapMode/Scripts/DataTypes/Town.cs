@@ -57,6 +57,7 @@ public class Town : MonoBehaviour
     public List<Fleet> dockedFleets = new List<Fleet>();
 
     private TownInfoUI townUI;
+    private float _productionTimer=0;
 
     #endregion
 
@@ -94,9 +95,16 @@ public class Town : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         UpdateDebugText();
-
-
+        
+        _productionTimer += Time.deltaTime; 
+        if (_productionTimer >= 1f)
+        {
+            RequestGoods();
+            RunProduction();
+            _productionTimer = 0f;
+        }
     }
     #endregion
 
@@ -142,7 +150,7 @@ public class Town : MonoBehaviour
     }
 
     private void RequestGoods() {
-        List<(float, string)> mostNeeded = MostNeededItems();// FIND LARGEST IF FAIL ON REQUEST GO TO NEXT
+        List<(float, string)> mostNeeded = MostNeededItems();
         int amountWant = 0;
         foreach ((float, string) itemToRequest in mostNeeded) {
             if(!ItemAlreadyRequested(itemToRequest)) { continue; }
