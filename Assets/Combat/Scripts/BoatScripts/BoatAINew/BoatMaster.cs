@@ -64,21 +64,24 @@ public class BoatMaster : MonoBehaviour
 
     private void SpawnBoats()
     {
-        if (SceneTransfer.playerFleet != null) {
-            foreach (Boat b in SceneTransfer.playerFleet.GetBoats()) {
-                foreach (BoatTeamManager boatTeam in boatTeamManagers) {
-                    if (1 == boatTeam.GetTeam()) {
-                        Debug.Log("team:" + boatTeam.GetTeam());
-                        boatTeam.SpawnBoat(b);
-                    }
+        
+        if (SceneTransfer.playerFleet?.GetBoats() != null) {
+            var teamOneBoatTeam = boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == 1);
+            var boats = SceneTransfer.playerFleet.GetBoats();
+            int flagshipIndex = boats.FindIndex(boat => boat.boatName == SceneTransfer.playerFleet.FlagShip);
+
+            for (int i = 0; i < boats.Count; i++) {
+                if (i == flagshipIndex || (flagshipIndex == -1 && i == 0)) {
+                    // Spawn the flagship or, if no flagship is found, the first boat as player-controlled
+                    teamOneBoatTeam.SpawnPlayerBoat(boats[i]);
+                } else {
+                    // Spawn all other boats
+                    teamOneBoatTeam.SpawnBoat(boats[i]);
                 }
+                Debug.Log("team:" + teamOneBoatTeam.GetTeam());
             }
         }
-        foreach (BoatTeamManager boatTeam in boatTeamManagers) {
-            if (1 == boatTeam.GetTeam()) {
-                boatTeam.SpawnPlayerBoat(PlayerGlobal.playerBoat);
-            }
-        }
+        
         if (SceneTransfer.enemyFleet != null) {
             foreach (Boat b in SceneTransfer.enemyFleet.GetBoats()) {
                 foreach (BoatTeamManager boatTeam in boatTeamManagers) {

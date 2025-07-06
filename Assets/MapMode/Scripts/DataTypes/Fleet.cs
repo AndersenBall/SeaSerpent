@@ -9,6 +9,7 @@ public class Fleet
     public string commander;
     public int FleetSizeLimit = 3;// how many boats someone can control before they get penalized
 
+    public string FlagShip = "None";
     public string Nationality = "British";
     public float fleetSpeed = 10;
     public float fleetAcceleration = 10;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -43,10 +44,8 @@ public class PlayerFleetMapController : MonoBehaviour
         //UpdateBoatNames();
         SceneTransfer.playerFleet = new Fleet("House Of Ball","Andersen");
         SceneTransfer.playerFleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
-        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger3", BoatType.Frigate));
-        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger4", BoatType.Frigate));
         SceneTransfer.playerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
-        PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
+
         PlayerGlobal.money = 5000000;
 
         BoatAILead.RemoveID(SceneTransfer.playerFleet.FleetID);
@@ -109,9 +108,6 @@ public class PlayerFleetMapController : MonoBehaviour
     #region Developer methods
     public void UpdateBoatNames()
     {
-
-        boatNames = "\nFlagship: " + PlayerGlobal.playerBoat.boatName +
-                     " | HP: " + PlayerGlobal.playerBoat.GetBoatHealth();
         boatNames += SceneTransfer.playerFleet.ToString();
 
     }
