@@ -9,6 +9,7 @@ using UnityEngine;
 [System.Serializable]
 public class Boat
 {
+    #region Properties
     public string boatName;
     public BoatType boatType { get; private set; }
     public BoatStats baseStats { get; private set; }
@@ -25,8 +26,9 @@ public class Boat
     public Hull hull { get; private set; }
     public Sails sails { get; private set; }
     public Cannon cannon { get; private set; }
+    #endregion
 
-    
+    #region Constructor
     public Boat(string name, BoatType type)
     {
         boatName = name;
@@ -45,7 +47,9 @@ public class Boat
             Debug.LogError($"No stats found for BoatType {type}");
         }
     }
+    #endregion
 
+    #region Component Management
     public void SetHull(Hull newHull)
     {
         hull = newHull;
@@ -85,8 +89,9 @@ public class Boat
         cargoMax = modifiedStats.cargoMax;
         maxSailorCount = modifiedStats.maxSailorCount;
     }
+    #endregion
 
-
+    #region Cargo Management 
     public int AddCargo(string item, int amount)
     {
         if (amount + cargoCurrent <= cargoMax) {
@@ -99,10 +104,8 @@ public class Boat
             }
             
             return amount;
-            //Debug.Log(boatName+"loaded :" + item + " amount: " + amount);
         }
         else {
-            //Debug.Log(boatName + "can not hold " + amount + "of " + item + "added: " + (cargoMax - cargoCurrent));
             cargoCurrent += cargoMax - cargoCurrent;
             supplies.Add(item, cargoMax - cargoCurrent);
             if (supplies.ContainsKey(item)) {
@@ -113,14 +116,13 @@ public class Boat
             }
             return cargoMax - cargoCurrent;
         }
-        
     }
+
     public int RemoveCargo(string item, int amount) {
         if (supplies.ContainsKey(item)) { 
             if (supplies[item] - amount >= 0) {
                 cargoCurrent -= amount;
                 supplies[item] -= amount; 
-                //Debug.Log(boatName + "removed :" + item + " amount: " + amount);
                 return amount;
             }
             else {
@@ -134,14 +136,19 @@ public class Boat
         Debug.Log("invalid item to remove: " + item);
         return 0;
     }
+    #endregion
+
+    #region Getters
     public IDictionary<string, int> getSupplies() {
         return supplies;
-        
     }
     public float GetSpeed() {return boatSpeed; }
     public float GetTurnSpeed() { return turnSpeed; }
     public int GetCargoMax(){ return cargoMax; }
     public int GetCargoCurrent() { return cargoCurrent; }
+    #endregion
+
+    #region Crew Management
     public void AddSailor(Sailor s) {
         sailors.Add(s);
     }
@@ -153,9 +160,13 @@ public class Boat
         }
         return false;
     }
+    
     public List<Sailor> GetSailors() {
         return sailors;
     }
+    #endregion
+
+    #region Health Management
     public int GetBoatHealth() {
         return boatHealth;
     }
@@ -163,6 +174,9 @@ public class Boat
     public void SetBoatHealth(int hp) {
         boatHealth = hp;
     }
+    #endregion
+
+    #region Overrides
     public override string ToString()
     {
         return $"Boat Name: {boatName}\n" +
@@ -171,8 +185,5 @@ public class Boat
                $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {boatHealth}, " +
                $"Cargo Current: {cargoCurrent}/{cargoMax}]\n";
     }
-
-
+    #endregion
 }
-
-
