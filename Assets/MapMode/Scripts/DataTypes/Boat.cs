@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using MapMode.Scripts.DataTypes.boatComponents;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
+using MapMode.Scripts.DataTypes.boatComponents.Hulls;
+using MapMode.Scripts.DataTypes.boatComponents.Sails;
 using UnityEngine;
 
 

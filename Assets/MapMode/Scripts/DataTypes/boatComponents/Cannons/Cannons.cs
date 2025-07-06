@@ -1,4 +1,4 @@
-﻿namespace MapMode.Scripts.DataTypes.boatComponents
+﻿namespace MapMode.Scripts.DataTypes.boatComponents.Cannons
 {
     [System.Serializable]
     public class Cannon : IBoatComponent
