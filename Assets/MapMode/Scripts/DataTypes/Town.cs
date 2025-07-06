@@ -77,7 +77,7 @@ public class Town : MonoBehaviour
         productionAmount = new float[10]; // Ensure the array has at least 10 elements
         for (int i = 0; i < 10; i++)
         {
-            productionAmount[i] = Random.Range(0.5f, 1.5f);
+            productionAmount[i] = Random.Range(0.4f, 1.5f);
         }
 
         for (int i = 0; i < 10; i++) {
@@ -377,7 +377,7 @@ public class Town : MonoBehaviour
 
         foreach (Boat b in fle.GetBoats()) {
             int cargospace = b.GetCargoMax() - b.GetCargoCurrent();
-            Debug.Log(b.boatName + " space on ship:" + cargospace + " amount in town: " + supplies[resource]);
+            //Debug.Log(b.boatName + " space on ship:" + cargospace + " amount in town: " + supplies[resource]);
             if ((int)supplies[resource] - cargospace > 0) {
                 if (currentAddedCargo + cargospace < amount) {
                     currentAddedCargo += cargospace;

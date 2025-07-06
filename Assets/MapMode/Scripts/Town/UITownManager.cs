@@ -255,6 +255,13 @@ public class UITownManager : MonoBehaviour {
     }
     #endregion
 
+    #region Dock Methods
+
+    public void SetCannonComponent()
+    {
+        
+    }
+    #endregion
     #region Sailor Management Methods
     public void LoadSailors() {
         Transform verticalLayoutParent = sailorSelect.transform.Find("VerticalLayout");

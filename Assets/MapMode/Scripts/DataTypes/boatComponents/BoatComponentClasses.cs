@@ -39,20 +39,3 @@ public class Sails : IBoatComponent
     }
 }
 
-[System.Serializable]
-public class Cannon : IBoatComponent
-{
-    public string Name { get; private set; }
-    public int Damage { get; private set; }
-
-    public Cannon(string name, int damage)
-    {
-        Name = name;
-        Damage = damage;
-    }
-
-    public void ApplyEffect(BoatStats stats)
-    {
-        //stats.firepower += Damage;
-    }
-}

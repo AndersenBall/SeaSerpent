@@ -7,8 +7,8 @@ public class TownManager : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public float baseCostPerShip = 1000000;
-    public float costPerUnitDistance = 50;
+    public float baseCostPerShip = 100000;
+    public float costPerUnitDistance = 100;
 
     public Town[] towns { get; set; }
     public IDictionary<string, float> standardPrices = new Dictionary<string,float>();
