@@ -256,5 +256,6 @@ public class CannonInterface : MonoBehaviour
         minHorizontalAngle = -cannon.MaxHorizontalAngle;
         maxHorizontalAngle = cannon.MaxHorizontalAngle;
         rotationSpeed = cannon.TurnSpeed;
+        cannonVariance = cannon.Variance;
     }
 }

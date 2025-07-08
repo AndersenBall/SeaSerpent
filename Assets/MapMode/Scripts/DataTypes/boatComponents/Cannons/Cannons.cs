@@ -14,6 +14,8 @@
         public float MaxHorizontalAngle { get; private set; }
         public int Cost { get; private set; }
         
+        public float Variance { get; private set; }
+        
         public CannonType CannonType { get; private set; }
 
         public Cannon(CannonType type)
@@ -32,6 +34,7 @@
                     MaxVerticalAngle = 10f;
                     MaxHorizontalAngle = 25f;
                     TurnSpeed = 5f;
+                    Variance = 3f;
                     break;
                 case CannonType.Carronade:
                     ShotWeight = 32;
@@ -42,6 +45,7 @@
                     MaxVerticalAngle = 10f;
                     MaxHorizontalAngle = 0f;
                     TurnSpeed = 3f;
+                    Variance = 4f;
                     break;
                 case CannonType.Mortar:
                     ShotWeight = 64;
@@ -52,6 +56,7 @@
                     MaxVerticalAngle = -25f;
                     MaxHorizontalAngle = 360f;
                     TurnSpeed = 15f;
+                    Variance = 5f;
                     break;
                 case CannonType.FlameThrower:
                     ShotWeight = 0;
@@ -62,6 +67,7 @@
                     MaxVerticalAngle = 15f;
                     MaxHorizontalAngle = 30f;
                     TurnSpeed = 15f;
+                    Variance = 1.5f;
                     break;
                 case CannonType.GrappleHook:
                     ShotWeight = 0;
@@ -72,6 +78,7 @@
                     MaxVerticalAngle = 60f;
                     MaxHorizontalAngle = 90f;
                     TurnSpeed = 20f;
+                    Variance = 1f;
                     break;
             }
             

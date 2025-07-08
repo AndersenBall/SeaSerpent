@@ -478,7 +478,7 @@ PrefabInstance:
     - target: {fileID: 4996191243590640672, guid: c444094c4888b7b47b93c0f99d22c02a,
         type: 3}
       propertyPath: cannonVariance
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8960217896718216569, guid: c444094c4888b7b47b93c0f99d22c02a,
         type: 3}

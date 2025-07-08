@@ -16,13 +16,18 @@ public class TestSetCombat : MonoBehaviour
         for (int i = 0; i < ShipNumber; i++){
             Boat newBoat = new Boat("p"+i, BoatType.Frigate);
             newBoat.SetCannon(new Cannon(CannonType.Carronade));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
             playerFleet.AddBoat(newBoat);
         }
         
 
         Fleet enemFleet = new Fleet("france", "loser");
         for (int i=0; i< enemyShipNumber; i++){
-            enemFleet.AddBoat(new Boat("e"+i, BoatType.Frigate));
+            Boat newBoat = new Boat("e"+i, BoatType.Frigate);
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            enemFleet.AddBoat(newBoat);
         }
         
         //enemFleet.AddBoat(new Boat("e3", "TradeShip"));

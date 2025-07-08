@@ -58,6 +58,12 @@ public class BoatTeamManager : MonoBehaviour
             spawnedAIUnit.transform.position += new Vector3(0, 0, numberOfSailors*2);
             numberOfSailors += 1;
         }
+        
+        CannonInterface[] cannons = spawnedBoat.GetComponentsInChildren<CannonInterface>();
+        foreach (var cannon in cannons)
+        {
+            cannon.SetCannonValues(b.cannon ?? new Cannon(CannonType.LongGun));
+        }
     }
     public void SpawnPlayerBoat(Boat b)
     {
