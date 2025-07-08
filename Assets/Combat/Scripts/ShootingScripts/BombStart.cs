@@ -9,7 +9,7 @@ public class BombStart : MonoBehaviour
     // Start is called before the first frame update
     public float bombRadius = 5.0F;
     public float bombPower = 10.0F;
-    public float damageDeal = 10;
+    public float damageDeal = 5;
     public GameObject impactEffect1;
     public GameObject impactEffect2;
 

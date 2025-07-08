@@ -1,6 +1,8 @@
 ﻿using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using Panda;
 using TMPro;
@@ -353,8 +355,8 @@ public class BoatAI : MonoBehaviour
 
 
 
-
-            if (closestDistance > Mathf.Pow(3500, 2))
+            bool hasCarronade = shipAmoInter.GetCannons().Any(c => c.cannonType == CannonType.Carronade);
+            if (closestDistance > Mathf.Pow(3500, 2) && !hasCarronade)
             {
                 Task.current.Fail();
                 attacking = false;
@@ -363,7 +365,7 @@ public class BoatAI : MonoBehaviour
             //{
             //    SetAction("PotShot");
             //}
-            else if (closestDistance > Mathf.Pow(200, 2))
+            else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade)
                 SetAction("FireAtWill");
             else
                 SetAction("DriveBy");

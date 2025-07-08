@@ -4,9 +4,11 @@ using System;
 
 using UnityEngine;
 using System.Drawing;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 
 public class CannonInterface : MonoBehaviour
 {
+    public CannonType cannonType;
     public ParticleSystem muzzleFlash;
     public Transform firePoint;
     public Transform rotationPoint;
@@ -23,6 +25,8 @@ public class CannonInterface : MonoBehaviour
     private float _wantedVerticalAngle = 0;
     [SerializeField]
     private float _wantedHorizontalAngle = 0;
+
+    public float baseCannonDamage = 0;
     public float WantedVerticalAngle
     {
         get => -_wantedVerticalAngle; 
@@ -136,7 +140,7 @@ public class CannonInterface : MonoBehaviour
    
     #endregion
 
-
+    
     public void SetLineActivity(bool activity) {
         cannonLine.SetActive(activity);
     }
@@ -154,10 +158,13 @@ public class CannonInterface : MonoBehaviour
             //spawns and pushes bullet
             GameObject bulletObject = Instantiate(bulletPrefab, firePoint.position , Quaternion.identity);
             Rigidbody bulletRigidBody = bulletObject.GetComponent<Rigidbody>();
-
-            //sets direction that object should be facing based off guns directon and fires it
+            BombStart bombStart = bulletObject.GetComponent<BombStart>();
+            if (bombStart != null)
+            {
+                bombStart.damageDeal += baseCannonDamage;
+            }
+            
             bulletObject.transform.forward = firePoint.forward;
-            //bulletRigidBody.AddForce(transform.forward * fireForce);
             double u1 = 1.0 - UnityEngine.Random.Range(0,.99f); //uniform(0,1] random doubles
             double u2 = 1.0 - UnityEngine.Random.Range(0f,.99f);
             //Debug.Log("random number:" + u1 + " " + u2);
@@ -237,6 +244,17 @@ public class CannonInterface : MonoBehaviour
         SetLineActivity(false);
         isManned = false;
         isBeingWorkedOn = false;
+    }
 
+    public void SetCannonValues(Cannon cannon)
+    {
+        cannonType = cannon.CannonType;
+        baseCannonDamage = cannon.Damage;
+        fireForce = cannon.ShotPower;
+        MinVerticalAngle = cannon.MaxVerticalAngle;//TODO THE CANNONS rotation is FUCKED UP SWAP ROTATION TO NOT BE NEGATIVE LATER
+        MaxVerticalAngle = cannon.MinVerticalAngle;
+        minHorizontalAngle = -cannon.MaxHorizontalAngle;
+        maxHorizontalAngle = cannon.MaxHorizontalAngle;
+        rotationSpeed = cannon.TurnSpeed;
     }
 }

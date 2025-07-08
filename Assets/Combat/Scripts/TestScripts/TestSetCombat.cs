@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 
 public class TestSetCombat : MonoBehaviour
 {
@@ -13,7 +14,9 @@ public class TestSetCombat : MonoBehaviour
 
         Fleet playerFleet = new Fleet("england", "jalapeno");
         for (int i = 0; i < ShipNumber; i++){
-            playerFleet.AddBoat(new Boat("p"+i, BoatType.Frigate));
+            Boat newBoat = new Boat("p"+i, BoatType.Frigate);
+            newBoat.SetCannon(new Cannon(CannonType.Carronade));
+            playerFleet.AddBoat(newBoat);
         }
         
 
