@@ -53,7 +53,7 @@ public class ShipCrewCommand : MonoBehaviour
             foreach (PandaUnitAI unit in unitAIs)
             {
                 unit.SetActionNoUn("Gunner");
-                Debug.Log("set to gunner");
+                //Debug.Log("set to gunner");
             }
             
         }

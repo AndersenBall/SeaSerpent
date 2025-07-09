@@ -345,14 +345,14 @@ public class BoatAI : MonoBehaviour
 
             }
         }
-
+        
         if (_targetEnemy != null) {
             Vector2 boatDirect = GetCardDirect();
             Vector2 targetVec = new Vector2((_targetEnemy.transform.position - transform.position).x, (_targetEnemy.transform.position - transform.position).z);
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-
+            Debug.Log(Task.current.debugInfo );
 
 
             bool hasCarronade = shipAmoInter.GetCannons().Any(c => c.cannonType == CannonType.Carronade);
@@ -477,16 +477,18 @@ public class BoatAI : MonoBehaviour
     public bool GetInAttackPosition(float exitDistance)
     {
         runTime += Time.deltaTime;
-        if (runTime > 10f) {
+        if (runTime > 5f) {
             runTime = 0;
-            Task.current.Fail();
+            Debug.Log("reseting tree");
+            ResetTree();
             return false;
         }
 
         float addedX = attackVector.x * boatMaster.tileSize;
         float addedY = attackVector.y * boatMaster.tileSize;
-        if (_targetEnemy == null) {
-            Task.current.Fail();
+        if (_targetEnemy == null)
+        {
+            ResetTree();
             return false;
         }
         (float x, float y) destination = (_targetEnemy.transform.position.x + addedX, _targetEnemy.transform.position.z + addedY);
@@ -503,6 +505,7 @@ public class BoatAI : MonoBehaviour
 
             AllignToVector(new Vector2(destination.x - transform.position.x, destination.y - transform.position.z));
             Task.current.debugInfo = Task.current.debugInfo + " RunTime:" + runTime;
+            Task.current.Fail();
             return false;
         }
         
@@ -514,7 +517,7 @@ public class BoatAI : MonoBehaviour
         Vector3 direction;
         runTime += Time.deltaTime;
         Task.current.debugInfo = "runTime:" + runTime;
-        if (runTime > 8f) {
+        if (runTime > 5f) {
             runTime = 0;
             Task.current.Fail();
         }
@@ -873,5 +876,16 @@ public class BoatAI : MonoBehaviour
                     _targetEnemy.GetPrevXYPos().x + "," + _targetEnemy.GetPrevXYPos().y + " Dot: " + (int)dotSideways + debugInf;
     }
     #endregion
+
+    void ResetTree()
+    {
+        // Assuming the GameObject has a BehaviourTree component
+        Panda.BehaviourTree bt = GetComponent<Panda.BehaviourTree>();
+    
+        if (bt != null)
+        {
+            bt.Reset(); // Resets the entire behavior tree
+        }
+    }
 
 }
