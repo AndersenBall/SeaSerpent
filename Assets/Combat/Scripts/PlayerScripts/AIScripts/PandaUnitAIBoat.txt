@@ -2,6 +2,7 @@ tree("Root")
 	FallBack
 		tree("Gunner")
 		tree("FireCannons")
+		tree("PrepFireCannons")
 		tree("ReloadCannons")
 		tree("RotateCannons")
 		tree("AdjustSail")
@@ -55,6 +56,13 @@ tree("FireCannons")
 			GoToClosest("Fire")
 			FireCannon("True")
 			VariableWait("FireCannon")
+			
+tree("PrepFireCannons")
+    while
+        ActionCheck("PrepCannons")
+        sequence
+            FindClosestCannon("Fire")
+            GoToClosest("Fire")
 tree("ReloadCannons")
 	while
 		ActionCheck("ReloadCannons")

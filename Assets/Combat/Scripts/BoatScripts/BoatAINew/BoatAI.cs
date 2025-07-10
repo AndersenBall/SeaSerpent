@@ -352,7 +352,7 @@ public class BoatAI : MonoBehaviour
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
-            Debug.Log(Task.current.debugInfo );
+            //Debug.Log(Task.current.debugInfo );
 
 
             bool hasCarronade = shipAmoInter.GetCannons().Any(c => c.cannonType == CannonType.Carronade);
@@ -472,6 +472,24 @@ public class BoatAI : MonoBehaviour
         Task.current.Succeed();
     }
 
+    [Task]
+    public void UnitsToCannons()
+    {
+        HashSet<int> cannonGroups = new HashSet<int>();
+        Task.current.debugInfo = "attack Direction:" + attackDirection;
+        shipCrewCommand.ClearCannons();
+        if (attackDirection == "Left") {
+            cannonGroups.Add(3);
+            shipCrewCommand.SetCannonSets(3);
+        }
+        if (attackDirection == "Right") {
+            cannonGroups.Add(4);
+            shipCrewCommand.SetCannonSets(4);
+        }
+        shipCrewCommand.PrepFireCannons();
+        Task.current.Succeed();
+    }
+
 
     [Task]
     public bool GetInAttackPosition(float exitDistance)
@@ -479,7 +497,7 @@ public class BoatAI : MonoBehaviour
         runTime += Time.deltaTime;
         if (runTime > 5f) {
             runTime = 0;
-            Debug.Log("reseting tree");
+            //Debug.Log("reseting tree");
             ResetTree();
             return false;
         }
@@ -530,25 +548,25 @@ public class BoatAI : MonoBehaviour
         }
         
         direction = transform.TransformDirection(Vector3.left);
-        if (Physics.Raycast(transform.position + transform.forward * 15 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
-            Debug.DrawRay(transform.position + transform.forward * 15 + direction * 10, direction * hit.distance, Color.red);
+        if (Physics.Raycast(transform.position + transform.forward * 10 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
+            Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider +"layer: " + hit.collider.gameObject.layer +" " + GetTeamNumber();
             SetAttackDirection("Left");
             runTime = 0;
             Task.current.Succeed();
         }
         else
-            Debug.DrawRay(transform.position+ transform.forward * 15, direction * 100, Color.white);
+            Debug.DrawRay(transform.position+ transform.forward * 10, direction * 100, Color.white);
         direction = transform.TransformDirection(Vector3.right);
-        if (Physics.Raycast(transform.position +transform.forward*15+ direction * 10, direction, out hit, 120f, layerMask)) {
-            Debug.DrawRay(transform.position + transform.forward * 15 + direction * 10, direction * hit.distance, Color.red);
+        if (Physics.Raycast(transform.position +transform.forward*10+ direction * 10, direction, out hit, 120f, layerMask)) {
+            Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider;
             SetAttackDirection("Right");
             runTime = 0;
             Task.current.Succeed();
         }
         else
-            Debug.DrawRay(transform.position + transform.forward * 15, direction * 100, Color.white);
+            Debug.DrawRay(transform.position + transform.forward * 10, direction * 100, Color.white);
 
     }
     [Task]
@@ -735,6 +753,12 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void Fire()
     {
+        runTime += Time.deltaTime;
+        Task.current.debugInfo += "runTime:" + runTime;
+        if (runTime > 10f) {
+            runTime = 0;
+            Task.current.Fail();
+        }
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
         if (attackDirection == "Left") {
