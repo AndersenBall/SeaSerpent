@@ -15,7 +15,7 @@ public class BoatAI : MonoBehaviour
     [SerializeField]
     private GameObject selectionIndicator;
     private BoatMaster boatMaster;
-    private BoatControls boatControl;
+    public BoatControls boatControl;
     private ShipCrewCommand shipCrewCommand;
     private ShipAmunitionInterface shipAmoInter;
     private BoatHealth boatHP;
@@ -59,7 +59,8 @@ public class BoatAI : MonoBehaviour
     public bool isDead = false;
     [Task]
     public bool playerOnBoard = false;
-
+    [Task]
+    public int maxRange = 1000;
 
     #endregion
 
@@ -72,12 +73,12 @@ public class BoatAI : MonoBehaviour
         shipAmoInter = gameObject.GetComponent<ShipAmunitionInterface>();
         boatHP = gameObject.GetComponentInChildren<BoatHealth>();
         selectionIndicator.SetActive(false);
+        maxRange = (int)boatControl.boat.GetMaxCannonRange();
     }
     
 
     #endregion
-
-
+    
     #region setters and getters
     //*************setters and getters***************
     //set the location that the boat should travel to.

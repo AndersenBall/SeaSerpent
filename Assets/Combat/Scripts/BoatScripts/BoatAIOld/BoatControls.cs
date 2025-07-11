@@ -11,7 +11,7 @@ public class BoatControls : MonoBehaviour
     private Animator animator;
     private BoatAI boatAI;
     private HUDController hudControl;
-    private Boat boat;
+    public Boat boat { get;private set; }
 
 
     //values used in program to control boat

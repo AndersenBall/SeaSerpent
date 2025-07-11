@@ -6,6 +6,7 @@ using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using MapMode.Scripts.DataTypes.boatComponents.Hulls;
 using MapMode.Scripts.DataTypes.boatComponents.Sails;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 [System.Serializable]
@@ -148,7 +149,16 @@ public class Boat
     public float GetTurnSpeed() { return turnSpeed; }
     public int GetCargoMax(){ return cargoMax; }
     public int GetCargoCurrent() { return cargoCurrent; }
+    
+    
     #endregion
+
+    public float GetMaxCannonRange()
+    {
+        if (cannon == null) return 0f;
+        float angle = 25f * Mathf.Deg2Rad;
+        return (cannon.ShotPower * cannon.ShotPower * Mathf.Sin(2 * angle)) / 9.81f;
+    }
 
     #region Crew Management
     public void AddSailor(Sailor s) {
