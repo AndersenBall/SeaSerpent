@@ -6,7 +6,6 @@ using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using MapMode.Scripts.DataTypes.boatComponents.Hulls;
 using MapMode.Scripts.DataTypes.boatComponents.Sails;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 
 [System.Serializable]
@@ -142,6 +141,22 @@ public class Boat
     #endregion
 
     #region Getters
+    public float GetMaxCannonRange()
+    {
+        float velocity = cannon?.ShotPower ?? new Cannon(CannonType.LongGun).ShotPower;
+        
+        float angle = (-cannon?.MinVerticalAngle ??  -new Cannon(CannonType.LongGun).MinVerticalAngle) * Mathf.Deg2Rad;
+        float gravity = 9.81f;
+
+        return (CalculateCannonRange(velocity, gravity) * Mathf.Cos(angle));
+    }
+
+    private float CalculateCannonRange(float velocity, float gravity)
+    {
+        float angle = 25f * Mathf.Deg2Rad;
+        return (velocity * velocity * Mathf.Sin(2 * angle)) / gravity;
+    }
+
     public IDictionary<string, int> getSupplies() {
         return supplies;
     }
@@ -152,13 +167,6 @@ public class Boat
     
     
     #endregion
-
-    public float GetMaxCannonRange()
-    {
-        if (cannon == null) return 0f;
-        float angle = 25f * Mathf.Deg2Rad;
-        return (cannon.ShotPower * cannon.ShotPower * Mathf.Sin(2 * angle)) / 9.81f;
-    }
 
     #region Crew Management
     public void AddSailor(Sailor s) {
