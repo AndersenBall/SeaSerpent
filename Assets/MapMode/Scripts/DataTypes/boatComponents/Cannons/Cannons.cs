@@ -34,7 +34,7 @@
                     MaxVerticalAngle = 10f;
                     MaxHorizontalAngle = 25f;
                     TurnSpeed = 5f;
-                    Variance = 3f;
+                    Variance = 2.5f;
                     break;
                 case CannonType.Carronade:
                     ShotWeight = 32;
@@ -45,7 +45,7 @@
                     MaxVerticalAngle = 10f;
                     MaxHorizontalAngle = 0f;
                     TurnSpeed = 3f;
-                    Variance = 4f;
+                    Variance = 3f;
                     break;
                 case CannonType.Mortar:
                     ShotWeight = 64;
