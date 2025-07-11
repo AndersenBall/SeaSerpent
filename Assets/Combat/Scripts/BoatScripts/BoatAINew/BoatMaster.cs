@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 
-//testing how array and list work
+
 public class BoatMaster : MonoBehaviour
 {
     public int tileSize = 25;
