@@ -23,63 +23,18 @@
             CannonType = type;
             UpgradeLevel = 0;
             
-            switch(type)
+            if (CannonStatsDatabase.BaseStats.TryGetValue(type, out CannonStats stats))
             {
-                case CannonType.LongGun:
-                    ShotWeight = 24;
-                    ShotPower = 200f;
-                    BaseDamage = 0;
-                    Cost = 1000;
-                    MinVerticalAngle = -20f;
-                    MaxVerticalAngle = 10f;
-                    MaxHorizontalAngle = 25f;
-                    TurnSpeed = 5f;
-                    Variance = 2.5f;
-                    break;
-                case CannonType.Carronade:
-                    ShotWeight = 32;
-                    ShotPower = 100f;
-                    BaseDamage = 20;
-                    Cost = 1200;
-                    MinVerticalAngle = -15f;
-                    MaxVerticalAngle = 10f;
-                    MaxHorizontalAngle = 0f;
-                    TurnSpeed = 3f;
-                    Variance = 3f;
-                    break;
-                case CannonType.Mortar:
-                    ShotWeight = 64;
-                    ShotPower = 50f;
-                    BaseDamage = 30;
-                    Cost = 2000;
-                    MinVerticalAngle = -80f;
-                    MaxVerticalAngle = -25f;
-                    MaxHorizontalAngle = 360f;
-                    TurnSpeed = 15f;
-                    Variance = 5f;
-                    break;
-                case CannonType.FlameThrower:
-                    ShotWeight = 0;
-                    ShotPower = 40f;
-                    BaseDamage = 50;
-                    Cost = 1500;
-                    MinVerticalAngle = -15f;
-                    MaxVerticalAngle = 15f;
-                    MaxHorizontalAngle = 30f;
-                    TurnSpeed = 15f;
-                    Variance = 1.5f;
-                    break;
-                case CannonType.GrappleHook:
-                    ShotWeight = 0;
-                    ShotPower = 100f;
-                    BaseDamage = 10;
-                    Cost = 800;
-                    MinVerticalAngle = -30f;
-                    MaxVerticalAngle = 60f;
-                    MaxHorizontalAngle = 90f;
-                    TurnSpeed = 20f;
-                    Variance = 1f;
-                    break;
+                ShotWeight = stats.ShotWeight;
+                ShotPower = stats.ShotPower;
+                BaseDamage = stats.BaseDamage;
+                Cost = stats.Cost;
+                MinVerticalAngle = stats.MinVerticalAngle;
+                MaxVerticalAngle = stats.MaxVerticalAngle;
+                MaxHorizontalAngle = stats.MaxHorizontalAngle;
+                TurnSpeed = stats.TurnSpeed;
+                Variance = stats.Variance;
+            
             }
             
             CalculateDamage();
