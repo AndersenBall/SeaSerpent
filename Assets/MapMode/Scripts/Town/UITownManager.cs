@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.IO;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
 using UnityEditor.ShaderGraph.Internal;
@@ -38,6 +39,10 @@ public class UITownManager : MonoBehaviour {
 
     [Header("Dock")] 
     public GameObject dockShipSelect;
+
+    public GameObject dockComponentSelect;
+    
+    private CannonType selectedCannonType;
     
     [Header("Ship Select")]
     [Tooltip("The list of ships to select from")]
@@ -213,6 +218,7 @@ public class UITownManager : MonoBehaviour {
         UpdateMoney();
         LoadBoatsPlayer();
         LoadBoatsDock();
+        LoadCannonComponent();
     }
 
     public void UpdateMoney() {
@@ -257,11 +263,49 @@ public class UITownManager : MonoBehaviour {
 
     #region Dock Methods
 
-    public void SetCannonComponent()
+    public void LoadCannonComponent()
     {
-        
+        Transform verticalLayoutParent = dockComponentSelect.transform.Find("VerticalLayout");
+
+        foreach (Transform child in verticalLayoutParent) {
+            Destroy(child.gameObject);
+        }
+
+        foreach (CannonType cannonType in System.Enum.GetValues(typeof(CannonType))) {
+            GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
+            newButton.name = "Btn_" + cannonType;
+
+            TMP_Text buttonText = newButton.transform.Find("Text").GetComponent<TMP_Text>();
+            if (buttonText != null) {
+                buttonText.text = cannonType.ToString();
+            }
+
+            Button button = newButton.GetComponent<Button>();
+            if (button != null) {
+                Cannon cannon = new Cannon(cannonType);
+                button.onClick.AddListener(() => OnCannonTypeButtonClicked(cannonType));
+            }
+        }
+    }
+    private void OnCannonTypeButtonClicked(CannonType cannonType) {
+        Debug.Log($"Selected cannon type: {cannonType}");
+        selectedCannonType = cannonType;
+    }
+
+    public void BuyCannonComponent() {
+        Cannon cannon = new Cannon(selectedCannonType);
+        if (selectedPlayerShip != null && PlayerGlobal.BuyItem(cannon.Cost)) {
+            selectedPlayerShip.SetCannon(cannon);
+            Debug.Log($"Added {cannon.CannonType} cannon to {selectedPlayerShip.boatName}");
+            GameEvents.SaveGame();
+            RefreshUi();
+        }
+        else {
+            Debug.LogWarning("No ship selected or not enough money to buy the cannon.");
+        }
     }
     #endregion
+    
     #region Sailor Management Methods
     public void LoadSailors() {
         Transform verticalLayoutParent = sailorSelect.transform.Find("VerticalLayout");
