@@ -5,11 +5,24 @@ using UnityEngine;
 
 public class GameEvents : MonoBehaviour
 {
-  
+    public static GameEvents Instance { get; private set; }
     public static System.Action SaveInitiated;
     public static System.Action LoadInitiated;
 
     public static event Action<string> OnEnemyKilled;
+    
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public static void SaveGame()
     {

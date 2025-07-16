@@ -245,6 +245,7 @@ public class BoatMaster : MonoBehaviour
             }
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
+        GameEvents.SaveGame();
     }
     
 }
