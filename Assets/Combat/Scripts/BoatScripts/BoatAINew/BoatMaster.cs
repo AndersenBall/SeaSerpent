@@ -227,21 +227,36 @@ public class BoatMaster : MonoBehaviour
         List<Boat> allyBoatsData = SceneTransfer.playerFleet.GetBoats();
         List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
 
-        foreach (BoatAI boatAlive in allyBoatsAI) {
-            foreach (Boat boatData in allyBoatsData) {
-                if (boatAlive.name == boatData.boatName) {
-                    boatData.SetBoatHealth(boatAlive.GetHP());
-                    Debug.Log("Boat:" + boatData.boatName + " hp:" + boatAlive.GetHP());
+        var boatsToRemove = allyBoatsData
+            .Where(boatData => !allyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
+            .ToList();
+        foreach (Boat boat in boatsToRemove) {
+            allyBoatsData.Remove(boat);
+        }
+        foreach (BoatAI boatAI in allyBoatsAI)
+        {
+            foreach (Boat boatData in allyBoatsData)
+            {
+                if (boatAI.name == boatData.boatName)
+                {
+                    boatData.currentBoatHealth = boatAI.GetHP();
+                    Debug.Log("Boat:" + boatData.boatName + " hp:" + boatAI.GetHP());
                 }
             }
         }
         SceneTransfer.playerFleet.SetBoats(allyBoatsData);
-        foreach (BoatAI boatAlive in enemyBoatsAI) {
+        
+        var boatsToRemoveEnemy = enemyBoatsData
+            .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
+            .ToList();
+        foreach (Boat boat in boatsToRemoveEnemy) {
+            enemyBoatsData.Remove(boat);
+        }
+        foreach (BoatAI boatAI in enemyBoatsAI) {
             foreach (Boat boatData in enemyBoatsData) {
-                if (boatAlive.name == boatData.boatName) {
-                    boatData.SetBoatHealth(boatAlive.GetHP());
+                if (boatAI.name == boatData.boatName) {
+                    boatData.currentBoatHealth = boatAI.GetHP();
                 }
-                
             }
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);

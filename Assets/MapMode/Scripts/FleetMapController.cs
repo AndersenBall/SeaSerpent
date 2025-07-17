@@ -119,11 +119,16 @@ public class FleetMapController : MonoBehaviour
 
     public void DockFleet(Town town) {
         town.DockFleet(fleet);
+        RemoveFleet();
+    }
+
+    public void RemoveFleet()
+    {
         string key = "boat" + fleet.FleetID;
         SaveLoad.DeleteSave(key);
         Destroy(gameObject, .1f);
     }
-  
+
     #endregion
     #region DevMethods
     public void SaveNPCFleet() {
@@ -139,6 +144,11 @@ public class FleetMapController : MonoBehaviour
         FleetData data = SaveLoad.Load<FleetData>("boat"+id);
         fleet = data.fleet;
         gameObject.name = "fleet" + fleet.FleetID;
+        if (fleet.GetBoats() == null || fleet.GetBoats().Count == 0)
+        {
+            RemoveFleet();
+            return;
+        }
 
         transform.position = new Vector3(data.pos[0], data.pos[1], data.pos[2]);
         Vector3 targetPosition = new Vector3(data.pos[0], data.pos[1], data.pos[2]);

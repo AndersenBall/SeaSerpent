@@ -17,7 +17,9 @@ public class Boat
     public BoatStats baseStats { get; private set; }
     public float boatSpeed { get; private set; }
     public float turnSpeed { get; private set; }
-    public int boatHealth { get; private set; }
+    public int maxBoatHealth { get; private set; }
+    
+    public int currentBoatHealth { get; set; }
 
     public int cargoCurrent { get; private set; } = 0;
     public int cargoMax { get; private set; }
@@ -40,6 +42,7 @@ public class Boat
         if (BoatStatsDatabase.BaseStats.TryGetValue(type, out BoatStats boatStats))
         {
             baseStats = boatStats;
+            currentBoatHealth = baseStats.health;
             RecalculateStats();
             AddSailor(new Sailor("tom",SailorType.Gunner));
             AddSailor(new Sailor("jerry", SailorType.Gunner));
@@ -87,7 +90,7 @@ public class Boat
 
         boatSpeed = modifiedStats.speed;
         turnSpeed = modifiedStats.turnSpeed;
-        boatHealth = modifiedStats.health;
+        maxBoatHealth = modifiedStats.health;
         cargoMax = modifiedStats.cargoMax;
         maxSailorCount = modifiedStats.maxSailorCount;
     }
@@ -188,11 +191,11 @@ public class Boat
 
     #region Health Management
     public int GetBoatHealth() {
-        return boatHealth;
+        return currentBoatHealth;
     }
 
     public void SetBoatHealth(int hp) {
-        boatHealth = hp;
+        maxBoatHealth = hp;
     }
     #endregion
 
@@ -202,7 +205,7 @@ public class Boat
         return $"Boat Name: {boatName}\n" +
                $"Boat Type: {boatType}\n" +
                $"Base Stats: [{baseStats}]\n" +
-               $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {boatHealth}, " +
+               $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {maxBoatHealth}, " +
                $"Cargo Current: {cargoCurrent}/{cargoMax}]\n";
     }
     #endregion

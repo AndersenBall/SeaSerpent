@@ -8,11 +8,11 @@
         {
             {
                 CannonType.LongGun,
-                new CannonStats(24, 200f, 0, -20f, 10f, 25f, 5f, 2.5f, 1000)
+                new CannonStats(24, 150f, 0, -35f, 10f, 25f, 5f, 1.5f, 1000)
             },
             {
                 CannonType.Carronade,
-                new CannonStats(32, 100f, 20, -15f, 10f, 0f, 3f, 3f, 1200)
+                new CannonStats(32, 100f, 20, -15f, 10f, 0f, 3f, 2f, 1200)
             },
             {
                 CannonType.Mortar,

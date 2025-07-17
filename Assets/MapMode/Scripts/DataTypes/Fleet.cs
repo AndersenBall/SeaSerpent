@@ -69,7 +69,7 @@ public class Fleet
 
     public bool HasBoatWithName(string name)
     {
-        return boats.Exists(boat => boat.boatName == name); // Assuming Boat has a 'Name' property
+        return boats.Exists(boat => boat.boatName == name); 
     }
 
     public (float fleetSpeed, float fleetAcceleration) CalculateSpeed()
