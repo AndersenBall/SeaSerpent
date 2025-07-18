@@ -72,12 +72,12 @@ public class TownManager : MonoBehaviour
             float totalProfit = profitGoods - transportationCost - cost;
 
             // Check if this trade is the most profitable and meets the minimum profit threshold
-            if (totalProfit > highestProfit && totalProfit > ((cost + transportationCost )* .2))
+            if (totalProfit > highestProfit )
             {
                 highestProfit = totalProfit;
                 chosenTown = t;
                 lessAmount = equalAmount;
-                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit );
+                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit + this.name);
             }
         }
 
@@ -91,7 +91,7 @@ public class TownManager : MonoBehaviour
             Fleet fleet = chosenTown.MakeTradeFleet(item, amount);
             if (fleet == null)
             {
-                Debug.LogError($"Failed to create a fleet for item: {item}, amount: {amount}.");
+                Debug.LogError($"Failed to create a fleet for item: {item}, amount: {amount}." + this.name);
                 return (null, -1);
             }
 
@@ -100,7 +100,7 @@ public class TownManager : MonoBehaviour
         }
 
         // No viable trade route found
-        //Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
+        Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
         return (null, -1);
     }
 

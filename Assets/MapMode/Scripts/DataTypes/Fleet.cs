@@ -108,7 +108,7 @@ public class Fleet
 
         // Calculate fleet speed and acceleration
         fleetSpeed = 6 * slowestSpeed * diminishingFactorSpeed;
-        fleetAcceleration = 90 * slowestAcceleration * diminishingFactorAcceleration;
+        fleetAcceleration = 400 * slowestAcceleration * diminishingFactorAcceleration;
 
         return (fleetSpeed, fleetAcceleration); // Return both as a tuple
     }
