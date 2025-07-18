@@ -92,7 +92,7 @@ public class FleetMapController : MonoBehaviour
             //Debug.Log("Fleet: " + fleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
         }
         else if (town != null && town.name == destination.name) {
-            Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
+            //Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
             town.SellItemsInCargo(fleet,10000,"All");
             UpdateBoatNames();
             DockFleet(town);

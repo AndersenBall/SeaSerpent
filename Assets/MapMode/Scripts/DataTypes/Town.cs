@@ -159,7 +159,7 @@ public class Town : MonoBehaviour
 
             if (deficit(itemToRequest.Item2) < 50)
             {
-                Debug.Log("not enough supply" + this.name + " item:" + itemToRequest.Item2 + " deficit:" + deficit(itemToRequest.Item2));;
+                //Debug.Log("not enough supply" + this.name + " item:" + itemToRequest.Item2 + " deficit:" + deficit(itemToRequest.Item2));;
                 continue;
             }
 
@@ -182,7 +182,7 @@ public class Town : MonoBehaviour
             foreach ((int,float,string) f in incomingFleets.Values) {
                 if (f.Item3 == itemToRequest.Item2) {
                     
-                    Debug.Log("item is already being shipped" + itemToRequest.Item2 + ": " + this.name);
+                    //Debug.Log("item is already being shipped" + itemToRequest.Item2 + ": " + this.name);
                     return false;
                 }
             }
@@ -424,7 +424,7 @@ public class Town : MonoBehaviour
                 amountRemoved = incomingFleets[fleetID].Item1;
                 incomingFleets.Remove(fleetID);
             }
-            Debug.Log("fleet came in" + fle.commander + gameObject.name + " removed predicted:" + ite + amountRemoved);
+            //Debug.Log("fleet came in" + fle.commander + gameObject.name + " removed predicted:" + ite + amountRemoved);
 
 
         }

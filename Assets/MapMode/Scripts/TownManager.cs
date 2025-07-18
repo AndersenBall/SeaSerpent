@@ -100,7 +100,7 @@ public class TownManager : MonoBehaviour
         }
 
         // No viable trade route found
-        Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
+        //Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
         return (null, -1);
     }
 

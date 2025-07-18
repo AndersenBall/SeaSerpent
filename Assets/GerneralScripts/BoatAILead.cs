@@ -37,7 +37,7 @@ public class BoatAILead : MonoBehaviour
             return false; 
         }
 
-        Debug.Log($"Fleet removed: {id}");
+        //Debug.Log($"Fleet removed: {id}");
         return boatIDs.Remove(id); 
     }
 
