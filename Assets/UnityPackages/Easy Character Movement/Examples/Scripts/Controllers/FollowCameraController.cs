@@ -62,4 +62,16 @@ public sealed class FollowCameraController : MonoBehaviour
     }
 
     #endregion
+    
+    #region METHODS
+
+    public void SetUPCamera(GameObject boat)
+    {
+
+        GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>().targetTransform = boat.transform.Find("CamTargetTransform");
+        GameObject.Find("CameraWrapper/BoatCam").GetComponent<MouseLookBoat>().lookLocation = boat.transform.Find("CamTargetTransform");
+        
+    }
+    
+    #endregion
 }

@@ -7522,6 +7522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectionIndicator: {fileID: 0}
+  boatControl: {fileID: 0}
   _targetEnemy: {fileID: 0}
   attackVector: {x: 0, y: 0}
   attackDirection: 
@@ -7530,6 +7531,7 @@ MonoBehaviour:
   runningAway: 0
   isDead: 0
   playerOnBoard: 0
+  maxRange: 1000
 --- !u!136 &1661610982503207224
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -12678,6 +12680,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5241580497566063814}
   - component: {fileID: 5241580497566063832}
+  - component: {fileID: 5241580497566063833}
   m_Layer: 0
   m_Name: TopDownCamera
   m_TagString: Untagged
@@ -12736,6 +12739,18 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &5241580497566063833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241580497566063815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc6a72bdc36cc694da4d9f13702a7669, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5249090944187155334
 Transform:
   m_ObjectHideFlags: 0

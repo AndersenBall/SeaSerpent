@@ -23,6 +23,11 @@ public class PlayerMovementOnBoat : MonoBehaviour
         transform.localEulerAngles = characterPositionInterface.GetRotation();
     }
 
-    //sets destination to move to. Converts world to local based on boat parent
-    
+    public void SetUpCharacterPositionInterface(BoatControls b)
+    {
+        //TODO delete old character ai
+        //TODO Spawn new ai and set character interface
+        //OR position new one in the new ai boat and set its transform there based on
+        //relative position to the new boat we just entered
+    }
 }

@@ -74,6 +74,7 @@ public class BoatTeamManager : MonoBehaviour
         spawnedBoat.transform.localPosition = new Vector3(numberOfBoats * 75, 0, -150);
         spawnedBoat.GetComponent<BoatControls>().SetBoatParamters(b,true);
         spawnedBoat.GetComponent<BoatAI>().SetTeamNumber(TeamNumber);
+        spawnedBoat.GetComponent<BoatControls>().aiBoat = spawnedAIBoat;
         spawnedBoat.name = b.boatName;
         GameObject flag = Instantiate(flagPrefab, spawnedBoat.transform);
         flag.transform.position = spawnedBoat.transform.position + new Vector3(0, 44, -10.47f);
@@ -105,10 +106,9 @@ public class BoatTeamManager : MonoBehaviour
         player.GetComponent<PlayerTriggerController>().SetUpBoat(spawnedBoat.GetComponent<BoatControls>());
 
         Transform cameraTopDown = transform.Find("TopDownCamera");
-        cameraTopDown.parent = spawnedBoat.transform;
-        cameraTopDown.localPosition = new Vector3(0, 67f, 0);
-        GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>().targetTransform = spawnedBoat.transform.Find("CamTargetTransform");
-        GameObject.Find("CameraWrapper/BoatCam").GetComponent<MouseLookBoat>().lookLocation = spawnedBoat.transform.Find("CamTargetTransform");
+        cameraTopDown.GetComponent<TopDownCamController>().SetUPCamera(spawnedBoat.transform);
+        var camControl  = GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>();
+        camControl.SetUPCamera(spawnedBoat);
     }
 
     public int GetTeam() {

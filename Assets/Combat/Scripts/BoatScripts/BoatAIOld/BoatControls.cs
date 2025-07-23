@@ -13,7 +13,8 @@ public class BoatControls : MonoBehaviour
     private HUDController hudControl;
     public Boat boat { get;private set; }
 
-
+    public GameObject aiBoat{ get; set; } 
+    
     //values used in program to control boat
     float rawForward = 0;//current forward speed
     float aiForward = 0;//goal forward speed

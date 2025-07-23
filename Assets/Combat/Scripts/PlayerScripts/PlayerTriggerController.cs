@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Combat.Scripts.PlayerScripts;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class PlayerTriggerController : MonoBehaviour
     private ItemPickUp itemPickUp;
     private FireGun handGunControl;
     
+    private PlayerBoatControls playerBoatControls;
+    private PlayerMovementOnBoat playerMovementOnBoat;
 
 
     private Collider triggerInsideOf = null;
@@ -29,7 +32,9 @@ public class PlayerTriggerController : MonoBehaviour
         itemPickUp = gameObject.GetComponent<ItemPickUp>();
   
         handGunControl = gameObject.GetComponentInChildren<FireGun>();
-
+        
+        playerBoatControls = gameObject.GetComponent<PlayerBoatControls>();
+        playerMovementOnBoat = gameObject.GetComponent<PlayerMovementOnBoat>();
     }
 
     private void Update()
@@ -111,6 +116,9 @@ public class PlayerTriggerController : MonoBehaviour
 
     }
     public void SetUpBoat(BoatControls bcontrols){
+        this.transform.parent = bcontrols.transform.Find("Crew");
+        playerBoatControls.boatControl = bcontrols;
+        playerMovementOnBoat.SetUpCharacterPositionInterface(bcontrols);
         boatControls = bcontrols;
         shipCrewCommand = boatControls.GetComponent<ShipCrewCommand>();
         shipAmunitionInterface = boatControls.GetComponent<ShipAmunitionInterface>();
