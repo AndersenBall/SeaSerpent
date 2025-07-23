@@ -2,18 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
+using MapMode.Scripts.DataTypes.boatComponents.Hulls;
+using MapMode.Scripts.DataTypes.boatComponents.Sails;
 using UnityEngine;
 
 
 [System.Serializable]
 public class Boat
 {
+    #region Properties
     public string boatName;
     public BoatType boatType { get; private set; }
     public BoatStats baseStats { get; private set; }
     public float boatSpeed { get; private set; }
     public float turnSpeed { get; private set; }
-    public int boatHealth { get; private set; }
+    public int maxBoatHealth { get; private set; }
+    
+    public int currentBoatHealth { get; set; }
 
     public int cargoCurrent { get; private set; } = 0;
     public int cargoMax { get; private set; }
@@ -21,7 +27,12 @@ public class Boat
     public List<Sailor> sailors = new List<Sailor>();
     public int maxSailorCount { get; private set; }
 
+    public Hull hull { get; private set; }
+    public Sails sails { get; private set; }
+    public Cannon cannon { get; private set; }
+    #endregion
 
+    #region Constructor
     public Boat(string name, BoatType type)
     {
         boatName = name;
@@ -31,22 +42,61 @@ public class Boat
         if (BoatStatsDatabase.BaseStats.TryGetValue(type, out BoatStats boatStats))
         {
             baseStats = boatStats;
-            boatSpeed = boatStats.speed;
-            turnSpeed = boatStats.turnSpeed;
-            boatHealth = boatStats.health;
-            cargoMax = boatStats.cargoMax;
-            maxSailorCount = boatStats.maxSailorCount;
+            currentBoatHealth = baseStats.health;
+            RecalculateStats();
             AddSailor(new Sailor("tom",SailorType.Gunner));
             AddSailor(new Sailor("jerry", SailorType.Gunner));
-
         }
         else
         {
             Debug.LogError($"No stats found for BoatType {type}");
         }
     }
+    #endregion
 
+    #region Component Management
+    public void SetHull(Hull newHull)
+    {
+        hull = newHull;
+        RecalculateStats();
+    }
 
+    public void SetSails(Sails newSails)
+    {
+        sails = newSails;
+        RecalculateStats();
+    }
+
+    public void SetCannon(Cannon newCannon)
+    {
+        cannon = newCannon;
+        RecalculateStats();
+    }
+
+    private void RecalculateStats()
+    {
+        BoatStats modifiedStats = new BoatStats(
+            baseStats.speed,
+            baseStats.turnSpeed,
+            baseStats.health,
+            baseStats.cargoMax,
+            baseStats.maxSailorCount,
+            baseStats.boatCost
+        );
+
+        if (hull != null) hull.ApplyEffect(modifiedStats);
+        if (sails != null) sails.ApplyEffect(modifiedStats);
+        if (cannon != null) cannon.ApplyEffect(modifiedStats);
+
+        boatSpeed = modifiedStats.speed;
+        turnSpeed = modifiedStats.turnSpeed;
+        maxBoatHealth = modifiedStats.health;
+        cargoMax = modifiedStats.cargoMax;
+        maxSailorCount = modifiedStats.maxSailorCount;
+    }
+    #endregion
+
+    #region Cargo Management 
     public int AddCargo(string item, int amount)
     {
         if (amount + cargoCurrent <= cargoMax) {
@@ -59,10 +109,8 @@ public class Boat
             }
             
             return amount;
-            //Debug.Log(boatName+"loaded :" + item + " amount: " + amount);
         }
         else {
-            //Debug.Log(boatName + "can not hold " + amount + "of " + item + "added: " + (cargoMax - cargoCurrent));
             cargoCurrent += cargoMax - cargoCurrent;
             supplies.Add(item, cargoMax - cargoCurrent);
             if (supplies.ContainsKey(item)) {
@@ -73,14 +121,13 @@ public class Boat
             }
             return cargoMax - cargoCurrent;
         }
-        
     }
+
     public int RemoveCargo(string item, int amount) {
         if (supplies.ContainsKey(item)) { 
             if (supplies[item] - amount >= 0) {
                 cargoCurrent -= amount;
                 supplies[item] -= amount; 
-                //Debug.Log(boatName + "removed :" + item + " amount: " + amount);
                 return amount;
             }
             else {
@@ -94,37 +141,72 @@ public class Boat
         Debug.Log("invalid item to remove: " + item);
         return 0;
     }
+    #endregion
+
+    #region Getters
+    public float GetMaxCannonRange()
+    {
+        float velocity = cannon?.ShotPower ?? new Cannon(CannonType.LongGun).ShotPower;
+        
+        float angle = (-cannon?.MinVerticalAngle ??  -new Cannon(CannonType.LongGun).MinVerticalAngle) * Mathf.Deg2Rad;
+        float gravity = 9.81f;
+
+        return (CalculateCannonRange(velocity, gravity) * Mathf.Cos(angle));
+    }
+
+    private float CalculateCannonRange(float velocity, float gravity)
+    {
+        float angle = 25f * Mathf.Deg2Rad;
+        return (velocity * velocity * Mathf.Sin(2 * angle)) / gravity;
+    }
+
     public IDictionary<string, int> getSupplies() {
         return supplies;
-        
     }
     public float GetSpeed() {return boatSpeed; }
     public float GetTurnSpeed() { return turnSpeed; }
     public int GetCargoMax(){ return cargoMax; }
     public int GetCargoCurrent() { return cargoCurrent; }
+    
+    
+    #endregion
+
+    #region Crew Management
     public void AddSailor(Sailor s) {
         sailors.Add(s);
     }
+
+    public bool RemoveSailor(Sailor sailor) {
+        if (sailors.Contains(sailor)) {
+            sailors.Remove(sailor);
+            return true;
+        }
+        return false;
+    }
+    
     public List<Sailor> GetSailors() {
         return sailors;
     }
+    #endregion
+
+    #region Health Management
     public int GetBoatHealth() {
-        return boatHealth;
+        return currentBoatHealth;
     }
 
     public void SetBoatHealth(int hp) {
-        boatHealth = hp;
+        maxBoatHealth = hp;
     }
+    #endregion
+
+    #region Overrides
     public override string ToString()
     {
         return $"Boat Name: {boatName}\n" +
                $"Boat Type: {boatType}\n" +
                $"Base Stats: [{baseStats}]\n" +
-               $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {boatHealth}, " +
+               $"Current Stats: [Speed: {boatSpeed}, Turn Speed: {turnSpeed}, Health: {maxBoatHealth}, " +
                $"Cargo Current: {cargoCurrent}/{cargoMax}]\n";
     }
-
-
+    #endregion
 }
-
-

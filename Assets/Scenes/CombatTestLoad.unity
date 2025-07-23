@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65f12777c9310241a2edcc80c902078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShipNumber: 3
+  ShipNumber: 5
   enemyShipNumber: 4
 --- !u!4 &206154390
 Transform:

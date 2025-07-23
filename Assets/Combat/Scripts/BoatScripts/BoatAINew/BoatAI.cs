@@ -1,6 +1,8 @@
 ﻿using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using Panda;
 using TMPro;
@@ -13,7 +15,7 @@ public class BoatAI : MonoBehaviour
     [SerializeField]
     private GameObject selectionIndicator;
     private BoatMaster boatMaster;
-    private BoatControls boatControl;
+    public BoatControls boatControl;
     private ShipCrewCommand shipCrewCommand;
     private ShipAmunitionInterface shipAmoInter;
     private BoatHealth boatHP;
@@ -57,7 +59,8 @@ public class BoatAI : MonoBehaviour
     public bool isDead = false;
     [Task]
     public bool playerOnBoard = false;
-
+    [Task]
+    public int maxRange = 1000;
 
     #endregion
 
@@ -70,12 +73,12 @@ public class BoatAI : MonoBehaviour
         shipAmoInter = gameObject.GetComponent<ShipAmunitionInterface>();
         boatHP = gameObject.GetComponentInChildren<BoatHealth>();
         selectionIndicator.SetActive(false);
+        maxRange = (int)boatControl.boat.GetMaxCannonRange();
     }
     
 
     #endregion
-
-
+    
     #region setters and getters
     //*************setters and getters***************
     //set the location that the boat should travel to.
@@ -343,18 +346,18 @@ public class BoatAI : MonoBehaviour
 
             }
         }
-
+        
         if (_targetEnemy != null) {
             Vector2 boatDirect = GetCardDirect();
             Vector2 targetVec = new Vector2((_targetEnemy.transform.position - transform.position).x, (_targetEnemy.transform.position - transform.position).z);
             float dot = Vector2.Dot(boatDirect, targetVec) / targetVec.magnitude;
 
             Task.current.debugInfo = "enemy targeted: " + _targetEnemy.name + "distance" + Mathf.Sqrt(closestDistance) + "dot:" + dot;
+            //Debug.Log(Task.current.debugInfo );
 
 
-
-
-            if (closestDistance > Mathf.Pow(3500, 2))
+            bool hasCarronade = shipAmoInter.GetCannons().Any(c => c.cannonType == CannonType.Carronade);
+            if (closestDistance > Mathf.Pow(3500, 2) && !hasCarronade)
             {
                 Task.current.Fail();
                 attacking = false;
@@ -363,7 +366,7 @@ public class BoatAI : MonoBehaviour
             //{
             //    SetAction("PotShot");
             //}
-            else if (closestDistance > Mathf.Pow(200, 2))
+            else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade)
                 SetAction("FireAtWill");
             else
                 SetAction("DriveBy");
@@ -470,21 +473,41 @@ public class BoatAI : MonoBehaviour
         Task.current.Succeed();
     }
 
+    [Task]
+    public void UnitsToCannons()
+    {
+        HashSet<int> cannonGroups = new HashSet<int>();
+        Task.current.debugInfo = "attack Direction:" + attackDirection;
+        shipCrewCommand.ClearCannons();
+        if (attackDirection == "Left") {
+            cannonGroups.Add(3);
+            shipCrewCommand.SetCannonSets(3);
+        }
+        if (attackDirection == "Right") {
+            cannonGroups.Add(4);
+            shipCrewCommand.SetCannonSets(4);
+        }
+        shipCrewCommand.PrepFireCannons();
+        Task.current.Succeed();
+    }
+
 
     [Task]
     public bool GetInAttackPosition(float exitDistance)
     {
         runTime += Time.deltaTime;
-        if (runTime > 10f) {
+        if (runTime > 5f) {
             runTime = 0;
-            Task.current.Fail();
+            //Debug.Log("reseting tree");
+            ResetTree();
             return false;
         }
 
         float addedX = attackVector.x * boatMaster.tileSize;
         float addedY = attackVector.y * boatMaster.tileSize;
-        if (_targetEnemy == null) {
-            Task.current.Fail();
+        if (_targetEnemy == null)
+        {
+            ResetTree();
             return false;
         }
         (float x, float y) destination = (_targetEnemy.transform.position.x + addedX, _targetEnemy.transform.position.z + addedY);
@@ -501,6 +524,7 @@ public class BoatAI : MonoBehaviour
 
             AllignToVector(new Vector2(destination.x - transform.position.x, destination.y - transform.position.z));
             Task.current.debugInfo = Task.current.debugInfo + " RunTime:" + runTime;
+            Task.current.Fail();
             return false;
         }
         
@@ -512,7 +536,7 @@ public class BoatAI : MonoBehaviour
         Vector3 direction;
         runTime += Time.deltaTime;
         Task.current.debugInfo = "runTime:" + runTime;
-        if (runTime > 8f) {
+        if (runTime > 5f) {
             runTime = 0;
             Task.current.Fail();
         }
@@ -525,25 +549,25 @@ public class BoatAI : MonoBehaviour
         }
         
         direction = transform.TransformDirection(Vector3.left);
-        if (Physics.Raycast(transform.position + transform.forward * 15 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
-            Debug.DrawRay(transform.position + transform.forward * 15 + direction * 10, direction * hit.distance, Color.red);
+        if (Physics.Raycast(transform.position + transform.forward * 10 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
+            Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider +"layer: " + hit.collider.gameObject.layer +" " + GetTeamNumber();
             SetAttackDirection("Left");
             runTime = 0;
             Task.current.Succeed();
         }
         else
-            Debug.DrawRay(transform.position+ transform.forward * 15, direction * 100, Color.white);
+            Debug.DrawRay(transform.position+ transform.forward * 10, direction * 100, Color.white);
         direction = transform.TransformDirection(Vector3.right);
-        if (Physics.Raycast(transform.position +transform.forward*15+ direction * 10, direction, out hit, 120f, layerMask)) {
-            Debug.DrawRay(transform.position + transform.forward * 15 + direction * 10, direction * hit.distance, Color.red);
+        if (Physics.Raycast(transform.position +transform.forward*10+ direction * 10, direction, out hit, 120f, layerMask)) {
+            Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider;
             SetAttackDirection("Right");
             runTime = 0;
             Task.current.Succeed();
         }
         else
-            Debug.DrawRay(transform.position + transform.forward * 15, direction * 100, Color.white);
+            Debug.DrawRay(transform.position + transform.forward * 10, direction * 100, Color.white);
 
     }
     [Task]
@@ -730,6 +754,12 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void Fire()
     {
+        runTime += Time.deltaTime;
+        Task.current.debugInfo += "runTime:" + runTime;
+        if (runTime > 10f) {
+            runTime = 0;
+            Task.current.Fail();
+        }
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
         if (attackDirection == "Left") {
@@ -871,5 +901,16 @@ public class BoatAI : MonoBehaviour
                     _targetEnemy.GetPrevXYPos().x + "," + _targetEnemy.GetPrevXYPos().y + " Dot: " + (int)dotSideways + debugInf;
     }
     #endregion
+
+    void ResetTree()
+    {
+        // Assuming the GameObject has a BehaviourTree component
+        Panda.BehaviourTree bt = GetComponent<Panda.BehaviourTree>();
+    
+        if (bt != null)
+        {
+            bt.Reset(); // Resets the entire behavior tree
+        }
+    }
 
 }

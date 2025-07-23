@@ -57,6 +57,8 @@ public class Town : MonoBehaviour
     public List<Fleet> dockedFleets = new List<Fleet>();
 
     private TownInfoUI townUI;
+    private float _productionTimer=0;
+    private Town _town;
 
     #endregion
 
@@ -64,6 +66,7 @@ public class Town : MonoBehaviour
 
     private void Awake()
     {
+        _town = gameObject.GetComponent<Town>();
         townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
     }
     void Start()
@@ -76,7 +79,7 @@ public class Town : MonoBehaviour
         productionAmount = new float[10]; // Ensure the array has at least 10 elements
         for (int i = 0; i < 10; i++)
         {
-            productionAmount[i] = Random.Range(0.5f, 1.5f);
+            productionAmount[i] = Random.Range(0.4f, 1.5f);
         }
 
         for (int i = 0; i < 10; i++) {
@@ -94,9 +97,16 @@ public class Town : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         UpdateDebugText();
-
-
+        
+        _productionTimer += Time.deltaTime; 
+        if (_productionTimer >= 1f)
+        {
+            RequestGoods();
+            RunProduction();
+            _productionTimer = 0f;
+        }
     }
     #endregion
 
@@ -142,31 +152,37 @@ public class Town : MonoBehaviour
     }
 
     private void RequestGoods() {
-        List<(float, string)> mostNeeded = MostNeededItems();// FIND LARGEST IF FAIL ON REQUEST GO TO NEXT
+        List<(float, string)> mostNeeded = MostNeededItems();
         int amountWant = 0;
         foreach ((float, string) itemToRequest in mostNeeded) {
             if(!ItemAlreadyRequested(itemToRequest)) { continue; }
-            if (deficit(itemToRequest.Item2) < 50) { continue; }
+
+            if (deficit(itemToRequest.Item2) < 50)
+            {
+                //Debug.Log("not enough supply" + this.name + " item:" + itemToRequest.Item2 + " deficit:" + deficit(itemToRequest.Item2));;
+                continue;
+            }
 
             if (deficit(itemToRequest.Item2) < 801) {
                 amountWant = deficit(itemToRequest.Item2);
             }
             else
                 amountWant = 800;
-            //can implment distance and cost to see if its wroth while in this function
-            (Fleet, int) sentOutFleet = townManager.RequestItemNonSurplus(itemToRequest.Item2, amountWant, gameObject.GetComponent<Town>());
+
+            (Fleet, int) sentOutFleet = townManager.RequestItemNonSurplus(itemToRequest.Item2, amountWant, _town);
 
             if (sentOutFleet.Item2 > 0 && sentOutFleet.Item1 != null) {
                 StartCoroutine(RunExpected(itemToRequest.Item2, sentOutFleet.Item2, sentOutFleet.Item1));
-                return;
             }
         }
+        return;
 
         bool ItemAlreadyRequested((float, string) itemToRequest)
         {
             foreach ((int,float,string) f in incomingFleets.Values) {
                 if (f.Item3 == itemToRequest.Item2) {
-                    //Debug.Log("item is already being shipped" + itemToRequest.Item2);
+                    
+                    //Debug.Log("item is already being shipped" + itemToRequest.Item2 + ": " + this.name);
                     return false;
                 }
             }
@@ -219,7 +235,7 @@ public class Town : MonoBehaviour
 
         foreach (KeyValuePair<string, float> supItem in supplies) {
             float percent = (float)(demand[supItem.Key] + 1) / ((int)supItem.Value + 1 + predictedSupplies[supItem.Key]);
-            //Debug.Log(supItem.Key + " percent:" + percent + "demand:" + demand[supItem.Key] + "supplies:" + supItem.Value + "+" + predictedSupplies[supItem.Key]);
+            //Debug.Log(supItem.Key + " percent:" + percent + "demand:" + demand[supItem.Key] + "supplies:" + supItem.Value + "+" + predictedSupplies[supItem.Key] + this.name);
             if (percent > 1f) { 
                 percentAmounts.Add((percent, supItem.Key));
             }        
@@ -369,7 +385,7 @@ public class Town : MonoBehaviour
 
         foreach (Boat b in fle.GetBoats()) {
             int cargospace = b.GetCargoMax() - b.GetCargoCurrent();
-            Debug.Log(b.boatName + " space on ship:" + cargospace + " amount in town: " + supplies[resource]);
+            //Debug.Log(b.boatName + " space on ship:" + cargospace + " amount in town: " + supplies[resource]);
             if ((int)supplies[resource] - cargospace > 0) {
                 if (currentAddedCargo + cargospace < amount) {
                     currentAddedCargo += cargospace;
@@ -408,7 +424,7 @@ public class Town : MonoBehaviour
                 amountRemoved = incomingFleets[fleetID].Item1;
                 incomingFleets.Remove(fleetID);
             }
-            Debug.Log("fleet came in" + fle.commander + gameObject.name + " removed predicted:" + ite + amountRemoved);
+            //Debug.Log("fleet came in" + fle.commander + gameObject.name + " removed predicted:" + ite + amountRemoved);
 
 
         }

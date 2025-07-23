@@ -9,6 +9,7 @@ public class Fleet
     public string commander;
     public int FleetSizeLimit = 3;// how many boats someone can control before they get penalized
 
+    public string FlagShip = "None";
     public string Nationality = "British";
     public float fleetSpeed = 10;
     public float fleetAcceleration = 10;
@@ -68,7 +69,7 @@ public class Fleet
 
     public bool HasBoatWithName(string name)
     {
-        return boats.Exists(boat => boat.boatName == name); // Assuming Boat has a 'Name' property
+        return boats.Exists(boat => boat.boatName == name); 
     }
 
     public (float fleetSpeed, float fleetAcceleration) CalculateSpeed()
@@ -107,7 +108,7 @@ public class Fleet
 
         // Calculate fleet speed and acceleration
         fleetSpeed = 6 * slowestSpeed * diminishingFactorSpeed;
-        fleetAcceleration = 90 * slowestAcceleration * diminishingFactorAcceleration;
+        fleetAcceleration = 400 * slowestAcceleration * diminishingFactorAcceleration;
 
         return (fleetSpeed, fleetAcceleration); // Return both as a tuple
     }

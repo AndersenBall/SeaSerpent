@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 
 public class BoatTeamManager : MonoBehaviour
 {
@@ -57,6 +58,12 @@ public class BoatTeamManager : MonoBehaviour
             spawnedAIUnit.transform.position += new Vector3(0, 0, numberOfSailors*2);
             numberOfSailors += 1;
         }
+        
+        CannonInterface[] cannons = spawnedBoat.GetComponentsInChildren<CannonInterface>();
+        foreach (var cannon in cannons)
+        {
+            cannon.SetCannonValues(b.cannon ?? new Cannon(CannonType.LongGun));
+        }
     }
     public void SpawnPlayerBoat(Boat b)
     {
@@ -67,6 +74,7 @@ public class BoatTeamManager : MonoBehaviour
         spawnedBoat.transform.localPosition = new Vector3(numberOfBoats * 75, 0, -150);
         spawnedBoat.GetComponent<BoatControls>().SetBoatParamters(b,true);
         spawnedBoat.GetComponent<BoatAI>().SetTeamNumber(TeamNumber);
+        spawnedBoat.GetComponent<BoatControls>().aiBoat = spawnedAIBoat;
         spawnedBoat.name = b.boatName;
         GameObject flag = Instantiate(flagPrefab, spawnedBoat.transform);
         flag.transform.position = spawnedBoat.transform.position + new Vector3(0, 44, -10.47f);
@@ -83,19 +91,24 @@ public class BoatTeamManager : MonoBehaviour
         }
 
         
-        Transform playerAI = boatAiTransform.Find("ECM_BaseFirstPersonControllerAI"); // 1.9 =x, 4.137 = y
+        CannonInterface[] cannons = spawnedBoat.GetComponentsInChildren<CannonInterface>();
+        foreach (var cannon in cannons)
+        {
+            cannon.SetCannonValues(b.cannon ?? new Cannon(CannonType.LongGun));
+        }
+
+        Transform playerAI = boatAiTransform.Find("ECM_BaseFirstPersonControllerAI"); 
         playerAI.parent = spawnedAIBoat.transform;
         playerAI.localPosition = new Vector3(1.9f, 4.137f, 0);
         
         GameObject player = transform.Find("ECM_BaseFirstPersonController").gameObject;
-        player.transform.parent = spawnedBoat.transform.Find("Crew");//3.28 = y
+        player.transform.parent = spawnedBoat.transform.Find("Crew");
         player.GetComponent<PlayerTriggerController>().SetUpBoat(spawnedBoat.GetComponent<BoatControls>());
 
         Transform cameraTopDown = transform.Find("TopDownCamera");
-        cameraTopDown.parent = spawnedBoat.transform;//67=y, .4 = z
-        cameraTopDown.localPosition = new Vector3(0, 67f, 0);
-        GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>().targetTransform = spawnedBoat.transform.Find("CamTargetTransform");
-        GameObject.Find("CameraWrapper/BoatCam").GetComponent<MouseLookBoat>().lookLocation = spawnedBoat.transform.Find("CamTargetTransform");
+        cameraTopDown.GetComponent<TopDownCamController>().SetUPCamera(spawnedBoat.transform);
+        var camControl  = GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>();
+        camControl.SetUPCamera(spawnedBoat);
     }
 
     public int GetTeam() {

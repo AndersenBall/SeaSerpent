@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 
 public class TestSetCombat : MonoBehaviour
 {
@@ -13,14 +14,20 @@ public class TestSetCombat : MonoBehaviour
 
         Fleet playerFleet = new Fleet("england", "jalapeno");
         for (int i = 0; i < ShipNumber; i++){
-            playerFleet.AddBoat(new Boat("p"+i, BoatType.Frigate));
+            Boat newBoat = new Boat("p"+i, BoatType.Frigate);
+            newBoat.SetCannon(new Cannon(CannonType.Carronade));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            playerFleet.AddBoat(newBoat);
         }
-        PlayerGlobal.playerBoat = new Boat("Serpent", BoatType.Frigate);
-        PlayerGlobal.playerBoat.SetBoatHealth(110);
+        
 
         Fleet enemFleet = new Fleet("france", "loser");
         for (int i=0; i< enemyShipNumber; i++){
-            enemFleet.AddBoat(new Boat("e"+i, BoatType.Frigate));
+            Boat newBoat = new Boat("e"+i, BoatType.Frigate);
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
+            enemFleet.AddBoat(newBoat);
         }
         
         //enemFleet.AddBoat(new Boat("e3", "TradeShip"));

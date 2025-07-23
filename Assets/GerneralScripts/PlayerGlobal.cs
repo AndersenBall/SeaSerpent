@@ -15,5 +15,8 @@ public class PlayerGlobal : MonoBehaviour
         }
         return false;
     }
-    
+
+    public static void AddMoney(float amount) {
+        money += amount;
+    }
 }

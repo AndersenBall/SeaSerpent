@@ -7,7 +7,13 @@ public class BoatHealth : MonoBehaviour
 {
 
     public float maxHealth = 100f;
-    public float currentHealth { get; set; } = 50f;
+    
+    [SerializeField] private float _currentHealth;
+    public float currentHealth
+    {
+        get { return _currentHealth; }
+        set { _currentHealth = value; }
+    }
     private bool isDead = false;
     private BoatControls boatControls;
     private HUDController hud;
@@ -17,6 +23,7 @@ public class BoatHealth : MonoBehaviour
 
     private void Start()
     {
+        currentHealth = maxHealth;
         boatControls = gameObject.GetComponentInParent<BoatControls>();
 
         healthCanvas = GetComponentInChildren<Canvas>();

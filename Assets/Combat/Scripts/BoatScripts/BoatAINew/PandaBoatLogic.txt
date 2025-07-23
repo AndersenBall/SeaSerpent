@@ -58,9 +58,10 @@ tree("DriveBy")
 					sequence
 						ChooseAttackDirection
 						CreateAttackVector
-						Wait 1.0	
+						Wait 1.0
 			sequence
-				CheckToFire	
+				UnitsToCannons
+				CheckToFire
 				Fire
 				CheckToRetreat
 

@@ -7,8 +7,8 @@ public class TownManager : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public float baseCostPerShip = 1000000;
-    public float costPerUnitDistance = 50;
+    public float baseCostPerShip = 100000;
+    public float costPerUnitDistance = 100;
 
     public Town[] towns { get; set; }
     public IDictionary<string, float> standardPrices = new Dictionary<string,float>();
@@ -72,12 +72,12 @@ public class TownManager : MonoBehaviour
             float totalProfit = profitGoods - transportationCost - cost;
 
             // Check if this trade is the most profitable and meets the minimum profit threshold
-            if (totalProfit > highestProfit && totalProfit > ((cost + transportationCost )* .2))
+            if (totalProfit > highestProfit )
             {
                 highestProfit = totalProfit;
                 chosenTown = t;
                 lessAmount = equalAmount;
-                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit );
+                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit + this.name);
             }
         }
 
@@ -91,7 +91,7 @@ public class TownManager : MonoBehaviour
             Fleet fleet = chosenTown.MakeTradeFleet(item, amount);
             if (fleet == null)
             {
-                Debug.LogError($"Failed to create a fleet for item: {item}, amount: {amount}.");
+                Debug.LogError($"Failed to create a fleet for item: {item}, amount: {amount}." + this.name);
                 return (null, -1);
             }
 

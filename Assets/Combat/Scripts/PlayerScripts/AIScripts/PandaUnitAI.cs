@@ -87,18 +87,30 @@ public class PandaUnitAI : MonoBehaviour
 
     }
 
-    private float PredictCannonAngle(float distance)
+    private float PredictCannonAngle(float distance, float firePower)
     {
-        float value = Mathf.Asin((distance - 7) / 4077.47f) / 2 * (180 / Mathf.PI);
-        if (float.IsNaN(value))
+        const float gravity = 9.81f; // Standard gravity in m/s^2
+    
+        // Ensure that the inputs make sense and avoid edge cases
+        if (distance <= 0f || firePower <= 0f)
         {
-            return 45f; // Default angle if prediction fails
+            return 45f; // Default angle if the inputs are invalid
         }
-        else
+
+        // Calculate the angle using the projectile motion formula
+        float term = gravity * distance / (firePower * firePower);
+        if (term > 1f) // If this condition is met, it means the target is out of range
         {
-            return value;
+            return 45f; // Default angle for unreachable targets
         }
+
+        // Calculate the angle in radians and convert it to degrees
+        float angleInRadians = Mathf.Asin(term) / 2f;
+        float angleInDegrees = angleInRadians * Mathf.Rad2Deg;
+
+        return angleInDegrees;
     }
+
     #endregion
 
     #region Panda BT Scripts
@@ -355,7 +367,7 @@ public class PandaUnitAI : MonoBehaviour
         float horizontalDistance = new Vector3(directionToEnemy.x, 0, directionToEnemy.z).magnitude;
         
         //calculate vertical
-        float desiredVerticalAngle = PredictCannonAngle(horizontalDistance);
+        float desiredVerticalAngle = PredictCannonAngle(horizontalDistance, nearestCannon.fireForce);
         desiredVerticalAngle -= Vector3.SignedAngle(nearestCannon.transform.up, Vector3.up, nearestCannon.transform.right); //adjust for ship tilt
 
         // Calc horizontal angle
