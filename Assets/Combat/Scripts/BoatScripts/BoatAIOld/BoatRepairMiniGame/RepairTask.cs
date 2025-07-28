@@ -9,14 +9,14 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
     public class RepairTask : MonoBehaviour
     {
         private BoatHealth boatHealth;
-        private float repairAmount; 
+        private int maxRepairAmount; 
         [SerializeField]
         private RhythmMiniGame rhythmMiniGame; 
         
-        public void Initialize(BoatHealth parentHealth, float healthRestore )
+        public void Initialize(BoatHealth parentHealth, int healthRestore )
         {
             boatHealth = parentHealth;
-            repairAmount = healthRestore;
+            maxRepairAmount = healthRestore;
         }
 
         private void OnMouseDown()
@@ -27,20 +27,16 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
                 rhythmMiniGame.StartRhythmGame();
             }
         }
-         private void OnMiniGameCompleted(bool success)
+         private void OnMiniGameCompleted(float accuracy)
         {
-            if (success)
+           
+            if (boatHealth != null)
             {
-                if (boatHealth != null)
-                {
-                    boatHealth.SetHealth(boatHealth.currentHealth + repairAmount);
-                    Debug.Log($"Repair successful! Restored {repairAmount} health.");
-                }
+                int repairAmount = Mathf.RoundToInt(maxRepairAmount * accuracy);
+                boatHealth.currentHealth = boatHealth.currentHealth + repairAmount;
+                Debug.Log($"Repair successful! Restored {repairAmount } our of {maxRepairAmount} health.");
             }
-            else
-            {
-                Debug.Log("Repair failed!");
-            }
+            
             
             RemoveTask();
         }

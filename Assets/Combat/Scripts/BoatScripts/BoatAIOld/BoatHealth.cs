@@ -6,14 +6,27 @@ using UnityEngine.UI;
 
 public class BoatHealth : MonoBehaviour
 {
+    [SerializeField]
+    public int _maxHealth = 100;
+    public int maxHealth{
+        get{ return _maxHealth; }
+        set{
+            _maxHealth = Mathf.Clamp(value, 1, 1000); 
+            if (healthSlider is not null){
+                healthSlider.maxValue = maxHealth;
+            }
+        }
+    }
+    
+    [SerializeField] private int _currentHealth;
 
-    public float maxHealth = 100f;
-
-    [SerializeField] private float _currentHealth;
-
-    public float currentHealth{
+    public int currentHealth{
         get{ return _currentHealth; }
-        set{ _currentHealth = value; }
+        set{ 
+            _currentHealth = Mathf.Clamp(value, 0, maxHealth);
+
+            UpdateHUD();
+        }
     }
 
     private bool isDead = false;
@@ -29,7 +42,7 @@ public class BoatHealth : MonoBehaviour
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        
         boatControls = gameObject.GetComponentInParent<BoatControls>();
 
         healthCanvas = GetComponentInChildren<Canvas>();
@@ -41,6 +54,8 @@ public class BoatHealth : MonoBehaviour
             }
         }
 
+        currentHealth = maxHealth;
+        
         if (boatControls.GetPlayerControlled()) // Only find HUD if this is the player's boat
         {
             hud = GameObject.Find("HUD/Canvas")?.GetComponent<HUDController>();
@@ -50,17 +65,12 @@ public class BoatHealth : MonoBehaviour
     }
 
 
-    public void TakeDamage(float damageAmount)
+    public void TakeDamage(int damageAmount)
     {
-        if (isDead) return; // Ignore damage if already dead
+        if (isDead) return; 
 
         currentHealth -= damageAmount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Ensure health doesn't go below 0
-        healthSlider.value = currentHealth;
-
-        UpdateHUD();
-
-
+        
         if (currentHealth <= 0f){
             isDead = true;
             Die();
@@ -69,17 +79,8 @@ public class BoatHealth : MonoBehaviour
         SpawnRepairTask(damageAmount);
 
     }
-
-    public void SetHealth(float hp)
-    {
-        currentHealth = Mathf.Clamp(hp, 0, maxHealth);
-
-        // Update the health bar
-        if (healthSlider != null){
-            healthSlider.value = currentHealth;
-        }
-
-    }
+    
+    
 
     public float GetHealth()
     {
@@ -97,14 +98,15 @@ public class BoatHealth : MonoBehaviour
 
     private void UpdateHUD()
     {
+        if (healthSlider is null) return;
         healthSlider.value = currentHealth;
 
-        if (boatControls.GetPlayerControlled() && hud != null){
-            hud.UpdateHealth(currentHealth); // Update the HUD with current health
+        if (boatControls.GetPlayerControlled() && hud is not null){
+            hud.UpdateHealth(currentHealth); 
         }
     }
 
-    private void SpawnRepairTask(float healthRestore)
+    private void SpawnRepairTask(int healthRestore)
     {
         if (repairTaskPrefab == null || shipTransform == null){
             Debug.LogWarning("RepairTask prefab or ship transform missing.");

@@ -5,98 +5,125 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RhythmMiniGame : MonoBehaviour
+namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 {
-    [Header("UI Elements")]
-    public GameObject buttonPrefab; // Prefab for the rhythm buttons
-    public Transform spawnParent;  // Parent object for spawned notes
-    public Slider progressSlider;  // Slider to show mini-game progress
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    [Header("Game Settings")]
-    public float gameDuration = 5.0f;  // Duration of the mini-game
-    public int totalNotes = 10;       // Number of notes in this session
-
-    private float timeBetweenNotes;
-    private List<GameObject> activeNotes = new List<GameObject>();
-    private int currentNoteIndex = 0;
-    private float elapsedTime;
-
-    private bool gameActive = false;
-
-    public delegate void MiniGameResult(bool success);
-    public MiniGameResult onMiniGameCompleted;
-
-    private void Start()
+    public class RhythmMiniGame : MonoBehaviour
     {
-        progressSlider.maxValue = gameDuration;
-    }
+        [Header("UI Elements")]
+        public GameObject buttonPrefab; 
+        public Transform spawnParent;  
+        public Slider progressSlider;  
 
-    public void StartRhythmGame()
-    {
-        gameActive = true;
-        elapsedTime = 0f;
-        timeBetweenNotes = gameDuration / totalNotes;
-        StartCoroutine(SpawnNotes());
-    }
+        [Header("Game Settings")]
+        public float gameDuration = 5.0f;  
+        public int totalNotes = 10;        
 
-    private void Update()
-    {
-        if (!gameActive) return;
+        private float timeBetweenNotes;
 
-        elapsedTime += Time.deltaTime;
-        progressSlider.value = elapsedTime;
+        private float elapsedTime;
 
-        if (elapsedTime >= gameDuration)
+        private bool gameActive = false;
+
+        public delegate void MiniGameResult(float score); // Percentage score: 0–100
+        public MiniGameResult onMiniGameCompleted;
+
+        public int numberNotesPlayed = 0;
+        private float totalScore = 0f; 
+
+        private void Start()
         {
-            EndMiniGame(currentNoteIndex >= totalNotes); // Success if all notes were hit
+            progressSlider.maxValue = gameDuration;
         }
 
-        // Handle player input
-        if (Input.GetKeyDown(KeyCode.Space)) // Replace with dynamic key detection
+        public void StartRhythmGame()
         {
-            CheckPlayerInput();
+            gameActive = true;
+            elapsedTime = 0f;
+            totalScore = 0f;
+            timeBetweenNotes = gameDuration / totalNotes;
+            StartCoroutine(SpawnNotes());
         }
-    }
 
-    private IEnumerator SpawnNotes()
-    {
-        for (int i = 0; i < totalNotes; i++)
+        private void Update()
         {
-            GameObject note = Instantiate(buttonPrefab, spawnParent);
-            activeNotes.Add(note);
-            yield return new WaitForSeconds(timeBetweenNotes);
-        }
-    }
+            if (!gameActive) return;
 
-    private void CheckPlayerInput()
-    {
-        if (currentNoteIndex < activeNotes.Count)
+            elapsedTime += Time.deltaTime;
+            progressSlider.value = elapsedTime;
+
+            if (elapsedTime >= gameDuration + 3f)
+            {
+                EndMiniGame();
+            }
+        }
+
+        private IEnumerator SpawnNotes()
         {
-            // Check if player hit the correct note or missed
-            GameObject note = activeNotes[currentNoteIndex];
-            currentNoteIndex++;
-            Destroy(note);
+            for (int i = 0; i < totalNotes; i++)
+            {
+                Vector3 randomPosition = new Vector3(
+                    Random.Range(-100f, 100f),  
+                    Random.Range(-50f, 50f),   
+                    0                          
+                );
+            
+                GameObject note = Instantiate(buttonPrefab, spawnParent);
+                note.transform.localPosition = randomPosition;
 
-            Debug.Log("Note Hit!");
+                // Hook into the note's judgment system to record scores
+                NoteScript noteScript = note.GetComponent<NoteScript>();
+                if (noteScript != null)
+                {
+                    noteScript.onNoteCompleted = OnNoteCompleted;
+                }
+                
+
+                yield return new WaitForSeconds(timeBetweenNotes);
+            }
         }
-        else
+
+        private void OnNoteCompleted(Judgment judgment)
         {
-            Debug.Log("Missed or Extra Input!");
-        }
-    }
+            switch (judgment)
+            {
+                case Judgment.Perfect:
+                    totalScore += 100f;
+                    break;
+                case Judgment.Good:
+                    totalScore += 65f;
+                    break;
+                case Judgment.Meh:
+                    totalScore += 35f;
+                    break;
+                case Judgment.Miss:
+                    totalScore += 0f; 
+                    break;
+            }
 
-    private void EndMiniGame(bool success)
-    {
-        gameActive = false;
-        StopAllCoroutines(); // Stop spawning notes if still active
-        foreach (var note in activeNotes)
+            numberNotesPlayed++;
+            if (numberNotesPlayed> totalNotes)
+            {
+                EndMiniGame();
+            }
+        }
+
+        private void EndMiniGame()
         {
-            Destroy(note);
-        }
-        activeNotes.Clear();
+            gameActive = false;
+            StopAllCoroutines(); 
 
-        onMiniGameCompleted?.Invoke(success); // Notify listeners
-        Debug.Log("Mini-Game Completed: " + success);
+            // Calculate final normalized score
+            float maxPossibleScore = totalNotes * 100f; 
+            float finalModifier = (totalScore / maxPossibleScore); 
+
+            onMiniGameCompleted?.Invoke(finalModifier); 
+            Debug.Log($"Mini-Game Completed! Final Score: {finalModifier:F3}%");
+        }
     }
 }
 }
