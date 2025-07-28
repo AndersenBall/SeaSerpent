@@ -45,7 +45,8 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             gameActive = true;
             elapsedTime = 0f;
             totalScore = 0f;
-            timeBetweenNotes = gameDuration / totalNotes;
+            timeBetweenNotes = totalNotes >= 20 ? 0.25f : 0.5f;
+            gameDuration = timeBetweenNotes * totalNotes;
             StartCoroutine(SpawnNotes());
         }
 
