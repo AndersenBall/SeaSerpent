@@ -8390,8 +8390,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 22, y: 40, z: 4.2913957}
-  m_Center: {x: 0, y: 26.988663, z: -0.0000019073485}
+  m_Size: {x: 5, y: 5, z: 5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4630249278865727436
 GameObject:
   m_ObjectHideFlags: 0
@@ -16005,8 +16005,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 22, y: 40, z: 2}
-  m_Center: {x: -0.048533913, y: 27.687397, z: 0}
+  m_Size: {x: 5, y: 5, z: 5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &579121890307689568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16019,6 +16019,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f44f6dcaf692af428352f5392eccff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  globalWindDirection: {x: 0, y: 0, z: 1}
+  rotationSpeed: 10
+  minHorizontalAngle: -90
+  maxHorizontalAngle: 90
 --- !u!1 &6903081656365965554
 GameObject:
   m_ObjectHideFlags: 0
@@ -16113,6 +16117,7 @@ GameObject:
   - component: {fileID: 3857713187163101294}
   - component: {fileID: 531901719724732757}
   - component: {fileID: 6951147259639514435}
+  - component: {fileID: 5931003405925370955}
   m_Layer: 13
   m_Name: Sail_02
   m_TagString: Untagged
@@ -16185,6 +16190,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5931003405925370955
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6934330330842054389}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 22, y: 40, z: 2}
+  m_Center: {x: -0.048533913, y: 0, z: 0}
 --- !u!1 &6956196617635777722
 GameObject:
   m_ObjectHideFlags: 0
@@ -36626,7 +36652,7 @@ Transform:
   m_GameObject: {fileID: 8039016306924350525}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.72, z: 12.74}
+  m_LocalPosition: {x: 0, y: 3.72, z: 12.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37318,6 +37344,7 @@ GameObject:
   - component: {fileID: 607312907329157459}
   - component: {fileID: 4632339918994335124}
   - component: {fileID: 5621424760407523498}
+  - component: {fileID: 8961059877013967469}
   m_Layer: 13
   m_Name: Sail_01
   m_TagString: Untagged
@@ -37390,6 +37417,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8961059877013967469
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8642096798383833561}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 22, y: 40, z: 4.2913957}
+  m_Center: {x: 0, y: 0, z: -0.0000019073485}
 --- !u!1 &8708076800015949971
 GameObject:
   m_ObjectHideFlags: 0

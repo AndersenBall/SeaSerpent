@@ -19,9 +19,10 @@ public class MastControls : MonoBehaviour
     [SerializeField]
     private Vector3 globalWindDirection = Vector3.forward; 
     public bool IsInSweetSpot { get; private set; } 
-    public bool IsBeyondMaxRotation { get; private set; } 
+    public bool IsBeyondMaxRotation { get; private set; }
+    public bool sweetSpotInMaxRotation{ get; private set; }
 
-    
+
     [SerializeField]
     private float rotationSpeed = 10f; 
 
@@ -91,14 +92,34 @@ public class MastControls : MonoBehaviour
         float angleDifference = Vector3.Angle(mastForward, globalWindDirection);
         
         float windRelativeAngle = Vector3.SignedAngle(transform.forward, globalWindDirection, Vector3.up);
-
+        
         IsBeyondMaxRotation = windRelativeAngle < minHorizontalAngle || windRelativeAngle > maxHorizontalAngle;
         
         float tolerance = 10f; 
         IsInSweetSpot = angleDifference <= tolerance;
 
-        
+        // Check if mast is at max rotation and wind is beyond bounds on left or right
+        if (IsBeyondMaxRotation)
+        {
+            if (windRelativeAngle < minHorizontalAngle && _targetAngle == minHorizontalAngle)
+            {
+                sweetSpotInMaxRotation = true; // Wind beyond left, mast at max left
+            }
+            else if (windRelativeAngle > maxHorizontalAngle && _targetAngle == maxHorizontalAngle)
+            {
+                sweetSpotInMaxRotation = true; // Wind beyond right, mast at max right
+            }
+            else
+            {
+                sweetSpotInMaxRotation = false;
+            }
+        }
+        else
+        {
+            sweetSpotInMaxRotation = false; // Reset if wind is not beyond limits
+        }
     }
+
 
 
 
