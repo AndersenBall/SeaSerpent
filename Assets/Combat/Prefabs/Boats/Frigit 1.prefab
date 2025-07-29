@@ -745,8 +745,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e8a1702dee7d64f8170bf878462782, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  _maxHealth: 100
   _currentHealth: 0
+  repairTaskPrefab: {fileID: 8284009210540312629, guid: 550bc8b8e83c66c45b96087228fbd33e,
+    type: 3}
+  shipTransform: {fileID: 117555807658964287}
 --- !u!1 &427348213377470279
 GameObject:
   m_ObjectHideFlags: 0
@@ -15865,6 +15868,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectionIndicator: {fileID: 5309022571543982389}
+  boatControl: {fileID: 0}
   _targetEnemy: {fileID: 0}
   attackVector: {x: 0, y: 0}
   attackDirection: 
@@ -15873,6 +15877,7 @@ MonoBehaviour:
   runningAway: 0
   isDead: 0
   playerOnBoard: 0
+  maxRange: 1000
 --- !u!114 &2223229389332775795
 MonoBehaviour:
   m_ObjectHideFlags: 0

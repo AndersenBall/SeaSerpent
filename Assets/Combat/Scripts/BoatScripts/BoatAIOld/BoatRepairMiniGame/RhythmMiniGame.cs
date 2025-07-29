@@ -16,7 +16,6 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
     {
         [Header("UI Elements")]
         public GameObject buttonPrefab; 
-        public Transform spawnParent;  
         public Slider progressSlider;  
 
         [Header("Game Settings")]
@@ -73,7 +72,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
                     0                          
                 );
             
-                GameObject note = Instantiate(buttonPrefab, spawnParent);
+                GameObject note = Instantiate(buttonPrefab, transform);
                 note.transform.localPosition = randomPosition;
 
                 // Hook into the note's judgment system to record scores

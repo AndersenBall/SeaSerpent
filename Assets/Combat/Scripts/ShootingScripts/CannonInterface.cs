@@ -26,7 +26,7 @@ public class CannonInterface : MonoBehaviour
     [SerializeField]
     private float _wantedHorizontalAngle = 0;
 
-    public float baseCannonDamage = 0;
+    public int baseCannonDamage = 0;
     public float WantedVerticalAngle
     {
         get => -_wantedVerticalAngle; 

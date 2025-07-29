@@ -24,8 +24,10 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             maxRepairAmount = healthRestore;
         }
 
+        //TODO wont work. need to use a raycast
         private void OnMouseDown()
         {
+            Debug.Log("starting mini game");
             if (boatHealth == null) return;
 
             GameObject miniGameInstance = Instantiate(rhythmMiniGamePrefab, uiParent);

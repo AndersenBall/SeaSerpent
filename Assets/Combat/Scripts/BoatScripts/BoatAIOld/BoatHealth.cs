@@ -56,15 +56,14 @@ public class BoatHealth : MonoBehaviour
 
         currentHealth = maxHealth;
         
-        if (boatControls.GetPlayerControlled()) // Only find HUD if this is the player's boat
+        if (boatControls.GetPlayerControlled()) 
         {
             hud = GameObject.Find("HUD/Canvas")?.GetComponent<HUDController>();
             UpdateHUD();
         }
 
     }
-
-
+    
     public void TakeDamage(int damageAmount)
     {
         if (isDead) return; 
@@ -78,13 +77,6 @@ public class BoatHealth : MonoBehaviour
 
         SpawnRepairTask(damageAmount);
 
-    }
-    
-    
-
-    public float GetHealth()
-    {
-        return currentHealth;
     }
 
     private void Die()
@@ -115,7 +107,7 @@ public class BoatHealth : MonoBehaviour
 
         // Generate a position for the repair task
         Vector3 randomPosition = shipTransform.position + new Vector3(
-            Random.Range(-2f, 2f), 0.5f, Random.Range(-2f, 2f));
+            Random.Range(-5f, 5f), 7f, Random.Range(-5f, 5f));
 
         // Instantiate the repair task
         GameObject taskInstance = Instantiate(repairTaskPrefab, randomPosition, Quaternion.identity, shipTransform);
