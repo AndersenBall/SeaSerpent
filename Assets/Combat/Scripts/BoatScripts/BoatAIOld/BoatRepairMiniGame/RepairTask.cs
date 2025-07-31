@@ -25,7 +25,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
         }
 
         //TODO wont work. need to use a raycast
-        private void OnMouseDown()
+        public void startMiniGame()
         {
             Debug.Log("starting mini game");
             if (boatHealth == null) return;
