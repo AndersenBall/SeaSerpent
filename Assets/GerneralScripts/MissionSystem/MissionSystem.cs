@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MapMode.Scripts;
 using UnityEngine;
 
 [Serializable]
@@ -51,15 +52,17 @@ public class MissionSystem : MonoBehaviour
         // Press B to simulate killing a goblin
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Debug.Log("Killed a goblin!");
-            GameEvents.EnemyKilled("Goblin");
+            Debug.Log("Killed a British Fleet!");
+            CombatEvents.InvokeEnemyKilled("BritishFleet");
+   
         }
 
         // Press N to simulate killing a human
         if (Input.GetKeyDown(KeyCode.N))
         {
-            Debug.Log("Killed a human!");
-            GameEvents.EnemyKilled("Human");
+            Debug.Log("Killed a French Fleet!");
+
+            CombatEvents.InvokeEnemyKilled("FrenchFleet");
         }
 
         if (Input.GetKey(KeyCode.M))

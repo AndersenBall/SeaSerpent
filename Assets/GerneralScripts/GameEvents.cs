@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using MapMode.Scripts;
 using UnityEngine;
 
 public class GameEvents : MonoBehaviour
@@ -8,8 +9,6 @@ public class GameEvents : MonoBehaviour
     public static GameEvents Instance { get; private set; }
     public static System.Action SaveInitiated;
     public static System.Action LoadInitiated;
-
-    public static event Action<string> OnEnemyKilled;
     
     private void Awake()
     {
@@ -42,14 +41,9 @@ public class GameEvents : MonoBehaviour
         }
     }
 
-
-    public static void EnemyKilled(string enemyID)
-    {
-        OnEnemyKilled?.Invoke(enemyID);
-    }
-
-    public static void ClearActions() {
+    public static void ClearEvents() {
         SaveInitiated = null;
         LoadInitiated = null;
+        
     }
 }
