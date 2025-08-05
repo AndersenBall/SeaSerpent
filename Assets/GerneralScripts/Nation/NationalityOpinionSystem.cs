@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MapMode.Scripts;
+using MapMode.Scripts.NavalInteractionContracts;
 using UnityEngine;
 
 [Serializable]
@@ -45,6 +47,7 @@ public class NationalityOpinionSystem : MonoBehaviour
     {
         GameEvents.SaveInitiated += Save;
         GameEvents.LoadInitiated += Load;
+        NavalInteractionEvent.AttackedFleet += HandleAttackEvent;
     }
     private void Start()
     {
@@ -65,10 +68,21 @@ public class NationalityOpinionSystem : MonoBehaviour
     {
         GameEvents.SaveInitiated -= Save;
         GameEvents.LoadInitiated -= Load;
+        NavalInteractionEvent.AttackedFleet -= HandleAttackEvent;
     }
     
     #endregion
 
+    #region  handle events
+
+    public void HandleAttackEvent(AttackFleetEvent attackEvent)
+    {
+        if (attackEvent.PlayerStartedAttack){
+            ModifyOpinion(attackEvent.EnemyFleet.Nationality,-10);
+        }
+    }
+
+    #endregion
     #region modify opinions 
     public void ModifyOpinion(Nation nationality, int amount)
     {

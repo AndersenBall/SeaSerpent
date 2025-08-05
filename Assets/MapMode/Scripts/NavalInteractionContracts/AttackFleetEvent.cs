@@ -2,20 +2,19 @@
 {
     public class AttackFleetEvent
     {
-        public Fleet EnemyFleetID { get; private set; } 
+        public Fleet EnemyFleet { get; private set; } 
         public bool PlayerStartedAttack { get; private set; } // True if the player initiated the attack, false if the enemy started
-
-        // Constructor
-        public AttackFleetEvent(Fleet enemyFleetID, bool playerStartedAttack)
+        
+        public AttackFleetEvent(Fleet enemyFleet, bool playerStartedAttack)
         {
-            EnemyFleetID = enemyFleetID;
+            EnemyFleet = enemyFleet;
             PlayerStartedAttack = playerStartedAttack;
         }
         
         public override string ToString()
         {
             return $"Attack Event: PlayerInitiated = {PlayerStartedAttack}, " +
-                   $"EnemyFleetID = {EnemyFleetID}";
+                   $"EnemyFleetID = {EnemyFleet}";
         }
     }
 
