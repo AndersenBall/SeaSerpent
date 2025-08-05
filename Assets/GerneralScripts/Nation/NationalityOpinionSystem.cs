@@ -38,7 +38,38 @@ public class NationalityOpinionSystem : MonoBehaviour
         { Nation.BarbaryCorsairs, 0 },
         { Nation.BrethrenOfTheCoast, 0 }
     };
+    
+    # region monohaviors 
+    
+    private void Awake()
+    {
+        GameEvents.SaveInitiated += Save;
+        GameEvents.LoadInitiated += Load;
+    }
+    private void Start()
+    {
+        // Ensure this instance is the singleton
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this);
+            return;
+        }
 
+        _instance = this;
+
+        DisplayOpinions();
+        InvokeRepeating(nameof(UpdateOpinionsOverTime), 30f, 30f); // Decay opinions every 30 seconds
+    }
+
+    private void OnDestroy()
+    {
+        GameEvents.SaveInitiated -= Save;
+        GameEvents.LoadInitiated -= Load;
+    }
+    
+    #endregion
+
+    #region modify opinions 
     public void ModifyOpinion(Nation nationality, int amount)
     {
         if (NationalityOpinions.ContainsKey(nationality))
@@ -89,6 +120,9 @@ public class NationalityOpinionSystem : MonoBehaviour
             Debug.Log($"{pair.Key}: {pair.Value}");
         }
     }
+    #endregion
+    
+    #region  save load
 
     public void Save()
     {
@@ -106,29 +140,8 @@ public class NationalityOpinionSystem : MonoBehaviour
 
     }
 
-    private void Awake()
-    {
-        GameEvents.SaveInitiated += Save;
-        GameEvents.LoadInitiated += Load;
-    }
-    private void Start()
-    {
-        // Ensure this instance is the singleton
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this);
-            return;
-        }
+    #endregion
+    
 
-        _instance = this;
-
-        DisplayOpinions();
-        InvokeRepeating(nameof(UpdateOpinionsOverTime), 30f, 30f); // Decay opinions every 30 seconds
-    }
-
-    private void OnDestroy()
-    {
-        GameEvents.SaveInitiated -= Save;
-        GameEvents.LoadInitiated -= Load;
-    }
+    
 }
