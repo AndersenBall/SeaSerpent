@@ -10,7 +10,7 @@ public class Fleet
     public int FleetSizeLimit = 3;// how many boats someone can control before they get penalized
 
     public string FlagShip = "None";
-    public string Nationality = "British";
+    public Nation Nationality = Nation.Britain;
     public float fleetSpeed = 10;
     public float fleetAcceleration = 10;
     public float diminishingFactorSpeed = 1;
@@ -22,7 +22,7 @@ public class Fleet
     public int FleetID { get; private set; }
 
 
-    public Fleet(string Natio,string command) {
+    public Fleet(Nation Natio,string command) {
         Nationality = Natio;
         commander = command;
         FleetID = BoatAILead.AssignID();

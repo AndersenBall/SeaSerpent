@@ -42,7 +42,7 @@ public class PlayerFleetMapController : MonoBehaviour
     {
 
         //UpdateBoatNames();
-        SceneTransfer.playerFleet = new Fleet("House Of Ball","Andersen");
+        SceneTransfer.playerFleet = new Fleet(Nation.PlayerNation,"Andersen");
         SceneTransfer.playerFleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
         SceneTransfer.playerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
 

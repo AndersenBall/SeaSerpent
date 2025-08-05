@@ -1,5 +1,6 @@
 public enum Nation
 {
+    PlayerNation,
     Britain,
     Spain,
     Netherlands,
