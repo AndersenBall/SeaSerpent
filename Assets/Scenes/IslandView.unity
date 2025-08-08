@@ -806,7 +806,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: England
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -1874,7 +1874,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Netherlands
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -6752,7 +6752,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: England
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -7798,7 +7798,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -8875,7 +8875,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -10770,7 +10770,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -13867,7 +13867,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: France
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -16034,7 +16034,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -17967,7 +17967,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -20084,7 +20084,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: England
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -23725,7 +23725,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
@@ -25639,7 +25639,7 @@ PrefabInstance:
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
-      value: Spain
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
