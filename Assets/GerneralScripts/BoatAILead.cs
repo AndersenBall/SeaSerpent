@@ -17,10 +17,13 @@ public class BoatAILead : MonoBehaviour
     public GameObject prefabFleet;
     void Start() {
         GameEvents.SaveInitiated += SaveIDs;
-        
         GameEvents.LoadInitiated += LoadAllBoats;
     }
-
+    private void OnDestroy()
+    {
+        GameEvents.SaveInitiated -= SaveIDs;
+        GameEvents.LoadInitiated -= LoadAllBoats;
+    }
 
 
     public static int AssignID() {

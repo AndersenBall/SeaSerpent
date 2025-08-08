@@ -12,7 +12,7 @@ public class TestSetCombat : MonoBehaviour
     void Start()
     {
 
-        Fleet playerFleet = new Fleet("england", "jalapeno");
+        Fleet playerFleet = new Fleet(Nation.Britain, "jalapeno");
         for (int i = 0; i < ShipNumber; i++){
             Boat newBoat = new Boat("p"+i, BoatType.Frigate);
             newBoat.SetCannon(new Cannon(CannonType.Carronade));
@@ -22,7 +22,7 @@ public class TestSetCombat : MonoBehaviour
         }
         
 
-        Fleet enemFleet = new Fleet("france", "loser");
+        Fleet enemFleet = new Fleet(Nation.Britain, "loser");
         for (int i=0; i< enemyShipNumber; i++){
             Boat newBoat = new Boat("e"+i, BoatType.Frigate);
             newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
@@ -38,9 +38,5 @@ public class TestSetCombat : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 }
