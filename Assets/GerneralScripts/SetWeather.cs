@@ -18,7 +18,8 @@ public class SetWeather : MonoBehaviour
         fogSettings.fog = true;
         fogSettings.volumetrics = true;
         fogSettings.quality = Enviro.EnviroFogSettings.Quality.Medium;
-    
+
+        Enviro.EnviroManager.instance.Weather.ChangeWeather("Foggy");
         Debug.Log($"Fog Enabled: {fogSettings.fog}, Volumetrics: {fogSettings.volumetrics}, Quality: {fogSettings.quality}");
 
     }
