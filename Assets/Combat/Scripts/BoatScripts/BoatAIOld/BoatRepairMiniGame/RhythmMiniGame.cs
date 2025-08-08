@@ -36,7 +36,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 
         private void Start()
         {
-            progressSlider.maxValue = gameDuration;
+            //progressSlider.maxValue = gameDuration;
         }
 
         public void StartRhythmGame()
@@ -54,7 +54,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             if (!gameActive) return;
 
             elapsedTime += Time.deltaTime;
-            progressSlider.value = elapsedTime;
+            //progressSlider.value = elapsedTime;
 
             if (elapsedTime >= gameDuration + 3f)
             {

@@ -32,12 +32,15 @@ public class ItemPickUp : MonoBehaviour
     {
         RaycastHit hit;
         Debug.DrawRay(fpsCam.transform.position + fpsCam.transform.forward / 10, fpsCam.transform.forward, Color.green);
-        if (Physics.Raycast(fpsCam.transform.position+fpsCam.transform.forward/10, fpsCam.transform.forward, out hit, range)) {
-            Debug.Log("interacted with:" + hit.transform.tag);
-            if (hit.transform.CompareTag("CannonBall")) {
+        int layerMask = LayerMask.GetMask("InteractablePiece");
+        
+        if (Physics.Raycast(fpsCam.transform.position+fpsCam.transform.forward/10, fpsCam.transform.forward, out hit, range, layerMask)) {
+            Debug.Log($"Hit correct collider: {hit.collider.name}, layer: {hit.collider.gameObject.layer}");
+            
+            if (hit.collider.transform.CompareTag("CannonBall")) {
                 HandleCannonBallPickup();
             }
-            if (hit.transform.CompareTag("RepairTask")) // Use a tag for objects that trigger the mini-game
+            if (hit.collider.transform.CompareTag("RepairTag")) 
             {
                 OnRepairTaskRaycastHit(hit);
             }
@@ -50,7 +53,7 @@ public class ItemPickUp : MonoBehaviour
     {
         Debug.Log("Starting mini-game");
         
-        RepairTask repairTask = hit.transform.GetComponent<RepairTask>();
+        RepairTask repairTask = hit.collider.transform.GetComponent<RepairTask>();
         if (repairTask != null){
             repairTask.startMiniGame();
         }

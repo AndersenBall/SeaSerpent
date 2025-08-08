@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5181088632822634357}
   - component: {fileID: 3182432533213968433}
   - component: {fileID: 3027699309925075720}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: RepairTag
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

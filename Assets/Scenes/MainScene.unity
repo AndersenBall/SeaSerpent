@@ -5468,7 +5468,7 @@ PrefabInstance:
     - target: {fileID: 996195548129873621, guid: f87a6dcf3b7b272429c0d328e33aa03f,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 1013523
+      value: 9402131
       objectReference: {fileID: 0}
     - target: {fileID: 6866982216862303089, guid: f87a6dcf3b7b272429c0d328e33aa03f,
         type: 3}
@@ -6100,7 +6100,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1011479
+    m_Bits: 9400087
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -11101,8 +11101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e8a1702dee7d64f8170bf878462782, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  _maxHealth: 100
   _currentHealth: 0
+  repairTaskPrefab: {fileID: 0}
+  shipTransform: {fileID: 0}
 --- !u!4 &3935896444948166830
 Transform:
   m_ObjectHideFlags: 0
