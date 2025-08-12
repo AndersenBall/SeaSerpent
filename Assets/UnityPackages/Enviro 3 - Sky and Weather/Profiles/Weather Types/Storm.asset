@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbac6e678443724c9bd2baf5d564c1d, type: 3}
   m_Name: Storm
   m_EditorClassIdentifier: 
-  showEditor: 0
+  showEditor: 1
   showEffectControls: 0
   showCloudControls: 0
   showFlatCloudControls: 0
   showFogControls: 0
-  showSkyControls: 0
-  showLightingControls: 0
+  showSkyControls: 1
+  showLightingControls: 1
   showAuroraControls: 0
   showEnvironmentControls: 0
   showAudioControls: 0
   showAmbientAudioControls: 0
   showWeatherAudioControls: 0
-  showLightningControls: 1
+  showLightningControls: 0
   cloudsOverride:
     ambientLightIntensity: 0.187
-    showLayer1: 0
+    showLayer1: 1
     coverageLayer1: 0.163
     dilateCoverageLayer1: 1
     dilateTypeLayer1: 0.233
@@ -73,16 +73,16 @@ MonoBehaviour:
     flatCloudsAmbientIntensity: 1
     flatCloudsAbsorbtion: 0.782
   lightingOverride:
-    directLightIntensityModifier: 0.33
-    ambientIntensityModifier: 0.5
-    shadowIntensity: 1
+    directLightIntensityModifier: 0
+    ambientIntensityModifier: 0
+    shadowIntensity: 0
   skyOverride:
     intensity: 1
-    skyColorTint: {r: 1, g: 1, b: 1, a: 1}
+    skyColorTint: {r: 0.010188653, g: 0.01428754, b: 0.03396219, a: 1}
   fogOverride:
-    fogDensity: 0
+    fogDensity: 0.059
     fogHeightFalloff: 0.0039
-    fogHeight: 0
+    fogHeight: 6
     fogDensity2: 0.598
     fogHeightFalloff2: 0.0177
     fogHeight2: -30
@@ -113,7 +113,7 @@ MonoBehaviour:
       winter: 0
   lightningOverride:
     lightningStorm: 1
-    randomLightningDelay: 5
+    randomLightningDelay: 5.8
   environmentOverride:
     temperatureWeatherMod: 0
     wetnessTarget: 1
