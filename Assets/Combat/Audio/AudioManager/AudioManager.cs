@@ -13,7 +13,7 @@ public class AudioManager : MonoBehaviour
 
 	private void Start()
 	{
-		Play("WesternSong");
+		//Play("WesternSong");
 	}
 	void Awake()
 	{
