@@ -90,8 +90,8 @@ public class Boat
 
         boatSpeed = modifiedStats.speed;
         turnSpeed = modifiedStats.turnSpeed;
-        currentBoatHealth = Mathf.Max(1,modifiedStats.maxHealth - maxBoatHealth + currentBoatHealth);
         maxBoatHealth = modifiedStats.maxHealth;
+        currentBoatHealth = Mathf.Max(1,modifiedStats.maxHealth - maxBoatHealth + currentBoatHealth);
         cargoMax = modifiedStats.cargoMax;
         maxSailorCount = modifiedStats.maxSailorCount;
     }

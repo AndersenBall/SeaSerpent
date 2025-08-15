@@ -52,13 +52,13 @@ public class MouseLookBoat : MonoBehaviour
             else {
                 if (Vector3.Dot(playerBody.right, lookLocation.forward) < -.3f) {
                     zoomType = "right";
-                    this.transform.localPosition = new Vector3(0, 0, -10);
-                    lookLocation.localPosition = new Vector3(10, 10, 6);
+                    this.transform.localPosition = new Vector3(0, 0, -5);
+                    lookLocation.localPosition = new Vector3(10, 10, 4);
                 }
                 if (Vector3.Dot(playerBody.right, lookLocation.forward) > .3f) {
                     zoomType = "right";
-                    this.transform.localPosition = new Vector3(0, 0, -10);
-                    lookLocation.localPosition = new Vector3(-10, 10, 6);
+                    this.transform.localPosition = new Vector3(0, 0, -5);
+                    lookLocation.localPosition = new Vector3(-10, 10, 4);
                 }
                 //Debug.Log("zoomtype: " + zoomType + "looking dot: " + Vector3.Dot(playerBody.right, lookLocation.forward));
 
