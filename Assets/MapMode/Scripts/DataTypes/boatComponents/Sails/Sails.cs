@@ -3,18 +3,25 @@
     [System.Serializable]
     public class Sails : IBoatComponent
     {
-        public string Name { get; private set; }
-        public float SpeedBoost { get; private set; }
+        public SailType Type { get; private set; }
+        public SailStats SailStats { get; private set; }
 
-        public Sails(string name, float speedBoost)
+        public Sails(SailType type)
         {
-            Name = name;
-            SpeedBoost = speedBoost;
+            Type = type;
+            if (SailStatsDatabase.BaseStats.TryGetValue(type, out SailStats stats))
+            {
+                SailStats = stats;
+            }
         }
 
         public void ApplyEffect(BoatStats stats)
         {
-            stats.speed += SpeedBoost;
+            if (SailStats == null) return;
+            stats.speed += SailStats.speedMultiplier;
+            stats.turnSpeed += SailStats.turnSpeedMultiplier;
+            stats.maxSailHealth += SailStats.sailHealth;
         }
+
     }
 }

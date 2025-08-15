@@ -42,7 +42,7 @@ public class Boat
         if (BoatStatsDatabase.BaseStats.TryGetValue(type, out BoatStats boatStats))
         {
             baseStats = boatStats;
-            currentBoatHealth = baseStats.health;
+            currentBoatHealth = baseStats.maxHealth;
             RecalculateStats();
             AddSailor(new Sailor("tom",SailorType.Gunner));
             AddSailor(new Sailor("jerry", SailorType.Gunner));
@@ -78,7 +78,7 @@ public class Boat
         BoatStats modifiedStats = new BoatStats(
             baseStats.speed,
             baseStats.turnSpeed,
-            baseStats.health,
+            baseStats.maxHealth,
             baseStats.cargoMax,
             baseStats.maxSailorCount,
             baseStats.boatCost
@@ -90,7 +90,8 @@ public class Boat
 
         boatSpeed = modifiedStats.speed;
         turnSpeed = modifiedStats.turnSpeed;
-        maxBoatHealth = modifiedStats.health;
+        currentBoatHealth = Mathf.Max(1,modifiedStats.maxHealth - maxBoatHealth + currentBoatHealth);
+        maxBoatHealth = modifiedStats.maxHealth;
         cargoMax = modifiedStats.cargoMax;
         maxSailorCount = modifiedStats.maxSailorCount;
     }

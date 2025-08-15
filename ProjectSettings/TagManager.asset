@@ -11,6 +11,7 @@ TagManager:
   - steeringWheel
   - Team2
   - FxTemporaire
+  - RepairTag
   layers:
   - Default
   - TransparentFX

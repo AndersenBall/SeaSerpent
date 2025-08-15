@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Town : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class Town : MonoBehaviour
     {
         public float[] productionAmount;
         public float[] consumptionAmount;
-        public string nationality;
+        public Nation nationality;
         public string townDescription;
 
         public IDictionary<string, float> supplies; 
@@ -43,7 +45,8 @@ public class Town : MonoBehaviour
 
     public GameObject prefabFleet;
     
-    public string nationality;
+    //TODO update to enum
+    public Nation nationality;
     public string townDescription;
 
 
@@ -139,8 +142,8 @@ public class Town : MonoBehaviour
     {
 
         int numberOfBoats = Mathf.CeilToInt((float)amount / 100);
-
-        Fleet f1 = new Fleet(nationality, "Trader");
+        
+        Fleet f1 = new Fleet(nationality,"Trader");
         for (int i = 0; i < numberOfBoats; i++)
         {
             f1.AddBoat(new Boat(name+"HMS V" + i, BoatType.TradeShip));

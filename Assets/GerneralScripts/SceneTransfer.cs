@@ -18,14 +18,14 @@ public class SceneTransfer : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         SceneManager.LoadScene("TownMenu");
-        GameEvents.ClearActions();
+        GameEvents.ClearEvents();
     }
 
     public static void TransferToMap() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         SceneManager.LoadScene("IslandView");
-        GameEvents.ClearActions();
+        GameEvents.ClearEvents();
         
     }
 

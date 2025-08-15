@@ -81,9 +81,8 @@ public class BoatAI : MonoBehaviour
     
     #region setters and getters
     //*************setters and getters***************
-    //set the location that the boat should travel to.
     public int GetHP() {
-        return (int) boatHP.GetHealth();
+        return boatHP.currentHealth;
     
     }
     public void SetIsDead(bool dead) {

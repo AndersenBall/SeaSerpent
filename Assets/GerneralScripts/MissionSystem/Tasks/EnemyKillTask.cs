@@ -1,4 +1,5 @@
 using System;
+using MapMode.Scripts;
 using UnityEngine;
 
 [Serializable]
@@ -16,15 +17,15 @@ public class EnemyKillTask : MissionTask
 
         Debug.Log($"EnemyKillTask created: {TaskName}, Target: {TargetEnemyID}, Kills Needed: {TargetKills}");
 
-
-        GameEvents.OnEnemyKilled += HandleEnemyKilled;
+        
+        CombatEvents.EnemyKilled += HandleEnemyKilled;
     }
 
     public override void Initialize()
     {
 
         // Re-subscribe to the enemy killed event
-        GameEvents.OnEnemyKilled += HandleEnemyKilled;
+        CombatEvents.EnemyKilled += HandleEnemyKilled;
 
         Debug.Log($"Initialized EnemyKillTask: {TaskName}, Target: {TargetEnemyID}, Current Kills: {CurrentKills}/{TargetKills}");
     }
@@ -47,13 +48,13 @@ public class EnemyKillTask : MissionTask
             CompleteTask();
 
             // Unsubscribe from the event when the task is completed
-            GameEvents.OnEnemyKilled -= HandleEnemyKilled;
+            CombatEvents.EnemyKilled -= HandleEnemyKilled;
         }
     }
     public override void Cleanup()
     {
         // Unsubscribe from the enemy killed event
-        GameEvents.OnEnemyKilled -= HandleEnemyKilled;
+        CombatEvents.EnemyKilled -= HandleEnemyKilled;
         base.Cleanup(); // Call the base cleanup for event cleanup
     }
 
