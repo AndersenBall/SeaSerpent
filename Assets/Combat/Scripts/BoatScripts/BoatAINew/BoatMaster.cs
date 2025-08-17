@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,8 +13,12 @@ public class BoatMaster : MonoBehaviour
     
     List<BoatAI>[,] Arr2d = new List<BoatAI>[1000,1000];
     List<BoatAI> allBoatsList;
-    
-    
+
+    private void Awake()
+    {
+        LoadFleet();
+    }
+
     void Start()
     {
         boatTeamManagers = gameObject.GetComponentsInChildren<BoatTeamManager>();
@@ -215,7 +220,6 @@ public class BoatMaster : MonoBehaviour
         Debug.Log("boat removed from boat list?:" + allBoatsList.Remove(boat));
         if (GetTeamBoats(1).Length == 0 || GetTeamBoats(2).Length == 0) {
             EndBattle();
-            SceneTransfer.TransferToMap();
         }
         
         
@@ -246,8 +250,8 @@ public class BoatMaster : MonoBehaviour
         }
         SceneTransfer.playerFleet.SetBoats(allyBoatsData);
         SavePlayerFleet(SceneTransfer.playerFleet);
-        
-        
+
+
         var boatsToRemoveEnemy = enemyBoatsData
             .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
             .ToList();
@@ -262,6 +266,12 @@ public class BoatMaster : MonoBehaviour
             }
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
+        if (SceneTransfer.playerFleet.GetBoats().Count == 0){
+            SceneTransfer.TransferToTownUI();
+            PlayerGlobal.money -= PlayerGlobal.money / 2;
+            //TODO 8/16 move location to starting town? set transfer what town you at in the UI
+        }
+        SceneTransfer.TransferToMap();
     }
     
     #region save load
@@ -289,6 +299,16 @@ public class BoatMaster : MonoBehaviour
         Debug.Log("Player Fleet saved successfully.");
     }
     
+    
+    public void LoadFleet()
+    {
+        if (SaveLoad.SaveExists("Player")) {
+            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
+            SceneTransfer.playerFleet = playerData.fleet;
+        }
+
+    }
+
     
     #endregion
     
