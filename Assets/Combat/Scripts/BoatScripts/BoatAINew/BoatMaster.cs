@@ -245,6 +245,8 @@ public class BoatMaster : MonoBehaviour
             }
         }
         SceneTransfer.playerFleet.SetBoats(allyBoatsData);
+        SavePlayerFleet(SceneTransfer.playerFleet);
+        
         
         var boatsToRemoveEnemy = enemyBoatsData
             .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -260,7 +262,34 @@ public class BoatMaster : MonoBehaviour
             }
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
-        GameEvents.SaveGame();
     }
+    
+    #region save load
+    public void SavePlayerFleet(Fleet fleet)
+    {
+        Vector3 targetPosition = new(0, 0, 0); //TODO PUT TO base cordinates of a town
+        if (SaveLoad.SaveExists("Player")) {
+            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
+            targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+        }
+      
+        
+        fleet.CalculateSpeed();
+        PlayerFleetMapController.PlayerFleetData saveFleet = new PlayerFleetMapController.PlayerFleetData
+        {
+            fleet = fleet, 
+            pos = new float[] 
+            {
+                targetPosition.x,
+                targetPosition.y,
+                targetPosition.z
+            }
+        };
+        SaveLoad.Save(saveFleet, "Player");
+        Debug.Log("Player Fleet saved successfully.");
+    }
+    
+    
+    #endregion
     
 }
