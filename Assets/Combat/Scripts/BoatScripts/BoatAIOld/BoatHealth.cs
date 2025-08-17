@@ -53,8 +53,6 @@ public class BoatHealth : MonoBehaviour
                 healthSlider.value = currentHealth;
             }
         }
-
-        currentHealth = maxHealth;
         
         if (boatControls.GetPlayerControlled()) 
         {
