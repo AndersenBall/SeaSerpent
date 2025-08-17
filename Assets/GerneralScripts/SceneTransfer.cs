@@ -47,13 +47,6 @@ public class SceneTransfer : MonoBehaviour
             }
         }
 
-        if (playerFleet != null) {
-            GameObject player = GameObject.Find("PlayerBoat");
-         
-            Debug.Log(playerFleet.GetBoats()[0].GetBoatHealth()+ playerFleet.GetBoats()[0].boatName);
-
-        }
-
         
     }
 }
