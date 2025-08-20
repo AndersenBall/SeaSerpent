@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MapMode.Scripts;
 using UnityEngine;
 
+
 [Serializable]
 public class MissionSaveData
 {
@@ -101,8 +102,15 @@ public class MissionSystem : MonoBehaviour
             mission.Cleanup(); // Ensure cleanup is done if MissionSystem is destroyed
         }
     }
-
-    public void AddMission(Mission mission)
+    
+    public Mission CreateMission(MissionTemplate template)
+    {
+        var mission = template.BuildMission();
+        AddMission(mission);
+        return mission;
+    }
+    
+    private void AddMission(Mission mission)
     {
         if (!activeMissions.Exists(m => m.MissionID == mission.MissionID))
         {

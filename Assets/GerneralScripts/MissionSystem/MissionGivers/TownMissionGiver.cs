@@ -31,27 +31,11 @@ public class TownMissionGiver : MonoBehaviour
             Debug.Log($"[{nameof(TownMissionGiver)}] All missions already assigned for town '{townId}'.");
             return;
         }
-
-        var context = new TownContext(
-            townId: string.IsNullOrEmpty(townId) ? gameObject.name : townId,
-            townCenter: townCenter ? townCenter.position : transform.position,
-            townLevel: townLevel
-        );
-
-        var mission = MissionFactory.CreateMission(template, context);
-
+        
         // Add to your existing system
-        MissionSystem.Instance?.AddMission(mission);
-
-        // If your MissionSystem does not call Initialize(), do it here:
-        // mission.Initialize();
-
-        // Broadcast
-        MissionEvents.InvokeMissionStarted(mission.MissionID);
-
+        var mission = MissionSystem.Instance.CreateMission(template);
+        
         _assignedMissionIds.Add(mission.MissionID);
-
-        Debug.Log($"Assigned mission '{mission.Title}' ({mission.MissionID}) at town '{context.TownId}'.");
     }
 
     private MissionTemplate GetNextUnassignedTemplate()
