@@ -2,7 +2,7 @@
 
 namespace GerneralScripts.MissionSystem
 {
-    public class MissionEvents
+    public static class MissionEvents
     {
         public static event Action<string> MissionCompleted;
         public static event Action<string> MissionStarted;

@@ -84,9 +84,10 @@ public class PlayerFleetMapController : MonoBehaviour
         }
         else if (town != null) {
             //           Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
-            //           townUI.DisplayTownUI(other.GetComponent<Town>(), fleet);
+            
             townOptionsUI.DisplayOptionsMenu(town);
             currentTown = town;
+            TownEvents.InvokeTownVisited(town);
             GameEvents.SaveGame();
         }
     }

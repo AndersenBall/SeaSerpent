@@ -2,6 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Missions/Mission Template")]
+[System.Serializable]
 public class MissionTemplate : ScriptableObject
 {
     [SerializeField] private string missionID;

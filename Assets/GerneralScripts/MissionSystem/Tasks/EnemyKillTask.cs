@@ -16,15 +16,12 @@ public class EnemyKillTask : MissionTask
         TargetEnemyID = targetEnemyID;
 
         Debug.Log($"EnemyKillTask created: {TaskName}, Target: {TargetEnemyID}, Kills Needed: {TargetKills}");
-
-        
         CombatEvents.EnemyKilled += HandleEnemyKilled;
     }
 
     public override void Initialize()
     {
-
-        // Re-subscribe to the enemy killed event
+        
         CombatEvents.EnemyKilled += HandleEnemyKilled;
 
         Debug.Log($"Initialized EnemyKillTask: {TaskName}, Target: {TargetEnemyID}, Current Kills: {CurrentKills}/{TargetKills}");

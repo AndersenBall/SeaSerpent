@@ -2,7 +2,7 @@
 
 namespace MapMode.Scripts
 {
-    public class CombatEvents
+    public static class CombatEvents
     {
         public static event Action<string> EnemyKilled;
 
