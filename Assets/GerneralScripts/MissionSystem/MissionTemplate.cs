@@ -21,7 +21,7 @@ public class MissionTemplate : ScriptableObject
     
     public Mission BuildMission()
     {
-        var runtimeTasks = new List<MissionTask>(tasks.Count);
+        var runtimeTasks = new List<TaskInstance>(tasks.Count);
         var runtimeRewards = new List<IMissionReward>(rewards.Count);
         foreach (var def in tasks)
         {

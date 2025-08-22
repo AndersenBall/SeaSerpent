@@ -46,30 +46,35 @@ public class NationalityOpinionSystem : MonoBehaviour
     
     private void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject); 
+            return;
+        }
+
+        _instance = this;
+        DontDestroyOnLoad(gameObject);
+
         GameEvents.SaveInitiated += Save;
         GameEvents.LoadInitiated += Load;
         NavalInteractionEvent.AttackedFleet += HandleAttackEvent;
     }
     private void Start()
     {
-        // Ensure this instance is the singleton
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
-        _instance = this;
-
         DisplayOpinions();
         InvokeRepeating(nameof(UpdateOpinionsOverTime), 60f, 60f); // Decay opinions every 30 seconds
     }
 
     private void OnDestroy()
     {
-        GameEvents.SaveInitiated -= Save;
-        GameEvents.LoadInitiated -= Load;
-        NavalInteractionEvent.AttackedFleet -= HandleAttackEvent;
+        if (_instance == this)
+        {
+            GameEvents.SaveInitiated -= Save;
+            GameEvents.LoadInitiated -= Load;
+            NavalInteractionEvent.AttackedFleet -= HandleAttackEvent;
+            _instance = null;
+        }
+
     }
     
     #endregion

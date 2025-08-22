@@ -5,9 +5,9 @@ using GerneralScripts.MissionSystem.Reward;
 public sealed class NationalityOpinionReward : IMissionReward
 {
     public Nation Nation;
-    public float Delta;
+    public int Delta;
 
-    public NationalityOpinionReward(Nation nation, float delta)
+    public NationalityOpinionReward(Nation nation, int delta)
     {
         Nation = nation;
         Delta = delta;
@@ -15,7 +15,7 @@ public sealed class NationalityOpinionReward : IMissionReward
 
     public void Apply()
     {
-       
+        NationalityOpinionSystem.Instance.ModifyOpinion(Nation.Spain, Delta);
     }
 
     public string GetDescription()

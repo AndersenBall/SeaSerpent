@@ -8,6 +8,6 @@ public abstract class TaskTemplate : ScriptableObject
     public string TaskName => taskName;
     public int Step => step;
     
-    public abstract MissionTask CreateRuntimeTask( );
+    public abstract TaskInstance CreateRuntimeTask( );
     
 }

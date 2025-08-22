@@ -12,12 +12,12 @@ public class Mission
     public string Title { get; private set; }
     public string Description { get; private set; }
     public bool IsCompleted => Tasks.All(t => t.IsCompleted);
-    public List<MissionTask> Tasks { get; private set; }
+    public List<TaskInstance> Tasks { get; private set; }
     
     public List<IMissionReward> Rewards { get; private set; } = new ();
     public int CurrentStep { get; private set; } = 0;
 
-    public Mission(string missionID, string title, string description, List<MissionTask> tasks, List<IMissionReward> rewards = null)
+    public Mission(string missionID, string title, string description, List<TaskInstance> tasks, List<IMissionReward> rewards = null)
     {
         MissionID = missionID;
         Title = title;
@@ -48,7 +48,7 @@ public class Mission
     }
 
 
-    private void CheckProgress(MissionTask completedTask)
+    private void CheckProgress(TaskInstance completedTaskInstance)
     {
         // If the task's step matches the current step, check if we can move to the next step
         if (Tasks.Where(t => t.Step == CurrentStep).All(t => t.IsCompleted))

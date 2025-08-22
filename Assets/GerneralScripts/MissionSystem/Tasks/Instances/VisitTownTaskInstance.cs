@@ -4,11 +4,11 @@
 namespace GerneralScripts.MissionSystem.Tasks
 {
     [Serializable]
-    public class VisitTownTask : MissionTask
+    public class VisitTownTaskInstance : TaskInstance
     {
         public string TargetTownName { get; private set; }
 
-        public VisitTownTask(string taskName, string targetTownName, int step = 0) : base(taskName, step)
+        public VisitTownTaskInstance(string taskName, string targetTownName, int step = 0) : base(taskName, step)
         {
             TargetTownName = targetTownName;
         }

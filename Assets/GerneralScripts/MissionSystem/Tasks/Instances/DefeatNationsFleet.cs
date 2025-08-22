@@ -3,7 +3,7 @@ using MapMode.Scripts;
 using UnityEngine;
 
 [Serializable]
-public class DefeatNationsFleet : MissionTask
+public class DefeatNationsFleet : TaskInstance
 {
     public int TargetKills { get; private set; }
     public int FleetsDefeated { get; private set; }

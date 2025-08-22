@@ -13,7 +13,7 @@ public class EnemyKillTaskDefinition : TaskTemplate
     [Min(1)]
     [SerializeField] private int requiredKills = 1;
 
-    public override MissionTask CreateRuntimeTask()
+    public override TaskInstance CreateRuntimeTask()
     {
         return new DefeatNationsFleet(taskName, step, requiredKills, targetNation);
     }

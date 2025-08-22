@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public abstract class MissionTask
+public abstract class TaskInstance
 {
     public string TaskName { get; protected set; }
     public int Step { get; private set; }
@@ -9,9 +9,9 @@ public abstract class MissionTask
 
     public bool isActive { get; set; } = false;
 
-    public event Action<MissionTask> OnTaskCompleted;
+    public event Action<TaskInstance> OnTaskCompleted;
 
-    protected MissionTask(string taskName, int step)
+    protected TaskInstance(string taskName, int step)
     {
         TaskName = taskName;
         Step = step;
