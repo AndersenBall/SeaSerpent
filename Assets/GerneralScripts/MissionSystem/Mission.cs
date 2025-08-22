@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GerneralScripts.MissionSystem.Reward;
 using UnityEngine;
 
 
@@ -12,14 +13,17 @@ public class Mission
     public string Description { get; private set; }
     public bool IsCompleted => Tasks.All(t => t.IsCompleted);
     public List<MissionTask> Tasks { get; private set; }
+    
+    public List<IMissionReward> Rewards { get; private set; } = new ();
     public int CurrentStep { get; private set; } = 0;
 
-    public Mission(string missionID, string title, string description, List<MissionTask> tasks)
+    public Mission(string missionID, string title, string description, List<MissionTask> tasks, List<IMissionReward> rewards = null)
     {
         MissionID = missionID;
         Title = title;
         Description = description;
         Tasks = tasks;
+        Rewards = rewards;
 
         foreach (var task in Tasks)
         {

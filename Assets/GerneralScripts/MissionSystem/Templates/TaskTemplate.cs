@@ -2,11 +2,12 @@
 
 public abstract class TaskTemplate : ScriptableObject
 {
-    [SerializeField] private string taskName;
-    [SerializeField] private int step;
+    [SerializeField] protected string taskName;
+    [SerializeField] protected int step;
 
     public string TaskName => taskName;
     public int Step => step;
     
     public abstract MissionTask CreateRuntimeTask( );
+    
 }

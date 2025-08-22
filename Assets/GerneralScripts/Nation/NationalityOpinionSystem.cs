@@ -15,7 +15,7 @@ public class NationalityOpinionSystem : MonoBehaviour
 {
     
 
-    // Singleton instance
+    #region variables
     private static NationalityOpinionSystem _instance;
     public static NationalityOpinionSystem Instance
     {
@@ -40,6 +40,7 @@ public class NationalityOpinionSystem : MonoBehaviour
         { Nation.BarbaryCorsairs, 0 },
         { Nation.BrethrenOfTheCoast, 0 }
     };
+    #endregion
     
     # region monohaviors 
     
@@ -61,7 +62,7 @@ public class NationalityOpinionSystem : MonoBehaviour
         _instance = this;
 
         DisplayOpinions();
-        InvokeRepeating(nameof(UpdateOpinionsOverTime), 30f, 30f); // Decay opinions every 30 seconds
+        InvokeRepeating(nameof(UpdateOpinionsOverTime), 60f, 60f); // Decay opinions every 30 seconds
     }
 
     private void OnDestroy()
@@ -83,6 +84,7 @@ public class NationalityOpinionSystem : MonoBehaviour
     }
 
     #endregion
+    
     #region modify opinions 
     public void ModifyOpinion(Nation nationality, int amount)
     {
@@ -155,7 +157,5 @@ public class NationalityOpinionSystem : MonoBehaviour
     }
 
     #endregion
-    
-
     
 }

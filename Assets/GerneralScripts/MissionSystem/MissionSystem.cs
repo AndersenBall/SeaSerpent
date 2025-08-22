@@ -35,36 +35,11 @@ public class MissionSystem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    //to delete
-    private void Start()
-    {
-        //// Create a basic mission to kill 5 goblins
-        //var goblinKillTask = new EnemyKillTask("Kill 5 Goblins", 0, 5, "Goblin");
-        //var humanKillTask = new EnemyKillTask("Kill 5 Humans", 0, 5, "Human");
-        //var goblinKillTask2 = new EnemyKillTask("Kill 5 Goblins", 1, 5, "Goblin");
-        //var mission = new Mission("M001", "Goblin Slayer", "Defeat 5 goblins.", new List<MissionTask> { goblinKillTask, humanKillTask, goblinKillTask2 });
-        //AddMission(mission);
-
-        //Debug.Log("Added basic mission: Kill 5 Goblins");
-    }
+  
 
     private void Update()
     {
-        // Press B to simulate killing a goblin
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Debug.Log("Killed a British Fleet!");
-            CombatEvents.InvokeEnemyKilled("BritishFleet");
-   
-        }
-
-        // Press N to simulate killing a human
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            Debug.Log("Killed a French Fleet!");
-
-            CombatEvents.InvokeEnemyKilled("FrenchFleet");
-        }
+        
 
         if (Input.GetKey(KeyCode.M))
         {
