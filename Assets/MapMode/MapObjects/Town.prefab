@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8781370842952158967}
   - component: {fileID: 2356750811951124822}
   - component: {fileID: 1747632040734284437}
+  - component: {fileID: 7490175024170189538}
   m_Layer: 0
   m_Name: Town
   m_TagString: Untagged
@@ -174,7 +175,7 @@ MonoBehaviour:
   - 0
   prefabFleet: {fileID: 2709414243621237436, guid: 26991f5fadd780c428df4b559f29d582,
     type: 3}
-  nationality: 
+  nationality: 0
   townDescription: Town1 Descriptiopnk dwnjefjnew jbgjr fnewjlfnj ewnwejljf enjkewnjkf
     nejkwnfje fnewf jkewnfkjew fnkjwenfjwekfn kjwe fnwefnjkwenfwejnf jwefjkwefw.
   dockedFleets: []
@@ -205,6 +206,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7490175024170189538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8781370842952158969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 501509d10ddf2124896e38fb36d89a7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableMissions:
+  - {fileID: 0}
 --- !u!1001 &277010607658196128
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,18 +2,18 @@
 
 namespace MapMode.Scripts
 {
-    public class CombatEvents
+    public static class CombatEvents
     {
-        public static event Action<string> EnemyKilled;
+        public static event Action<Fleet> DefeatFleet;
 
-        public static void InvokeEnemyKilled(string enemyID)
+        public static void InvokeDefeatFleet(Fleet enemyFleet)
         {
-            EnemyKilled?.Invoke(enemyID);
+            DefeatFleet?.Invoke(enemyFleet);
         }
 
         public static void Clear()
         {
-            EnemyKilled = null;
+            DefeatFleet = null;
         }
     }
 

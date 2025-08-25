@@ -15,7 +15,7 @@ public class NationalityOpinionSystem : MonoBehaviour
 {
     
 
-    // Singleton instance
+    #region variables
     private static NationalityOpinionSystem _instance;
     public static NationalityOpinionSystem Instance
     {
@@ -40,35 +40,41 @@ public class NationalityOpinionSystem : MonoBehaviour
         { Nation.BarbaryCorsairs, 0 },
         { Nation.BrethrenOfTheCoast, 0 }
     };
+    #endregion
     
     # region monohaviors 
     
     private void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject); 
+            return;
+        }
+
+        _instance = this;
+        DontDestroyOnLoad(gameObject);
+
         GameEvents.SaveInitiated += Save;
         GameEvents.LoadInitiated += Load;
         NavalInteractionEvent.AttackedFleet += HandleAttackEvent;
     }
     private void Start()
     {
-        // Ensure this instance is the singleton
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
-        _instance = this;
-
         DisplayOpinions();
-        InvokeRepeating(nameof(UpdateOpinionsOverTime), 30f, 30f); // Decay opinions every 30 seconds
+        InvokeRepeating(nameof(UpdateOpinionsOverTime), 60f, 60f); // Decay opinions every 30 seconds
     }
 
     private void OnDestroy()
     {
-        GameEvents.SaveInitiated -= Save;
-        GameEvents.LoadInitiated -= Load;
-        NavalInteractionEvent.AttackedFleet -= HandleAttackEvent;
+        if (_instance == this)
+        {
+            GameEvents.SaveInitiated -= Save;
+            GameEvents.LoadInitiated -= Load;
+            NavalInteractionEvent.AttackedFleet -= HandleAttackEvent;
+            _instance = null;
+        }
+
     }
     
     #endregion
@@ -83,6 +89,7 @@ public class NationalityOpinionSystem : MonoBehaviour
     }
 
     #endregion
+    
     #region modify opinions 
     public void ModifyOpinion(Nation nationality, int amount)
     {
@@ -155,7 +162,5 @@ public class NationalityOpinionSystem : MonoBehaviour
     }
 
     #endregion
-    
-
     
 }
