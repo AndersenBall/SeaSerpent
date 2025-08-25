@@ -1,10 +1,12 @@
 ﻿using System;
+using UnityEngine;
 
 namespace GerneralScripts.MissionSystem.Reward.Templates
 {
+    [CreateAssetMenu(menuName = "Rewards/New Money Reward", fileName = "MoneyRewardTemplate")]
     public class MoneyRewardTemplate:RewardTemplate
     {
-        private int reward;
+        [SerializeField] private int reward = 1000;
 
         public MoneyRewardTemplate(int reward)
         {

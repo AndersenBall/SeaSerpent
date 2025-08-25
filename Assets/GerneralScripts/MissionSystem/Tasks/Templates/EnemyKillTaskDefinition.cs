@@ -4,9 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Missions/Tasks/Enemy Kill Task Definition", fileName = "EnemyKillTaskDefinition")]
 public class EnemyKillTaskDefinition : TaskTemplate
 {
-    [Header("Task Meta")]
-    [SerializeField] private string taskName = "Eliminate Targets";
-
+ 
     [Header("Enemy Kill Settings")]
     [Tooltip("ID of the enemy type to track. Leave empty to count any enemy, if supported by your task.")]
     [SerializeField] private Nation targetNation = Nation.Britain;
