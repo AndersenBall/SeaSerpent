@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using GerneralScripts.Utils;
+using MapMode.Scripts.PostBattle;
 
 
 public class BoatMaster : MonoBehaviour
@@ -13,9 +13,10 @@ public class BoatMaster : MonoBehaviour
     
   
     List<BoatAI> allBoatsList;
-
+    
     private void Awake()
     {
+   
         LoadFleet();
     }
 
@@ -119,17 +120,49 @@ public class BoatMaster : MonoBehaviour
 
         Debug.Log("boat removed from boat list?:" + allBoatsList.Remove(boat));
         if (GetTeamBoats(1).Length == 0 || GetTeamBoats(2).Length == 0) {
-            EndBattle();
+            ActivatePostBattleLooting();
         }
-        
+
+
         
     }
-
-    public void EndBattle() {
-        BoatAI[] allyBoatsAI = GetTeamBoats(1);
+    
+    public void ActivatePostBattleLooting()
+    {
         BoatAI[] enemyBoatsAI = GetTeamBoats(1);
-        List<Boat> allyBoatsData = SceneTransfer.playerFleet.GetBoats();
         List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
+        int goldGained; 
+        
+        var boatsToRemoveEnemy = enemyBoatsData
+            .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
+            .ToList();
+        
+        var loot = LootUtils.ComputeAvailableLoot(
+            SceneTransfer.enemyFleet,
+            boatsToRemoveEnemy,
+            sunkFraction: 0.30f, 
+            afloatFraction: 0.0f,
+            out goldGained
+        );
+
+    }
+
+    
+    public void EndBattle() {
+        UpdatePlayerFleet();
+        UpdateEnemyFleet();
+        
+        if (SceneTransfer.playerFleet.GetBoats().Count == 0){
+            SceneTransfer.TransferToTownUI();
+            PlayerGlobal.money -= PlayerGlobal.money / 2;
+            return;
+        }
+        SceneTransfer.TransferToMap();
+    }
+
+    private void UpdatePlayerFleet() {
+        BoatAI[] allyBoatsAI = GetTeamBoats(1);
+        List<Boat> allyBoatsData = SceneTransfer.playerFleet.GetBoats();
 
         var boatsToRemove = allyBoatsData
             .Where(boatData => !allyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -150,7 +183,11 @@ public class BoatMaster : MonoBehaviour
         }
         SceneTransfer.playerFleet.SetBoats(allyBoatsData);
         SavePlayerFleet(SceneTransfer.playerFleet);
+    }
 
+    private void UpdateEnemyFleet() {
+        BoatAI[] enemyBoatsAI = GetTeamBoats(1);
+        List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
 
         var boatsToRemoveEnemy = enemyBoatsData
             .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -166,13 +203,6 @@ public class BoatMaster : MonoBehaviour
             }
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
-        if (SceneTransfer.playerFleet.GetBoats().Count == 0){
-            SceneTransfer.TransferToTownUI();
-            PlayerGlobal.money -= PlayerGlobal.money / 2;
-            return;
-            //TODO 8/16 move location to starting town? set transfer what town you at in the UI
-        }
-        SceneTransfer.TransferToMap();
     }
     
     #region save load
