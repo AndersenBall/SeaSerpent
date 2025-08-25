@@ -169,6 +169,7 @@ public class BoatMaster : MonoBehaviour
         if (SceneTransfer.playerFleet.GetBoats().Count == 0){
             SceneTransfer.TransferToTownUI();
             PlayerGlobal.money -= PlayerGlobal.money / 2;
+            return;
             //TODO 8/16 move location to starting town? set transfer what town you at in the UI
         }
         SceneTransfer.TransferToMap();
