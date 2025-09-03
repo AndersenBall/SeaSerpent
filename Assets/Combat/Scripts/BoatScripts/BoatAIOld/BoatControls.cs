@@ -50,14 +50,7 @@ public class BoatControls : MonoBehaviour
     public bool GetPlayerControlled() {
         return isPlayersBoat;
     }
-    /*
-    public void SetBoatParamters(Boat b) {
-        //Debug.Log(b.GetTurnSpeed()) ;
-        boat = b;
-        boatPhysics = gameObject.GetComponent<BoatAlignNormal>();//as it hasnt spawned yet
-        boatPhysics.SetBoatSpeed(b.GetSpeed(), b.GetTurnSpeed());
-        gameObject.GetComponentInChildren<BoatHealth>().SetHealth(b.GetBoatHealth());
-    }*/
+
     public void SetBoatParamters(Boat b,bool playerControlled)
     {
         //Debug.Log(b.GetTurnSpeed()) ;
