@@ -19,17 +19,19 @@ public class BoatSteeringControls : MonoBehaviour
     [SerializeField] private float slowDownRadius = 20f;
     [Tooltip("Consider 'arrived' and stop within this distance (meters).")]
     [SerializeField] private float stopDistance = 2f;
+    [SerializeField] private float _distanceToTarget;
+    public float DistanceToTarget{get => _distanceToTarget; set => _distanceToTarget = value; }
     
     [Header("Wiring")]
     [SerializeField] private BoatControls boatControls;
     
-    [Header("Circle Mode")]
+    [Header("Circle Mode")] 
     [Tooltip("If enabled, the boat will circle the target, maintaining a perfect 90° angle to it.")]
-
-    private bool _circle = false;
+    [SerializeField]private bool _circle = false;
     public bool circle { get => _circle; set => _circle = value; }
+    
     [Tooltip("When circling, choose direction: true = clockwise, false = counter-clockwise.")]
-    private bool _circleClockwise = true;
+    [SerializeField]private bool _circleClockwise = true;
     public bool CircleClockwise { get => _circleClockwise; set => _circleClockwise = value; }
 
     
@@ -83,6 +85,7 @@ public class BoatSteeringControls : MonoBehaviour
 
         Vector2 toTgt = goal - self;
         float d = toTgt.magnitude;
+        DistanceToTarget = d;
         if (d <= stopDistance){
             throttleOut = 0f;
             return;
