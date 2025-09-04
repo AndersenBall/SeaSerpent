@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+public enum AttackSide { Left, Right }
+
+
 [DisallowMultipleComponent]
 public class BoatSteeringControls : MonoBehaviour
 {
@@ -28,6 +31,17 @@ public class BoatSteeringControls : MonoBehaviour
     [Tooltip("When circling, choose direction: true = clockwise, false = counter-clockwise.")]
     private bool _circleClockwise = true;
     public bool CircleClockwise { get => _circleClockwise; set => _circleClockwise = value; }
+
+    
+    [Header("Collision Avoidance")]
+    [SerializeField] private bool enableAvoidance = true;
+    [SerializeField] private LayerMask shipLayer;
+    [SerializeField] private float detectionRadius = 40f;   // meters
+    [SerializeField] private float clearanceRadius = 8f;    // meters (hull + buffer)
+    [SerializeField] private float timeHorizon = 3.0f;      // seconds to look ahead
+    [SerializeField, Range(0f,1f)] private float avoidBlend = 0.7f; // weight of avoidance vs goal
+    [SerializeField] private float keepRightBias = 0.4f;    // bias to pass starboard-to-starboard
+    [SerializeField] private float hardBrakeTTC = 0.8f;     // emergency throttle cut threshold
 
     
     private Rigidbody _rb;
@@ -81,35 +95,47 @@ public class BoatSteeringControls : MonoBehaviour
         Vector2 fwd  = new Vector2(fwd3.x, fwd3.z).normalized;
         float angVelY = transform.InverseTransformDirection(_rb.angularVelocity).y;
         
+        Vector2 desiredDir;
         if (circle)
         {
-            // Tangent direction = 90° from the target vector (perfect perpendicular)
-            // Clockwise uses +90° rotation on the XZ plane (y,-x); CCW uses -90° (-y,x).
             Vector2 tangent = CircleClockwise
-                ? new Vector2(toTgtN.y, -toTgtN.x)   // CW
-                : new Vector2(-toTgtN.y, toTgtN.x);  // CCW
+                ? new Vector2(toTgtN.y, -toTgtN.x)
+                : new Vector2(-toTgtN.y, toTgtN.x);
+            desiredDir = tangent.normalized;
+        }
+        else
+        {
+            desiredDir = toTgtN;
+        }
 
-            // signed angle from forward -> tangent on XZ
-            float dot = Mathf.Clamp(Vector2.Dot(fwd, tangent), -1f, 1f);
-            float perp = fwd.x * tangent.y - fwd.y * tangent.x; // + = left (CCW)
-            float angleErr = Mathf.Atan2(perp, dot);            // radians [-pi, pi]
+        bool imminent = false;
+        if (enableAvoidance)
+        {
+            Vector2 velXZ = new Vector2(_rb.velocity.x, _rb.velocity.z);
+            Vector2 avoidDir = ComputeAvoidance(self, velXZ, out imminent);
+            if (avoidDir.sqrMagnitude > 0.0001f)
+            {
+                desiredDir = (avoidDir * avoidBlend + desiredDir * (1f - avoidBlend)).normalized;
+            }
+        }
+        
+        if (circle)
+        {
+            float dot = Mathf.Clamp(Vector2.Dot(fwd, desiredDir), -1f, 1f);
+            float perp = fwd.x * desiredDir.y - fwd.y * desiredDir.x;
+            float angleErr = Mathf.Atan2(perp, dot);
 
-            // PD steer toward tangent (90° to target line)
             steerOut = Mathf.Clamp(Kp * angleErr - Kd * angVelY, -1f, 1f);
 
-            // Keep moving; reduce throttle a bit when turning hard
             float turnSlowdown = Mathf.Lerp(1f, 0.5f, Mathf.InverseLerp(0.3f, 1f, Mathf.Abs(steerOut)));
             throttleOut = Mathf.Clamp01(turnSlowdown);
         }
         else
         {
-            // Normal: steer directly toward the target
-            // signed angle from forward -> target on XZ
-            float dot = Mathf.Clamp(Vector2.Dot(fwd, toTgtN), -1f, 1f);
-            float perp = fwd.x * toTgtN.y - fwd.y * toTgtN.x;  // + = left (CCW)
-            float angleErr = Mathf.Atan2(perp, dot);           // radians [-pi, pi]
+            float dot = Mathf.Clamp(Vector2.Dot(fwd, desiredDir), -1f, 1f);
+            float perp = fwd.x * desiredDir.y - fwd.y * desiredDir.x;
+            float angleErr = Mathf.Atan2(perp, dot);
 
-            // PD steer (tune gains to taste)
             steerOut = Mathf.Clamp(Kp * angleErr - Kd * angVelY, -1f, 1f);
 
             if (d <= stopDistance)
@@ -124,12 +150,82 @@ public class BoatSteeringControls : MonoBehaviour
             }
             else
             {
-                // Reduce throttle a bit when turning hard
                 float turnSlowdown = Mathf.Lerp(1f, 0.5f, Mathf.InverseLerp(0.3f, 1f, Mathf.Abs(steerOut)));
                 throttleOut = Mathf.Clamp01(turnSlowdown);
             }
         }
+        if (enableAvoidance && imminent)
+        {
+            throttleOut = Mathf.Min(throttleOut, 0.25f);
+        }
 
     }
+    
+    private Vector2 ComputeAvoidance(Vector2 selfPosXZ, Vector2 selfVelXZ, out bool imminent)
+    {
+        imminent = false;
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius, shipLayer, QueryTriggerInteraction.Ignore);
+        if (hits.Length == 0) return Vector2.zero;
 
+        Vector2 sum = Vector2.zero;
+        float bestImminence = float.MaxValue;
+
+        foreach (var h in hits)
+        {
+            if (h.attachedRigidbody == null || h.attachedRigidbody == _rb) continue;
+
+            Vector3 otherPos3 = h.attachedRigidbody.position;
+            Vector3 otherVel3 = h.attachedRigidbody.velocity;
+
+            Vector2 otherPos = new Vector2(otherPos3.x, otherPos3.z);
+            Vector2 otherVel = new Vector2(otherVel3.x, otherVel3.z);
+
+            Vector2 r = otherPos - selfPosXZ;              // relative position
+            Vector2 v = otherVel - selfVelXZ;              // relative velocity
+
+            float v2 = v.sqrMagnitude;
+            if (v2 < 0.0001f)
+            {
+                float dist = r.magnitude;
+                if (dist < clearanceRadius * 1.2f)
+                {
+                    Vector2 push = (-r).normalized;
+                    sum += push * Mathf.InverseLerp(clearanceRadius * 1.2f, 0f, dist);
+                    bestImminence = Mathf.Min(bestImminence, 0.5f);
+                }
+                continue;
+            }
+
+            float tStar = Mathf.Clamp(-Vector2.Dot(r, v) / v2, 0f, timeHorizon);
+            Vector2 rAtClosest = r + v * tStar;
+            float sep = rAtClosest.magnitude;
+
+            if (sep < clearanceRadius)
+            {
+                Vector2 left = new Vector2(v.y, -v.x).normalized;
+                Vector2 right = -left;
+
+                Vector2 fwd = new Vector2(transform.forward.x, transform.forward.z).normalized;
+                float sideSign = Mathf.Sign(fwd.x * v.y - fwd.y * v.x); // + => left turn is “natural”
+                Vector2 chosen = sideSign >= 0f ? left : right;
+
+                // Starboard (right) passing bias
+                chosen = Vector2.Lerp(chosen, right, keepRightBias).normalized;
+
+                float tWeight = 1f - (tStar / timeHorizon);
+                float sWeight = 1f - Mathf.InverseLerp(0f, clearanceRadius, sep);
+                float weight = Mathf.Clamp01(0.5f * tWeight + 0.5f * sWeight);
+
+                sum += chosen * weight;
+                bestImminence = Mathf.Min(bestImminence, tStar);
+            }
+        }
+
+        if (bestImminence < hardBrakeTTC) imminent = true;
+
+        return sum.sqrMagnitude > 0.0001f ? sum.normalized : Vector2.zero;
+    }
+
+
+    
 }
