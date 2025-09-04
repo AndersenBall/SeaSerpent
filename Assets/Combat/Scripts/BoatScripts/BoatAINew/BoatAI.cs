@@ -12,6 +12,14 @@ public class BoatAI : MonoBehaviour
 {
     #region variables
 
+    [Header("Drive by Tuning")]
+    [Tooltip("Meters to stay abeam from the target ship.")]
+    [SerializeField] private float lateralOffset = 25f;
+    [Tooltip("How far ahead of the enemy to aim (seconds of lead).")]
+    [SerializeField] private float leadTime = 3.0f;
+    [Tooltip("Add an extra 'exit' point beyond the enemy so you truly drive past.")]
+    [SerializeField] private float overrunDistance = 40f;
+    
     [SerializeField]
     private GameObject selectionIndicator;
     private BoatMaster boatMaster;
@@ -293,29 +301,6 @@ public class BoatAI : MonoBehaviour
     }
     
     [Task]
-    public void CreateAttackVector() {
-        if (action == "DriveBy") {
-            if (attackDirection == "Left")
-                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * 2;
-            else
-                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * -2;
-            Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
-            Task.current.Succeed();
-        }
-        else if (action == "FireAtWill" || action == "ApproachTurnShoot" || action == "Ram" || action == "PotShot") {
-            attackVector = new Vector2(0, 0);
-
-            Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
-            Task.current.Succeed();
-        }
-        else {
-            Task.current.Fail();
-        }
-    }
-   
-    
-
-    [Task]
     public void SetCannonsNutral()
     {
         shipCrewCommand.SetCannonSets(3);
@@ -347,8 +332,78 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void DriveBeside()
     {
+        //TODO now use boatSteeringControl.SetTargetPosition(Vector3);
         
+        runTime += Time.deltaTime;
+        if (runTime > 5f) {
+            runTime = 0;
+            //Debug.Log("reseting tree");
+            ResetTree();
+            return;
+        }
+
+        float addedX = attackVector.x * 25;
+        float addedY = attackVector.y * 25;
+        if (_targetEnemy == null)
+        {
+            ResetTree();
+            return;
+        }
+
+        var destination = FindDriveByTarget(ChooseAttackDirection());
+        boatSteeringControl.SetTargetPosition(destination);
+        if (boatSteeringControl.DistanceToTarget < 100) {
+            Task.current.Succeed();
+        }
+        else {
+            Task.current.Fail();
+        };
     }
+    
+    /// <summary>
+    /// Computes 1-2 waypoints on the chosen broadside. First is the "entry" point you should steer to now.
+    /// Second (optional) is an "exit" point to ensure you pass and clear.
+    /// </summary>
+    public Vector3 FindDriveByTarget(AttackSide side)
+    {
+        if (_targetEnemy == null)
+        {
+            // Fallback: just go forward a bit
+            return transform.position + transform.forward * 25f;
+        }
+
+        // --- 2D math on XZ plane ---
+        Vector2 meXZ    = new Vector2(transform.position.x, transform.position.z);
+        Vector2 enemyXZ = new Vector2(_targetEnemy.transform.position.x, _targetEnemy.transform.position.z);
+
+        // Direction from ME → ENEMY (defines my right/left as I face the enemy)
+        Vector2 approach  = (enemyXZ - meXZ).normalized;
+
+        // Perpendiculars relative to *my* facing toward the enemy:
+        // Right = (y, -x); Left = -Right
+        Vector2 rightPerp = new Vector2(approach.y, -approach.x);
+        Vector2 sidePerp  = (side == AttackSide.Right) ? rightPerp : -rightPerp;
+
+        // Lead ahead of where the enemy will be
+        Vector2 enemyFwd = new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z).normalized;
+        float   enemySpd = Mathf.Max(0f, _targetEnemy.GetSpeed());
+        float   leadDist = enemySpd * leadTime;
+
+        // Entry point: ahead of enemy + lateral offset on chosen side
+        Vector2 entryXZ = enemyXZ + enemyFwd * leadDist + sidePerp * lateralOffset;
+
+        // Back to 3D
+        Vector3 entry3D = new Vector3(entryXZ.x, 10, entryXZ.y);
+
+        // Debug gizmos (optional)
+        Debug.DrawLine(transform.position, _targetEnemy.transform.position, Color.yellow, 0.05f);
+        Debug.DrawLine(_targetEnemy.transform.position,
+            new Vector3(entry3D.x, 10, entry3D.z),
+            Color.cyan, 0.05f);
+
+        return entry3D;
+    }
+
 
     [Task]
     public void CheckToFire()
