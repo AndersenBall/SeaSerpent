@@ -181,8 +181,6 @@ public class BoatAI : MonoBehaviour
     #endregion
 
     #region Panda BT Scripts
-    //************** Panda BT Script **********
-    
     //*****Far away*****
     
     [Task]
@@ -295,32 +293,6 @@ public class BoatAI : MonoBehaviour
     }
     
     [Task]
-    public void ChooseAttackDirection()
-    {
-        Vector2 boatDirect = GetCardDirect();
-        if (_targetEnemy == null) {
-            Task.current.Fail();
-            return;
-        }
-        Vector2 targetVec = new Vector2(_targetEnemy.transform.position.x - transform.position.x, _targetEnemy.transform.position.z - transform.position.z);
-        targetVec += new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z) * 100 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-
-        Debug.DrawRay(transform.position, new Vector3(targetVec.x, 0, targetVec.y), Color.white, 1f);
-        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
-        if (dotSideways > 0) {
-            SetAttackDirection("Right");
-            Task.current.debugInfo = "Right";
-        }
-        else {
-            SetAttackDirection("Left");
-            Task.current.debugInfo = "Left";
-        }
-        Task.current.debugInfo = "enemy speed " + _targetEnemy.GetSpeed();
-        Task.current.Succeed();
-    }
-    [Task]
     public void CreateAttackVector() {
         if (action == "DriveBy") {
             if (attackDirection == "Left")
@@ -340,42 +312,7 @@ public class BoatAI : MonoBehaviour
             Task.current.Fail();
         }
     }
-    [Task]
-    public void SetUpCannons()
-    {
-        if (attackDirection == "Right") {
-            shipCrewCommand.SetCannonSets(4);
-        }
-        else {
-            shipCrewCommand.SetCannonSets(3);
-        }
-        if (_targetEnemy == null) {
-            
-            Task.current.Fail();
-            return;
-        }
-
-
-        float distance = Vector3.Distance(_targetEnemy.transform.position, transform.position);
-        //Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-        //Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
-        //distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
-
-
-        Vector3 targetPosition = _targetEnemy.transform.position;
-        Vector3 targetDirection = new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z);
-        float targetSpeed = (_targetEnemy.GetSpeed() * _targetEnemy.GetEngineSpeed());
-        float bulletTravelTime = distance / 200;
-
-        Vector3 predictionVec = targetPosition + targetDirection * targetSpeed * bulletTravelTime;
-        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0), Color.black);
-
-        shipCrewCommand.SetCannonAnglePredictions(0,Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
-        //shipCrewCommand.AdjustCannonAngles();
-        Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
-        if (shipAmoInter.GetRotateCannons().Length == 0)
-            Task.current.Succeed();
-    }
+   
     
 
     [Task]
@@ -407,7 +344,12 @@ public class BoatAI : MonoBehaviour
         Task.current.Succeed();
     }
 
-    
+    [Task]
+    public void DriveBeside()
+    {
+        
+    }
+
     [Task]
     public void CheckToFire()
     {
@@ -452,7 +394,9 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void TurnToFire()
     {
-        
+        var side = ChooseAttackDirection();
+        boatSteeringControl.circle = true;
+        boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
     }
 
 
@@ -552,7 +496,9 @@ public class BoatAI : MonoBehaviour
         Task.current.Fail();
         
     }
-    //***********helper methods***************
+    #endregion
+
+    #region helper
     public float PredictCannonAngle(float distance)
     {
         float value = Mathf.Asin((distance-7) / 4077.47f) / 2 * (180 / Mathf.PI);
@@ -575,5 +521,28 @@ public class BoatAI : MonoBehaviour
             bt.Reset(); // Resets the entire behavior tree
         }
     }
+    
+    public AttackSide ChooseAttackDirection()
+    {
+        Vector2 boatDirect = GetCardDirect();
+        if (_targetEnemy == null) {
+            return AttackSide.Right; // fallback default
+        }
+
+        Vector2 targetVec = new Vector2(
+            _targetEnemy.transform.position.x - transform.position.x,
+            _targetEnemy.transform.position.z - transform.position.z
+        );
+        targetVec += new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z) 
+                     * 100 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
+
+        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
+        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
+
+        return dotSideways > 0 ? AttackSide.Right : AttackSide.Left;
+    }
+    
+    
+    #endregion
 
 }
