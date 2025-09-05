@@ -35,6 +35,7 @@ public class BoatAI : MonoBehaviour
     private (int x, int y) XYDest;
 
     private float runTime = 0;
+    private float recalcTimer = float.MaxValue;
 
     private bool turningToTarget = false;//legacy TODO remove? idk
 
@@ -60,10 +61,7 @@ public class BoatAI : MonoBehaviour
     private PandaBehaviour pandaBT = null;
     [Task]
     public string action;
-    [Task]
-    public bool attacking = true;
-    [Task]
-    public bool runningAway = false;
+    
     [Task]
     public bool isDead = false;
     [Task]
@@ -220,16 +218,6 @@ public class BoatAI : MonoBehaviour
         shipCrewCommand.ReloadCannons();
         Task.current.Succeed();
     }
-    [Task]
-    public void CheckReload()
-    {
-        CannonInterface[] cannons = shipAmoInter.GetUnloadedCannons();
-        Task.current.debugInfo = "cannons not loaded:" + cannons.Length;
-        if (cannons.Length == 0) {
-            attacking = false;
-            runningAway = false;
-        }
-    }
 
     //****** Close by *****
     [Task]
@@ -282,26 +270,25 @@ public class BoatAI : MonoBehaviour
             if (closestDistance > Mathf.Pow(3500, 2) && !hasCarronade)
             {
                 Task.current.Fail();
-                attacking = false;
             }
-            //else if (closestDistance > Mathf.Pow(800, 2))
-            //{
-            //    SetAction("PotShot");
-            //}
-            else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade)
+            
+            else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade){
                 SetAction("FireAtWill");
-            else
+                shipCrewCommand.SetFireReloadAll(false);
+            }else{
                 SetAction("DriveBy");
+                shipCrewCommand.SetFireReloadAll(false);
+            }
+            
 
             Task.current.Succeed();
         } else {
-            attacking = false;
             Task.current.Fail();
         }
     }
     
     [Task]
-    public void SetCannonsNutral()
+    public void SetCannonsNeutral()
     {
         shipCrewCommand.SetCannonSets(3);
         shipCrewCommand.SetCannonAnglePredictions(0,0);
@@ -332,32 +319,37 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void DriveBeside()
     {
-        //TODO now use boatSteeringControl.SetTargetPosition(Vector3);
-        
         runTime += Time.deltaTime;
+        recalcTimer += Time.deltaTime;
         if (runTime > 5f) {
             runTime = 0;
-            //Debug.Log("reseting tree");
-            ResetTree();
+            recalcTimer = float.MaxValue;
+            Task.current.Fail();
             return;
         }
 
-        float addedX = attackVector.x * 25;
-        float addedY = attackVector.y * 25;
-        if (_targetEnemy == null)
-        {
-            ResetTree();
+        if (_targetEnemy == null){
+            runTime = 0;
+            recalcTimer = float.MaxValue;
+            Task.current.Fail();
             return;
         }
 
-        var destination = FindDriveByTarget(ChooseAttackDirection());
-        boatSteeringControl.SetTargetPosition(destination);
+        if (recalcTimer >= 1){
+            recalcTimer = 0;
+            var destination = FindDriveByTarget(ChooseAttackDirection());
+            boatSteeringControl.SetTargetPosition(destination);
+            
+        }
+
+        
         if (boatSteeringControl.DistanceToTarget < 100) {
             Task.current.Succeed();
+            runTime = 0;
+            recalcTimer = float.MaxValue;
+            return;
         }
-        else {
-            Task.current.Fail();
-        };
+        
     }
     
     /// <summary>
@@ -452,6 +444,7 @@ public class BoatAI : MonoBehaviour
         var side = ChooseAttackDirection();
         boatSteeringControl.circle = true;
         boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
+        Task.current.Succeed();
     }
 
 
@@ -479,19 +472,6 @@ public class BoatAI : MonoBehaviour
         if (shipAmoInter.GetLoadedCannons(cannonGroups).Length == 0) {
             Task.current.Succeed();
         }
-    }
-    [Task]
-    public void ChooseToAttack() {
-        attacking = true;
-        Task.current.Succeed();
-    
-    }
-    [Task]
-    public void CheckToRetreat()
-    {
-        runningAway = true;
-        attacking = false;
-        Task.current.Succeed();
     }
 
     [Task]
@@ -528,10 +508,7 @@ public class BoatAI : MonoBehaviour
         GetComponent<PandaBehaviour>().enabled = false;
         Task.current.Succeed();
     }
-    [Task]
-    public void Idle() {
-        Task.current.Succeed();
-    }
+
     [Task]
     public void FireAwayCommand() {
         HashSet<int> cannonGroups = new HashSet<int>();
@@ -554,18 +531,7 @@ public class BoatAI : MonoBehaviour
     #endregion
 
     #region helper
-    public float PredictCannonAngle(float distance)
-    {
-        float value = Mathf.Asin((distance-7) / 4077.47f) / 2 * (180 / Mathf.PI);
-        if (float.IsNaN(value)) {
-            return 45f;
-        }
-        else {
-            return value;
-        }
-    }
     
-
     void ResetTree()
     {
         // Assuming the GameObject has a BehaviourTree component

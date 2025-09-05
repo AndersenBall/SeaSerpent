@@ -9,12 +9,14 @@ public class PandaUnitAI : MonoBehaviour
     #region variables
 
     public string currentAction;
-   
+
+    [Task]
+    public bool BroadsideMode = false;
+    
     public float fireSpeed;
     private bool hasCannonBall = false;
     [SerializeField]
     private float startTime;
-    public bool resetCannonGroups { get; set; } = false;
 
     public GameObject cannonBallPrefab;
     private BoatAI currentBoatAi;
@@ -32,7 +34,7 @@ public class PandaUnitAI : MonoBehaviour
         }
     }
     [SerializeField]
-    private CannonInterface nearestCannon; // need to set to null on death or action change. Also set the cannon to be not busy
+    private CannonInterface nearestCannon;
     private CannonBallSetType nearestBallPile;
 
     private PandaBehaviour pandaBT = null;
@@ -194,6 +196,25 @@ public class PandaUnitAI : MonoBehaviour
     }
 
     [Task]
+    public bool HasAnyTargetableCannon(string input)
+    {
+        CannonInterface[] cannonList = null;
+
+        if (input == "All") {
+            cannonList = shipAmunitions.GetCannons();
+        }
+        else if (input == "Fire") {
+            cannonList = shipAmunitions.GetLoadedCannons(cannonGroups);
+        }
+        else if (input == "Reload") {
+            cannonList = shipAmunitions.GetUnloadedCannons();
+        }
+
+        return cannonList != null && cannonList.Length > 0;
+    }
+    
+    
+    [Task]
     public void FindClosestCannon(string input)
     {
         CannonInterface[] cannonList = null;
@@ -313,31 +334,9 @@ public class PandaUnitAI : MonoBehaviour
         nearestCannon = null;
         Task.current.Fail();
     }
+    
     [Task]
-    public void CheckCannonGroupReset() {
-        if (resetCannonGroups)
-        {
-            resetCannonGroups = false;
-            Task.current.Fail();
-        }
-        else {
-            Task.current.Succeed();
-        }
-    }
-    [Task]
-    public void RotateCannon() {
-        if (nearestCannon != null) {
-            nearestCannon.RotateBarrel();
-        }
-        
-        //if statment for if cannon needs to be rotated 
-        animator.SetTrigger("FireCannon");
-        UnsubscribeCannon();
-        Task.current.Succeed();
-
-    }
-    [Task]
-    public void RotateCannonNew()
+    public void RotateCannon()
     {
         if (Task.current.isStarting)
         {

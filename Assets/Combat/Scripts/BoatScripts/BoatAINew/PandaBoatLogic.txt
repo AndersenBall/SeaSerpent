@@ -19,10 +19,9 @@ tree("RunAway")
 		runningAway
 		sequence
 			ChooseRunAwayLocation
-			Reload
-			Parallel
-				CheckReload
-				AllignToWanderPoint
+			Wait 10.0
+
+
 tree ("FarAway")
 	while
 		not attacking
@@ -30,7 +29,6 @@ tree ("FarAway")
 			ChooseToAttack
 			sequence
 				ChooseWanderDest
-				AllignToWanderPoint
 				Wait 5.0
 
 tree("Attack")
@@ -42,7 +40,6 @@ tree("Attack")
 				tree("DriveBy")
 				tree("ApproachTurnShoot")
 				tree("Ram")
-				tree("PotShot")
 				tree("FireAtWill")
 
 
@@ -50,7 +47,7 @@ tree("Attack")
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
-		SetCannonsNutral
+		SetCannonsNeutral
 		fallback
 			while 
 				not GetInAttackPosition(100.0)
@@ -68,47 +65,19 @@ tree("DriveBy")
 tree("ApproachTurnShoot")
 	sequence
 		ActionCheck("ApproachTurnShoot")
-		CreateAttackVector
 		GetInAttackPosition(100.0)
 		TurnToFire
-		Fire
-		CheckToRetreat
+		Wait 10.0
 
 tree("Ram")
 	sequence
 		ActionCheck("Ram")
-		CreateAttackVector
 		GetInAttackPosition(100.0)
 		RamSpeed
-		CheckToRetreat
-		
-tree("PotShot")
-	sequence
-		ActionCheck("PotShot")
-		ChooseAttackDirection
-		CreateAttackVector
-		sequence
-			TurnToFireFar
-			race
-				SetUpCannons
-				KeepAim
-		Race
-			sequence
-				Wait 2.0
-				Fire
-			KeepAim
-		Wait 2.0
-		CheckToRetreat
 
 tree("FireAtWill")
 	sequence
 		ActionCheck("FireAtWill")
-		ChooseAttackDirection
-		CreateAttackVector
-		TurnToFireFar
-		Race
-			FireAwayCommand
-			KeepAim
-			Wait 20.0
-		Wait 2.0
-		CheckToRetreat
+		TurnToFire
+		Wait 10.0
+		

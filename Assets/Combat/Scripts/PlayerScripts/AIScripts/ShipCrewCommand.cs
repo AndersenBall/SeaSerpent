@@ -75,6 +75,24 @@ public class ShipCrewCommand : MonoBehaviour
         
 
     }
+    
+    public void SetFireReloadAll(bool broadside)
+    {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            //Debug.Log(gameObject.name + "start firing all cannons");
+            foreach (PandaUnitAI unit in unitAIs){
+                unit.BroadsideMode = broadside;
+            }
+            
+        }
+        
+
+    }
 
     public void SetCannonGroups() {
         if (unitAIs == null)
