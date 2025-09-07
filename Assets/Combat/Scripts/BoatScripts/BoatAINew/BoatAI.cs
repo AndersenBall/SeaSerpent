@@ -1,11 +1,9 @@
-﻿using System.CodeDom;
-using System.Collections;
+﻿
 using System.Collections.Generic;
 using System.Linq;
 using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using Panda;
-using TMPro;
 
 //methods and functions for panda bt tree
 public class BoatAI : MonoBehaviour
@@ -56,7 +54,7 @@ public class BoatAI : MonoBehaviour
     [SerializeField]
     private BoatAI _targetEnemy;
     public Vector2 attackVector;
-    public string attackDirection;
+    public AttackSide attackDirection;
 
     private PandaBehaviour pandaBT = null;
     [Task]
@@ -127,17 +125,7 @@ public class BoatAI : MonoBehaviour
     public string GetAction() {
         return action;
     }
-    //Set side boat hopes to shoot from
-    public bool SetAttackDirection(string act)
-    {
-        attackDirection = act;
-        return true;
-    }
-
-    public string GetAttackDirection()
-    {
-        return attackDirection;
-    }
+    
     //gets team number
     public int GetTeamNumber() {
         return teamNumber;
@@ -163,6 +151,15 @@ public class BoatAI : MonoBehaviour
         return boatControl.GetEnginePower();
     }
 
+    [Task]
+    public bool IsAttacking()
+    {
+        if (action.Equals("FireAtWill") || action.Equals("DriveBy") || action.Equals("Ram") || action.Equals("ApproachTurnShoot"))
+            return true;
+        else{
+            return false;
+        }
+    }
 
     #endregion
 
@@ -188,7 +185,12 @@ public class BoatAI : MonoBehaviour
 
     #region Panda BT Scripts
     //*****Far away*****
-    
+    [Task]
+    public void Idle()
+    {
+        return;
+    }
+
     [Task]
     public void ChooseWanderDest() {
         BoatAI enemyBoat = boatMaster.GetClosestBoat(transform.position, teamNumber == 1 ? 2 : 1);
@@ -229,6 +231,13 @@ public class BoatAI : MonoBehaviour
         else
             Task.current.Fail();
     }
+
+    [Task]
+    public void GetInAttackPosition(float distance)
+    {
+        Task.current.Succeed();
+    }
+
     [Task] // TODO 12/5 expand into larger sub system with smart overall decisions for choosing who to attack. might be controlled by a seperate "commander" ai.
     public void ChooseEnemy() {
 
@@ -304,11 +313,11 @@ public class BoatAI : MonoBehaviour
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
         shipCrewCommand.ClearCannons();
-        if (attackDirection == "Left") {
+        if (attackDirection == AttackSide.Left) {
             cannonGroups.Add(3);
             shipCrewCommand.SetCannonSets(3);
         }
-        if (attackDirection == "Right") {
+        if (attackDirection == AttackSide.Right) {
             cannonGroups.Add(4);
             shipCrewCommand.SetCannonSets(4);
         }
@@ -337,7 +346,8 @@ public class BoatAI : MonoBehaviour
 
         if (recalcTimer >= 1){
             recalcTimer = 0;
-            var destination = FindDriveByTarget(ChooseAttackDirection());
+            attackDirection = ChooseAttackDirection();
+            var destination = FindDriveByTarget(attackDirection);
             boatSteeringControl.SetTargetPosition(destination);
             
         }
@@ -420,7 +430,7 @@ public class BoatAI : MonoBehaviour
         if (Physics.Raycast(transform.position + transform.forward * 10 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
             Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider +"layer: " + hit.collider.gameObject.layer +" " + GetTeamNumber();
-            SetAttackDirection("Left");
+            attackDirection = AttackSide.Left;
             runTime = 0;
             Task.current.Succeed();
         }
@@ -430,7 +440,7 @@ public class BoatAI : MonoBehaviour
         if (Physics.Raycast(transform.position +transform.forward*10+ direction * 10, direction, out hit, 120f, layerMask)) {
             Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider;
-            SetAttackDirection("Right");
+            attackDirection = AttackSide.Right;
             runTime = 0;
             Task.current.Succeed();
         }
@@ -459,11 +469,11 @@ public class BoatAI : MonoBehaviour
         }
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
-        if (attackDirection == "Left") {
+        if (attackDirection == AttackSide.Left) {
             cannonGroups.Add(3);
             shipCrewCommand.SetCannonSets(3);
         }
-        if (attackDirection == "Right") {
+        if (attackDirection == AttackSide.Right) {
             cannonGroups.Add(4);
             shipCrewCommand.SetCannonSets(4);
         }
@@ -513,12 +523,12 @@ public class BoatAI : MonoBehaviour
     public void FireAwayCommand() {
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
-        if (attackDirection == "Left")
+        if (attackDirection == AttackSide.Left)
         {
             cannonGroups.Add(3);
             shipCrewCommand.SetCannonSets(3);
         }
-        if (attackDirection == "Right")
+        if (attackDirection == AttackSide.Right)
         {
             cannonGroups.Add(4);
             shipCrewCommand.SetCannonSets(4);
