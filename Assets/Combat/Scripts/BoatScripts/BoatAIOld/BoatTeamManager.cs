@@ -40,8 +40,9 @@ public class BoatTeamManager : MonoBehaviour
         int numberOfSailors = 0;
         GameObject spawnedAIBoat = Instantiate(boatAIPrefab, boatAiTransform);
         spawnedAIBoat.transform.localPosition = new Vector3(numberOfBoats*30, 0, 0);
-        GameObject spawnedBoat = Instantiate(boatPrefab, this.transform);
-        spawnedBoat.transform.localPosition = new Vector3(numberOfBoats*150,0,Random.Range(-100,100));
+        GameObject spawnedBoatParrent = Instantiate(boatPrefab, this.transform);
+        spawnedBoatParrent.transform.localPosition = new Vector3(numberOfBoats*150,0,Random.Range(-100,100));
+        GameObject spawnedBoat = spawnedBoatParrent.GetComponentInChildren<BoatControls>().gameObject;
         spawnedBoat.GetComponent<BoatControls>().SetBoatParamters(b,false);
         spawnedBoat.GetComponent<BoatAI>().SetTeamNumber(TeamNumber);
         spawnedBoat.name = b.boatName;
@@ -70,8 +71,10 @@ public class BoatTeamManager : MonoBehaviour
         int numberOfSailors = 0;
         GameObject spawnedAIBoat = Instantiate(boatAIPrefab, boatAiTransform);
         spawnedAIBoat.transform.localPosition = new Vector3(numberOfBoats * 30, 0, 0);
-        GameObject spawnedBoat = Instantiate(boatPrefab, this.transform);
-        spawnedBoat.transform.localPosition = new Vector3(numberOfBoats * 75, 0, -150);
+        GameObject spawnedBoatParrent = Instantiate(boatPrefab, this.transform);
+        spawnedBoatParrent.transform.localPosition = new Vector3(numberOfBoats*150,0,Random.Range(-100,100));
+        
+        GameObject spawnedBoat = spawnedBoatParrent.GetComponentInChildren<BoatControls>().gameObject;
         spawnedBoat.GetComponent<BoatControls>().SetBoatParamters(b,true);
         spawnedBoat.GetComponent<BoatAI>().SetTeamNumber(TeamNumber);
         spawnedBoat.GetComponent<BoatControls>().aiBoat = spawnedAIBoat;

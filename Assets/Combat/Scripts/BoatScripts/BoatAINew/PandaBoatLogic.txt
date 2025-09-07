@@ -3,8 +3,8 @@ tree("Root")
 		tree("Dead")
 		tree("Player")
 		tree("RunAway")
-		tree("FarAway")
 		tree("Attack")
+
 tree("Dead")
 	while
 		isDead
@@ -14,26 +14,16 @@ tree("Player")
 	while
 		playerOnBoard
 		Idle
+		
 tree("RunAway")
-	while
-		runningAway
-		sequence
-			ChooseRunAwayLocation
-			Wait 10.0
-
-
-tree ("FarAway")
-	while
-		not attacking
-		Random
-			ChooseToAttack
-			sequence
-				ChooseWanderDest
-				Wait 5.0
+	sequence
+		ActionCheck("RunAway")
+		ChooseRunAwayLocation
+		Wait 10.0
 
 tree("Attack")
 	while
-		attacking
+		IsAttacking
 		sequence
 			ChooseEnemy
 			fallback
@@ -42,25 +32,14 @@ tree("Attack")
 				tree("Ram")
 				tree("FireAtWill")
 
-
-
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
 		SetCannonsNeutral
-		fallback
-			while 
-				not GetInAttackPosition(100.0)
-				repeat	
-					sequence
-						ChooseAttackDirection
-						CreateAttackVector
-						Wait 1.0
-			sequence
-				UnitsToCannons
-				CheckToFire
-				Fire
-				CheckToRetreat
+		DriveBeside
+		UnitsToCannons
+		CheckToFire
+		Fire
 
 tree("ApproachTurnShoot")
 	sequence

@@ -21,7 +21,6 @@ public class BoatMaster : MonoBehaviour
         SpawnBoats();
         allBoatsList = new List<BoatAI>(gameObject.GetComponentsInChildren<BoatAI>());
         Debug.Log("Log:BoatMaster:total boats count:" + allBoatsList.Count());
-        InitalizeBoats();
 
     }
   
@@ -59,15 +58,7 @@ public class BoatMaster : MonoBehaviour
         
     }
     //adds all boats into array and sets their previous position
-    private void InitalizeBoats()
-    {
-        foreach (BoatAI boat in allBoatsList) {
-            Vector3 pos = boat.transform.position;
-            (int x, int y) xyPos = (Mathf.FloorToInt(pos.x / tileSize), Mathf.FloorToInt(pos.z / tileSize));
-            Debug.Log("Log:BoatMaster:add boat: (" + boat.name + ") at location: " + xyPos.x +","+ xyPos.y);
-        }
-    }
-
+ 
 
 
     //returns all boats on a team

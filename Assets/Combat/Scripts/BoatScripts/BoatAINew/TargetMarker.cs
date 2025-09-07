@@ -1,29 +1,23 @@
 ﻿// TargetMarker.cs
 using UnityEngine;
 
+using UnityEngine;
+
 public class TargetMarker : MonoBehaviour
 {
-    [SerializeField] private Transform visualsRoot;
-
     private Renderer[] _renderers;
 
     private void Awake()
     {
-        if (!visualsRoot && transform.childCount > 0)
-            visualsRoot = transform.GetChild(0);
-
-        _renderers = (visualsRoot ? visualsRoot : transform).GetComponentsInChildren<Renderer>(true);
+        // Cache all renderers under this prefab (including children)
+        _renderers = GetComponentsInChildren<Renderer>(true);
     }
 
     public void SetVisible(bool visible)
     {
-        if (visualsRoot)
+        foreach (var r in _renderers)
         {
-            visualsRoot.gameObject.SetActive(visible);
-        }
-        else
-        {
-            foreach (var r in _renderers) r.enabled = visible;
+            if (r) r.enabled = visible;
         }
     }
 
@@ -32,10 +26,11 @@ public class TargetMarker : MonoBehaviour
         transform.position = worldPos;
     }
 
-    // Optional: call this if you want the flag to face the camera
+    // Optional: make the marker face the camera
     public void FaceCamera(Camera cam)
     {
-        if (!cam || !visualsRoot) return;
-        visualsRoot.LookAt(cam.transform, Vector3.up);
+        if (!cam) return;
+        transform.LookAt(cam.transform, Vector3.up);
     }
 }
+
