@@ -15700,13 +15700,13 @@ GameObject:
   m_Component:
   - component: {fileID: 117555807658964287}
   - component: {fileID: 5511703257330935221}
+  - component: {fileID: 2223229389332775795}
   - component: {fileID: 6362646742254563882}
   - component: {fileID: 3128859446018046226}
   - component: {fileID: 6479057852392036910}
   - component: {fileID: 2544396252402667370}
   - component: {fileID: 8980126206376788530}
   - component: {fileID: 4185036786648382446}
-  - component: {fileID: 2223229389332775795}
   - component: {fileID: 4576520262543149880}
   m_Layer: 12
   m_Name: Frigit 1
@@ -15770,6 +15770,28 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2223229389332775795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6742494546592704570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17e43e7170fb45b4b81dcd16d0ff55d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scripts:
+  - {fileID: 4900000, guid: 0ade089c7414a6048935d73f4611924e, type: 3}
+  autoReset: 1
+  tickOn: 0
+  sourceInfos:
+  - isFoldout: 1
+    breakPoints: 
+    breakPointStatuses: 
+    collapsedLines: 
+    btScript: 
 --- !u!114 &6362646742254563882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15882,28 +15904,6 @@ MonoBehaviour:
   isDead: 0
   playerOnBoard: 0
   maxRange: 1000
---- !u!114 &2223229389332775795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6742494546592704570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17e43e7170fb45b4b81dcd16d0ff55d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scripts:
-  - {fileID: 4900000, guid: 0ade089c7414a6048935d73f4611924e, type: 3}
-  autoReset: 1
-  tickOn: 0
-  sourceInfos:
-  - isFoldout: 1
-    breakPoints: 
-    breakPointStatuses: 
-    collapsedLines: 
-    btScript: 
 --- !u!114 &4576520262543149880
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,12 +5,9 @@ using Panda;
 
 public class PandaUnitAI : MonoBehaviour
 {
-    // Start is called before the first frame update
     #region variables
-
+    
     public string currentAction;
-
-    [Task]
     public bool BroadsideMode = false;
     
     public float fireSpeed;
@@ -72,6 +69,10 @@ public class PandaUnitAI : MonoBehaviour
         return currentAction;
     }
 
+    [Task]
+    public bool GetBroadsideMode(string s) {
+        return s == "broadside" ? BroadsideMode : !BroadsideMode;
+    }
 
     #endregion
 
@@ -131,8 +132,8 @@ public class PandaUnitAI : MonoBehaviour
 
     [Task]
     public void SetWanderPoint() {
-        //Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
-        //Debug.Log("Info:Unit:Wander point " + wanderPoint);
+        Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
+        Debug.Log("Info:Unit:Wander point" + wanderPoint);
         //movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
         Task.current.Succeed();
     }
