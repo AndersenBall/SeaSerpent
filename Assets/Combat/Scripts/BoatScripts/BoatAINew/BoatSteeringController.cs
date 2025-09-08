@@ -128,7 +128,7 @@ public class BoatSteeringControls : MonoBehaviour
             float perp = fwd.x * desiredDir.y - fwd.y * desiredDir.x;
             float angleErr = Mathf.Atan2(perp, dot);
 
-            steerOut = Mathf.Clamp(Kp * angleErr - Kd * angVelY, -1f, 1f);
+            steerOut = Mathf.Clamp(-1*Kp * angleErr - Kd * angVelY, -1f, 1f);
 
             float turnSlowdown = Mathf.Lerp(1f, 0.5f, Mathf.InverseLerp(0.3f, 1f, Mathf.Abs(steerOut)));
             throttleOut = Mathf.Clamp01(turnSlowdown);
@@ -139,7 +139,7 @@ public class BoatSteeringControls : MonoBehaviour
             float perp = fwd.x * desiredDir.y - fwd.y * desiredDir.x;
             float angleErr = Mathf.Atan2(perp, dot);
 
-            steerOut = Mathf.Clamp(Kp * angleErr - Kd * angVelY, -1f, 1f);
+            steerOut = Mathf.Clamp(-1*Kp * angleErr - Kd * angVelY, -1f, 1f);
 
             if (d <= stopDistance)
             {

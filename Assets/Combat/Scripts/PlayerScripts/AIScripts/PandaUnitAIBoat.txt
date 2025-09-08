@@ -1,9 +1,8 @@
 tree("Root")
 	FallBack
 		tree("Gunner")
-		tree("FireCannons")
 		tree("PrepFireCannons")
-		tree("ReloadCannons")
+		tree("ReloadAll")
 		tree("RotateCannons")
 		tree("AdjustSail")
 		tree("RepairShip")
@@ -13,23 +12,18 @@ tree("Root")
 tree("Idle")
 	while
 		ActionCheck("Idle")
-	    sequence
-			SetWanderPoint
-			Idle
+		SetWanderPoint
 
 tree("Gunner")
 	while
 		ActionCheck("Gunner")
-		selector
-			sequence
-				IsTrue("BroadsideMode")
-				tree("GunnerBroadside")
-			sequence
-				IsFalse("BroadsideMode")
-				tree("GunnerCycle")
+		Sequence
+			tree("GunnerBroadside")
+			tree("GunnerCycle")
 
 tree("GunnerCycle")
 	sequence
+		GetBroadsideMode("noraml")
 		FindClosestCannon("Fire")
 		GoToClosest("Fire")
 		RotateCannon
@@ -48,9 +42,10 @@ tree("ReloadCannon")
 		Reload
 		
 tree("GunnerBroadside")
-    sequence
-        tree("Broadside_FireAll")
-        tree("ReloadAll")
+	sequence
+		GetBroadsideMode("broadside")
+		tree("Broadside_FireAll")
+		tree("ReloadAll")
 
 tree("Broadside_FireAll")
 	while

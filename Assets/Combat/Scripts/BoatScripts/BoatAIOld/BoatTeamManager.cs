@@ -73,7 +73,8 @@ public class BoatTeamManager : MonoBehaviour
         spawnedAIBoat.transform.localPosition = new Vector3(numberOfBoats * 30, 0, 0);
         GameObject spawnedBoatParrent = Instantiate(boatPrefab, this.transform);
         spawnedBoatParrent.transform.localPosition = new Vector3(numberOfBoats*150,0,Random.Range(-100,100));
-        
+
+        spawnedBoatParrent.GetComponentInChildren<BoatSteeringControls>().enabled = false;
         GameObject spawnedBoat = spawnedBoatParrent.GetComponentInChildren<BoatControls>().gameObject;
         spawnedBoat.GetComponent<BoatControls>().SetBoatParamters(b,true);
         spawnedBoat.GetComponent<BoatAI>().SetTeamNumber(TeamNumber);
