@@ -1,17 +1,38 @@
 ﻿// TargetMarker.cs
-using UnityEngine;
 
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TargetMarker : MonoBehaviour
 {
+    #region  variables 
     private Renderer[] _renderers;
+    private GameObject target;
+    private Queue<Vector3> waypoints = new Queue<Vector3>();
+    
 
+    #endregion
+
+    #region  monobehaviors
+    
     private void Awake()
     {
         // Cache all renderers under this prefab (including children)
         _renderers = GetComponentsInChildren<Renderer>(true);
     }
+    private void Update()
+    {
+        if (target != null)
+        {
+            Vector3 targetPosition = target.transform.position;
+            targetPosition.y += 15f;
+            transform.position = targetPosition;
+        }
+    }
+    
+
+    #endregion
+    
 
     public void SetVisible(bool visible)
     {
@@ -26,11 +47,39 @@ public class TargetMarker : MonoBehaviour
         transform.position = worldPos;
     }
 
-    // Optional: make the marker face the camera
-    public void FaceCamera(Camera cam)
+    public void FollowTarget(GameObject obj)
     {
-        if (!cam) return;
-        transform.LookAt(cam.transform, Vector3.up);
+        target = obj;
     }
+
+    public void StopFollowingTarget()
+    {
+        target = null;
+    }
+
+    public void AddWaypoint(Vector3 position)
+    {
+        waypoints.Enqueue(position);
+    }
+
+    public bool CheckpointReached()
+    {
+        if(waypoints.Count > 0)
+        {
+            if(target != null)
+            {
+                target.transform.position = waypoints.Dequeue();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void ClearWaypoints()
+    {
+        waypoints.Clear();
+    }
+    
+    
 }
 
