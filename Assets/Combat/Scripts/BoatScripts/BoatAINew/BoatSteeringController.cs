@@ -64,6 +64,11 @@ public class BoatSteeringControls : MonoBehaviour
         targetMarker.SetPosition(worldPosition);
     }
 
+    public void SetTargetPosition(GameObject target)
+    {
+        targetMarker.FollowTarget(target);
+    }
+
 
     private void FixedUpdate()
     {
@@ -119,6 +124,16 @@ public class BoatSteeringControls : MonoBehaviour
             if (avoidDir.sqrMagnitude > 0.0001f)
             {
                 desiredDir = (avoidDir * avoidBlend + desiredDir * (1f - avoidBlend)).normalized;
+                
+                //Debug for avoidance
+                Vector3 basePos = new Vector3(transform.position.x, transform.position.y + 5f, transform.position.z);
+                Vector3 rawAvoid = new Vector3(avoidDir.x, 0f, avoidDir.y).normalized;
+                Vector3 adjustedDir3 = new Vector3(desiredDir.x, 0f, desiredDir.y).normalized;
+                Vector3 pureDir3     = new Vector3(toTgtN.x,    0f, toTgtN.y   ).normalized;
+                // Draw 10m lines
+                Debug.DrawLine(basePos, basePos + adjustedDir3 * 10f, Color.green);  
+                Debug.DrawLine(basePos, basePos + pureDir3     * 10f, Color.yellow);
+                Debug.DrawLine(basePos, basePos + rawAvoid     * 10f, Color.red);
             }
         }
         

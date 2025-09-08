@@ -518,26 +518,7 @@ public class BoatAI : MonoBehaviour
         GetComponent<PandaBehaviour>().enabled = false;
         Task.current.Succeed();
     }
-
-    [Task]
-    public void FireAwayCommand() {
-        HashSet<int> cannonGroups = new HashSet<int>();
-        Task.current.debugInfo = "attack Direction:" + attackDirection;
-        if (attackDirection == AttackSide.Left)
-        {
-            cannonGroups.Add(3);
-            shipCrewCommand.SetCannonSets(3);
-        }
-        if (attackDirection == AttackSide.Right)
-        {
-            cannonGroups.Add(4);
-            shipCrewCommand.SetCannonSets(4);
-        }
-
-        shipCrewCommand.FireAtWill();
-        Task.current.Fail();
-        
-    }
+    
     #endregion
 
     #region helper
