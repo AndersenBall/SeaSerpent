@@ -36,6 +36,7 @@ tree("Attack")
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
+		GetInAttackPosition(100.0)
 		SetCannonsNeutral
 		DriveBeside
 		UnitsToCannons
@@ -45,7 +46,7 @@ tree("DriveBy")
 tree("ApproachTurnShoot")
 	sequence
 		ActionCheck("ApproachTurnShoot")
-		GetInAttackPosition(100.0)
+		GetInAttackPosition(-1.0)
 		TurnToFire
 		Wait 10.0
 
@@ -55,9 +56,4 @@ tree("Ram")
 		GetInAttackPosition(100.0)
 		RamSpeed
 
-tree("FireAtWill")
-	sequence
-		ActionCheck("FireAtWill")
-		TurnToFire
-		Wait 10.0
 		

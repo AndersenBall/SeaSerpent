@@ -1,9 +1,11 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using Panda;
+using Random = UnityEngine.Random;
 
 //methods and functions for panda bt tree
 public class BoatAI : MonoBehaviour
@@ -29,13 +31,9 @@ public class BoatAI : MonoBehaviour
 
     private int teamNumber;
 
-    private (int x, int y) prevXYPos = (-1, -1);
-    private (int x, int y) XYDest;
-
     private float runTime = 0;
     private float recalcTimer = float.MaxValue;
-
-    private bool turningToTarget = false;//legacy TODO remove? idk
+    
 
     private bool targetSetByCommander = false;
     
@@ -47,23 +45,35 @@ public class BoatAI : MonoBehaviour
             if (_targetEnemy != value)
             {
                 _targetEnemy = value;
-                targetSetByCommander = true; 
             }
         }
     }
     [SerializeField]
     private BoatAI _targetEnemy;
-    public Vector2 attackVector;
     public AttackSide attackDirection;
 
     private PandaBehaviour pandaBT = null;
     [Task]
     public string action;
     
+    private bool _isDead = false;
     [Task]
-    public bool isDead = false;
-    [Task]
-    public bool playerOnBoard = false;
+    public bool isDead
+    {
+        get => _isDead;
+        set
+        {
+            if (_isDead == value) return;
+            _isDead = value;
+
+            if (value)
+            {
+                boatMaster.DestroyBoat(this);
+                Destroy(gameObject, 10f);
+            }
+        }
+    }
+    
     [Task]
     public int maxRange = 1000;
 
@@ -81,40 +91,25 @@ public class BoatAI : MonoBehaviour
         selectionIndicator.SetActive(false);
         maxRange = (int)boatControl.boat.GetMaxCannonRange();
     }
-    
 
     #endregion
     
     #region setters and getters
     //*************setters and getters***************
+    public void SetTargetPosition(Vector3 pos)
+    {
+        boatSteeringControl.SetTargetPosition(pos);
+    }
+    
+    public void SetTargetPosition(GameObject target)
+    {
+        boatSteeringControl.SetTargetPosition(target);
+    }
+    
     public int GetHP() {
         return boatHP.currentHealth;
     
     }
-    public void SetIsDead(bool dead) {
-        isDead = dead;
-        if (dead == true) {
-            boatMaster.DestroyBoat(this);
-            Destroy(gameObject, 10);
-        }
-    }
-    public bool GetIsDead() {
-        return isDead;
-    }
-
-    public void SetDestination(float x, float z)
-    {
-        boatSteeringControl.SetTargetPosition(new Vector3(x, 10, z));
-        return;
-    }
-    public (int x, int y) GetDestination() {
-        return XYDest;
-    }
-    //previous xyPos on array
-    public (int x, int y) GetPrevXYPos() {
-        return prevXYPos;
-    }
-    
 
     //sets current action ship is taking
     public bool SetAction(string act) {
@@ -195,26 +190,24 @@ public class BoatAI : MonoBehaviour
     public void ChooseWanderDest() {
         BoatAI enemyBoat = boatMaster.GetClosestBoat(transform.position, teamNumber == 1 ? 2 : 1);
         if (enemyBoat != null) {
-            SetDestination(enemyBoat.transform.position.x, enemyBoat.transform.position.z);
+            boatSteeringControl.SetTargetPosition(enemyBoat.transform.position); 
         }
         else {
-            SetDestination(Random.Range(-100,100), Random.Range(-100,100));
+            boatSteeringControl.SetTargetPosition(Random.Range(-100,100), Random.Range(-100,100));
         }
-        //Debug.Log("wander: setting boat Destination in script 20 ,1");
         Task.current.Succeed();
     }
-    
-
     
     //*****Run away*****
     [Task]
     public void ChooseRunAwayLocation()
     {
         // in future maybe have run to spawn... scan nearby areas for enemy ships ext maybe have it activly avaid enemys
-        SetDestination(1000, 1400);
+        boatSteeringControl.SetTargetPosition(1000, 1400);
 
         Task.current.Succeed();
     }
+    
     [Task]
     public void Reload() {
         shipCrewCommand.ReloadCannons();
@@ -235,7 +228,24 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void GetInAttackPosition(float distance)
     {
-        Task.current.Succeed();
+        runTime += Time.deltaTime;
+        float calculatedDistance = distance;
+        
+        if (runTime > 5f) {
+            runTime = 0;
+            Task.current.Fail();
+            return;
+        }
+        
+        if (distance < 0){
+            calculatedDistance = boatControl.boat.GetMaxCannonRange();
+        }
+
+        if (boatSteeringControl.DistanceToTarget < calculatedDistance){
+            runTime = 0;
+            Task.current.Succeed();
+            return;
+        }
     }
 
     [Task] // TODO 12/5 expand into larger sub system with smart overall decisions for choosing who to attack. might be controlled by a seperate "commander" ai.
@@ -289,7 +299,7 @@ public class BoatAI : MonoBehaviour
                 shipCrewCommand.SetFireReloadAll(false);
             }
             
-
+            boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
             Task.current.Succeed();
         } else {
             Task.current.Fail();
@@ -451,7 +461,9 @@ public class BoatAI : MonoBehaviour
     [Task]
     public void TurnToFire()
     {
+        
         var side = ChooseAttackDirection();
+        boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
         boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
         Task.current.Succeed();

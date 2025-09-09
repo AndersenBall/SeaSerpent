@@ -116,7 +116,7 @@ public class BoatControls : MonoBehaviour
 
     public void Die() {
         isDead = true;
-        boatAI.SetIsDead(true);
+        boatAI.isDead = true;
         boatPhysics._buoyancyCoeff = 0;
 
     }
