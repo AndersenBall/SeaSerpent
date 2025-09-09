@@ -44,6 +44,7 @@ public class TargetMarker : MonoBehaviour
 
     public void SetPosition(Vector3 worldPos)
     {
+        target = null;
         transform.position = worldPos;
     }
 
@@ -52,33 +53,35 @@ public class TargetMarker : MonoBehaviour
         target = obj;
     }
 
-    public void StopFollowingTarget()
-    {
-        target = null;
-    }
-
+    #region waypoints
     public void AddWaypoint(Vector3 position)
     {
         waypoints.Enqueue(position);
     }
 
-    public bool CheckpointReached()
+    /// <summary>
+    /// Advance to next queued waypoint (if any) and position THIS marker there.
+    /// Returns true if a waypoint was consumed.
+    /// </summary>
+    public bool AdvanceToNextWaypoint()
     {
-        if(waypoints.Count > 0)
+        if (waypoints.Count > 0)
         {
-            if(target != null)
-            {
-                target.transform.position = waypoints.Dequeue();
-                return true;
-            }
+            SetPosition(waypoints.Dequeue());
+            return true;
         }
         return false;
     }
 
-    public void ClearWaypoints()
+    public void ClearWaypoints() => waypoints.Clear();
+
+    public bool HasWaypoints => waypoints.Count > 0;
+
+    public Vector3? PeekNextWaypoint()
     {
-        waypoints.Clear();
+        return waypoints.Count > 0 ? waypoints.Peek() : (Vector3?)null;
     }
+    #endregion
     
     
 }

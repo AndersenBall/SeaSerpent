@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum AttackSide { Left, Right }
 
@@ -16,9 +17,9 @@ public class BoatSteeringControls : MonoBehaviour
 
     [Header("Arrival/Braking")]
     [Tooltip("Start slowing down when within this distance to the target (meters).")]
-    [SerializeField] private float slowDownRadius = 20f;
+    [SerializeField] public float slowDownRadius = 20f;
     [Tooltip("Consider 'arrived' and stop within this distance (meters).")]
-    [SerializeField] private float stopDistance = 2f;
+    [SerializeField] public float stopDistance = 10f;
     [SerializeField] private float _distanceToTarget;
     public float DistanceToTarget{get => _distanceToTarget; set => _distanceToTarget = value; }
     
@@ -54,22 +55,33 @@ public class BoatSteeringControls : MonoBehaviour
         if (!boatControls) boatControls = GetComponent<BoatControls>();
     }
 
+    private void Update()
+    {
+        if (_distanceToTarget < stopDistance){
+            targetMarker.AdvanceToNextWaypoint();
+        }
+    }
+
     public void SetTargetMarker(TargetMarker marker)
     {
         targetMarker = marker;
     }
+
+    public void SetTargetPosition(int x , int z)
+    {
+        targetMarker.SetPosition(new Vector3(x, 10, z));
+    }
     
     public void SetTargetPosition(Vector3 worldPosition)
     {
-        targetMarker.SetPosition(worldPosition);
+        targetMarker.SetPosition(new Vector3(worldPosition.x, 10, worldPosition.z));
     }
 
     public void SetTargetPosition(GameObject target)
     {
         targetMarker.FollowTarget(target);
     }
-
-
+    
     private void FixedUpdate()
     {
         ComputeSteeringXZ(out float steer, out float throttle);
@@ -243,7 +255,4 @@ public class BoatSteeringControls : MonoBehaviour
 
         return sum.sqrMagnitude > 0.0001f ? sum.normalized : Vector2.zero;
     }
-
-
-    
 }
