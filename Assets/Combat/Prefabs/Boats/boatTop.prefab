@@ -26,7 +26,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1054.0803, y: 38.022694, z: 1183.7}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3963982219938735681}
@@ -141,11 +141,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4185036786648382446, guid: e8bce6ac70a1df646a04371c283bbb67,
+        type: 3}
+      propertyPath: action
+      value: ApproachTurnShoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
+        type: 3}
+      propertyPath: timeHorizon
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}
       propertyPath: targetMarker
       value: 
       objectReference: {fileID: 1077597881639999398}
+    - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
+        type: 3}
+      propertyPath: clearanceRadius
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
+        type: 3}
+      propertyPath: detectionRadius
+      value: 700
+      objectReference: {fileID: 0}
     - target: {fileID: 4809685467141615448, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}
       propertyPath: m_AnchorMax.x
