@@ -15919,7 +15919,7 @@ MonoBehaviour:
   targetMarker: {fileID: 0}
   Kp: 2
   Kd: 0.25
-  slowDownRadius: 20
+  slowDownRadius: 25
   stopDistance: 2
   _distanceToTarget: 0
   boatControls: {fileID: 0}
@@ -15928,10 +15928,10 @@ MonoBehaviour:
   enableAvoidance: 1
   shipLayer:
     serializedVersion: 2
-    m_Bits: 0
-  detectionRadius: 40
-  clearanceRadius: 8
-  timeHorizon: 3
+    m_Bits: 4096
+  detectionRadius: 200
+  clearanceRadius: 30
+  timeHorizon: 2
   avoidBlend: 0.7
   keepRightBias: 0.4
   hardBrakeTTC: 0.8
