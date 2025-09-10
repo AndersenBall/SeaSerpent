@@ -67,6 +67,11 @@ public class BoatSteeringControls : MonoBehaviour
         targetMarker = marker;
     }
 
+    public void SetTargetMarketVisable(bool visible)
+    {
+        targetMarker.SetVisible(visible);
+    }
+
     public void SetTargetPosition(int x , int z)
     {
         targetMarker.SetPosition(new Vector3(x, 10, z));

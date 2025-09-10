@@ -127,16 +127,8 @@ public class RTSBoxSelection : MonoBehaviour
     private void SetBoatSelected(BoatAI boat, bool selected)
     {
         if (boat == null) return;
-
-        // Your existing hook
         boat.SetSelected(selected);
-
-        // Toggle TargetMarker visibility if present
-        var marker = boat.GetComponentInChildren<TargetMarker>(true);
-        if (marker != null)
-        {
-            marker.SetVisible(selected);
-        }
+        boat.SetTargetMarkerVisible(true);
     }
     
     private void SelectBoatsInBox()

@@ -96,6 +96,11 @@ public class BoatAI : MonoBehaviour
     
     #region setters and getters
     //*************setters and getters***************
+    public void SetTargetMarkerVisible(bool visible)
+    {
+        boatSteeringControl.SetTargetMarketVisable(visible);
+    }
+
     public void SetTargetPosition(Vector3 pos)
     {
         boatSteeringControl.SetTargetPosition(pos);
