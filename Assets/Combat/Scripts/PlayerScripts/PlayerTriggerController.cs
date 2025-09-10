@@ -114,7 +114,7 @@ public class PlayerTriggerController : MonoBehaviour
         boatControls = bcontrols;
         shipCrewCommand = boatControls.GetComponent<ShipCrewCommand>();
         shipAmunitionInterface = boatControls.GetComponent<ShipAmunitionInterface>();
-        boatControls.GetComponent<BoatAI>().playerOnBoard = true;
+        
     }
 
     private void NewCommand(string newCommand) {

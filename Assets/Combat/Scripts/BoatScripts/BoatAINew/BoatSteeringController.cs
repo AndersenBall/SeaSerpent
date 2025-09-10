@@ -39,11 +39,11 @@ public class BoatSteeringControls : MonoBehaviour
     [Header("Collision Avoidance")]
     [SerializeField] private bool enableAvoidance = true;
     [SerializeField] private LayerMask shipLayer;
-    [SerializeField] private float detectionRadius = 40f;   // meters
-    [SerializeField] private float clearanceRadius = 8f;    // meters (hull + buffer)
-    [SerializeField] private float timeHorizon = 3.0f;      // seconds to look ahead
-    [SerializeField, Range(0f,1f)] private float avoidBlend = 0.7f; // weight of avoidance vs goal
-    [SerializeField] private float keepRightBias = 0.4f;    // bias to pass starboard-to-starboard
+    [SerializeField] private float detectionRadius = 700f;   // meters
+    [SerializeField] private float clearanceRadius = 30f;    // meters (hull + buffer)
+    [SerializeField] private float timeHorizon = 5.0f;      // seconds to look ahead
+    [SerializeField, Range(0f,1f)] private float avoidBlend = 1f; // weight of avoidance vs goal
+    [SerializeField] private float keepRightBias = 0.0f;    // bias to pass starboard-to-starboard
     [SerializeField] private float hardBrakeTTC = 0.8f;     // emergency throttle cut threshold
 
     
@@ -148,9 +148,9 @@ public class BoatSteeringControls : MonoBehaviour
                 Vector3 adjustedDir3 = new Vector3(desiredDir.x, 0f, desiredDir.y).normalized;
                 Vector3 pureDir3     = new Vector3(toTgtN.x,    0f, toTgtN.y   ).normalized;
                 // Draw 10m lines
-                Debug.DrawLine(basePos, basePos + adjustedDir3 * 10f, Color.green);  
-                Debug.DrawLine(basePos, basePos + pureDir3     * 10f, Color.yellow);
-                Debug.DrawLine(basePos, basePos + rawAvoid     * 10f, Color.red);
+                Debug.DrawLine(basePos, basePos + adjustedDir3 * 40f, Color.green);  
+                Debug.DrawLine(basePos, basePos + pureDir3     * 40f, Color.yellow);
+                Debug.DrawLine(basePos, basePos + rawAvoid     * 40f, Color.red);
             }
         }
         
@@ -219,14 +219,30 @@ public class BoatSteeringControls : MonoBehaviour
             Vector2 v = otherVel - selfVelXZ;              // relative velocity
 
             float v2 = v.sqrMagnitude;
-            if (v2 < 0.0001f)
+            if (v2 < 0.5f) // ~0.5 m/s relative speed; tune as needed
             {
                 float dist = r.magnitude;
-                if (dist < clearanceRadius * 1.2f)
+                if (dist < clearanceRadius * 1.6f)
                 {
-                    Vector2 push = (-r).normalized;
-                    sum += push * Mathf.InverseLerp(clearanceRadius * 1.2f, 0f, dist);
-                    bestImminence = Mathf.Min(bestImminence, 0.5f);
+                    // Deterministic right-of-way so we don't mirror each other
+                    int myId    = _rb.GetInstanceID();
+                    int otherId = h.attachedRigidbody.GetInstanceID();
+                    bool iYield = myId > otherId; // one yields, one proceeds (consistent for the pair)
+
+                    // "Away" is radial separation; "tangentRight" circles around their starboard side
+                    Vector2 away          = (-r).normalized;
+                    Vector2 tangentRight  = new Vector2(-away.y, away.x);   // right around them
+                    Vector2 tangentLeft   = -tangentRight;                  // left around them
+
+                    // Stand-on goes one way, give-way goes the other (breaks symmetry)
+                    Vector2 chosenTangent = iYield ? tangentRight : tangentLeft;
+
+                    // Make the move mostly tangential (to slide past), with a bit of radial spacing
+                    float nearWeight = Mathf.InverseLerp(clearanceRadius * 1.6f, 0f, dist); // closer => stronger
+                    Vector2 nudge = chosenTangent * (0.65f + 0.35f * nearWeight) + away * 0.25f;
+
+                    sum += nudge.normalized * Mathf.Clamp01(nearWeight);
+                    bestImminence = Mathf.Min(bestImminence, 0.25f); // treat as urgent so throttle clamps a bit
                 }
                 continue;
             }
@@ -237,22 +253,67 @@ public class BoatSteeringControls : MonoBehaviour
 
             if (sep < clearanceRadius)
             {
-                Vector2 left = new Vector2(v.y, -v.x).normalized;
+                // --- choose side & prefer passing BEHIND the other ship ---
+
+                Vector2 left  = new Vector2(v.y, -v.x).normalized;
                 Vector2 right = -left;
 
-                Vector2 fwd = new Vector2(transform.forward.x, transform.forward.z).normalized;
-                float sideSign = Mathf.Sign(fwd.x * v.y - fwd.y * v.x); // + => left turn is “natural”
+                Vector2 fwdSelf  = new Vector2(transform.forward.x, transform.forward.z).normalized;
+                Vector2 fwdOther = new Vector2(h.attachedRigidbody.transform.forward.x,
+                                               h.attachedRigidbody.transform.forward.z).normalized;
+
+                // Are we closing and is the other roughly in front of us?
+                float closingSpeed = Vector2.Dot(v, -r);            // > 0 => closing
+                bool  otherAhead   = Vector2.Dot(fwdSelf, r.normalized) > 0f;
+
+                // Are we in FRONT of the other at CPA (>0) or BEHIND (<0)?
+                float frontnessAtCPA = Vector2.Dot(fwdOther, rAtClosest);
+
+                // Preview how a lateral nudge changes that frontness (which side tucks us behind more)
+                float preview = Mathf.Max(5f, clearanceRadius * 0.5f);
+                float frontnessIfLeft  = Vector2.Dot(fwdOther, rAtClosest + left  * preview);
+                float frontnessIfRight = Vector2.Dot(fwdOther, rAtClosest + right * preview);
+
+                // Natural side from current relative motion (stability)
+                float sideSign = Mathf.Sign(fwdSelf.x * v.y - fwdSelf.y * v.x); // + => left is natural
                 Vector2 chosen = sideSign >= 0f ? left : right;
 
-                // Starboard (right) passing bias
-                chosen = Vector2.Lerp(chosen, right, keepRightBias).normalized;
+                // If we’re closing, the other is in front, and CPA says we’d be in FRONT of them,
+                // pick the side that makes us end up more BEHIND (frontness more negative).
+                if (closingSpeed > 0f && otherAhead && frontnessAtCPA > 0f)
+                {
+                    chosen = (frontnessIfLeft <= frontnessIfRight) ? left : right;
+                }
+                else
+                {
+                    // Otherwise apply a small keep-right to break symmetry
+                    chosen = Vector2.Lerp(chosen, right, keepRightBias).normalized;
+                }
 
+                // --- add a "tuck behind" pull so we slide into the gap opening behind them ---
+                Vector2 otherVelXZ = otherVel; // already computed above
+                float  otherSpeed  = otherVelXZ.magnitude;
+                if (otherSpeed > 0.1f)
+                {
+                    // Aim a little bit behind their stern, with a small lateral offset toward 'chosen'
+                    float followDist    = Mathf.Max(clearanceRadius * 1.5f, 10f);
+                    float lateralOffset = Mathf.Max(clearanceRadius * 0.6f, 5f);
+
+                    Vector2 tuckDir = (-fwdOther * followDist + chosen * lateralOffset).normalized;
+
+                    // Blend the tuck with the pure side step: this favors slipping behind rather than nosing ahead
+                    float tuckWeight = 0.6f; // tune 0.4–0.8
+                    chosen = (chosen * (1f - tuckWeight) + tuckDir * tuckWeight).normalized;
+                }
+
+                // Weight by time-to-contact & separation as before
                 float tWeight = 1f - (tStar / timeHorizon);
                 float sWeight = 1f - Mathf.InverseLerp(0f, clearanceRadius, sep);
-                float weight = Mathf.Clamp01(0.5f * tWeight + 0.5f * sWeight);
+                float weight  = Mathf.Clamp01(0.5f * tWeight + 0.5f * sWeight);
 
                 sum += chosen * weight;
                 bestImminence = Mathf.Min(bestImminence, tStar);
+
             }
         }
 

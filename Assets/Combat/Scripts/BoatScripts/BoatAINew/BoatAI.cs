@@ -297,7 +297,7 @@ public class BoatAI : MonoBehaviour
             }
             
             else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade){
-                SetAction("FireAtWill");
+                SetAction("ApproachTurnShoot");
                 shipCrewCommand.SetFireReloadAll(false);
             }else{
                 SetAction("DriveBy");
@@ -470,7 +470,7 @@ public class BoatAI : MonoBehaviour
         var side = ChooseAttackDirection();
         boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
-        boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
+        boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
         Task.current.Succeed();
     }
 

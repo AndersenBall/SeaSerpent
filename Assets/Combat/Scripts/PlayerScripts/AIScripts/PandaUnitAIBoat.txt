@@ -15,7 +15,7 @@ tree("Idle")
 tree("Gunner")
 	while
 		ActionCheck("Gunner")
-		Sequence
+		fallback
 			tree("GunnerBroadside")
 			tree("GunnerCycle")
 

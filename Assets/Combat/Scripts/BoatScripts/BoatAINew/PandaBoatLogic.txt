@@ -1,7 +1,6 @@
 tree("Root")
 	FallBack
 		tree("Dead")
-		tree("Player")
 		tree("RunAway")
 		tree("Attack")
 
@@ -9,11 +8,6 @@ tree("Dead")
 	while
 		isDead
 		Die
-
-tree("Player")
-	while
-		playerOnBoard
-		Idle
 		
 tree("RunAway")
 	sequence
@@ -30,7 +24,6 @@ tree("Attack")
 				tree("DriveBy")
 				tree("ApproachTurnShoot")
 				tree("Ram")
-				tree("FireAtWill")
 				tree("BoardEnemyShip")
 
 tree("DriveBy")
@@ -48,12 +41,16 @@ tree("ApproachTurnShoot")
 		ActionCheck("ApproachTurnShoot")
 		GetInAttackPosition(-1.0)
 		TurnToFire
-		Wait 10.0
+		Wait 30.0
 
 tree("Ram")
 	sequence
 		ActionCheck("Ram")
 		GetInAttackPosition(100.0)
 		RamSpeed
+		
+tree("BoardEnemyShip")
+	sequence
+		ActionCheck("BoardEnemyShip")
 
 		

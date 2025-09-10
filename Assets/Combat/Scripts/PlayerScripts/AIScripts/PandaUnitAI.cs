@@ -71,6 +71,11 @@ public class PandaUnitAI : MonoBehaviour
 
     [Task]
     public bool GetBroadsideMode(string s) {
+        if (s == "broadside" ? BroadsideMode : !BroadsideMode) {
+            Task.current.Succeed();
+        } else {
+            Task.current.Fail();
+        }
         return s == "broadside" ? BroadsideMode : !BroadsideMode;
     }
 
@@ -133,7 +138,7 @@ public class PandaUnitAI : MonoBehaviour
     [Task]
     public void SetWanderPoint() {
         Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
-        Debug.Log("Info:Unit:Wander point" + wanderPoint);
+        //Debug.Log("Info:Unit:Wander point" + wanderPoint);
         //movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
         Task.current.Succeed();
     }
