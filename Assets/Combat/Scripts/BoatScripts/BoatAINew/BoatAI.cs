@@ -243,7 +243,7 @@ public class BoatAI : MonoBehaviour
         }
         
         if (distance < 0){
-            calculatedDistance = boatControl.boat.GetMaxCannonRange();
+            calculatedDistance = boatControl.boat.GetMaxCannonRange()*3/4;
         }
 
         if (boatSteeringControl.DistanceToTarget < calculatedDistance){
@@ -471,6 +471,7 @@ public class BoatAI : MonoBehaviour
         boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
         boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
+        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Left ? new[] { 3 } : new[] { 4 });
         Task.current.Succeed();
     }
 

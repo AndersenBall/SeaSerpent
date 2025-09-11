@@ -13,7 +13,8 @@ public class ShipCrewCommand : MonoBehaviour
     private PandaUnitAI [] unitAIs;
     private ShipAmunitionInterface shipAmunitionInterface;
 
-    private readonly HashSet<int> cannonGroups = new HashSet<int>(); 
+    private readonly HashSet<int> cannonGroups = new HashSet<int>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -93,7 +94,7 @@ public class ShipCrewCommand : MonoBehaviour
         
 
     }
-
+    
     public void SetCannonGroups() {
         if (unitAIs == null)
         {
@@ -105,9 +106,27 @@ public class ShipCrewCommand : MonoBehaviour
             {
                 unit.cannonGroups = new HashSet<int>(cannonGroups);
             }
-
         }
 
+    }
+
+    public void SetCannonGroups(params int[] groups) {
+        if (unitAIs == null)
+        {
+            Debug.Log(gameObject.name + "no players on ship");
+        }
+        else
+        {
+            foreach (PandaUnitAI unit in unitAIs)
+            {
+                unit.cannonGroups = new HashSet<int>(groups);
+            }
+        }
+
+        cannonGroups.Clear();
+        foreach (int group in groups) {
+            cannonGroups.Add(group);
+        }
     }
 
 

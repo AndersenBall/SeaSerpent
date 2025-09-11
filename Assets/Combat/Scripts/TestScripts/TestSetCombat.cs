@@ -16,7 +16,7 @@ public class TestSetCombat : MonoBehaviour
             Fleet playerFleet = new Fleet(Nation.Britain, "jalapeno");
             for (int i = 0; i < ShipNumber; i++){
                 Boat newBoat = new Boat("p"+i, BoatType.Frigate);
-                newBoat.SetCannon(new Cannon(CannonType.Carronade));
+                newBoat.SetCannon(new Cannon(CannonType.LongGun));
                 newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
                 newBoat.AddSailor(new Sailor("t",SailorType.Gunner));
                 playerFleet.AddBoat(newBoat);

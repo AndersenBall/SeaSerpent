@@ -8,7 +8,7 @@
         {
             {
                 CannonType.LongGun,
-                new CannonStats(24, 150f, 0, -35f, 10f, 25f, 5f, 1.5f, 1000)
+                new CannonStats(24, 150f, 0, -35f, 10f, 25f, 5f, .5f, 1000)
             },
             {
                 CannonType.Carronade,

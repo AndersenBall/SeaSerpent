@@ -7,7 +7,7 @@ public class PandaUnitAI : MonoBehaviour
 {
     #region variables
     
-    public string currentAction;
+    public string currentAction ;
     public bool BroadsideMode = false;
     
     public float fireSpeed;
@@ -51,8 +51,8 @@ public class PandaUnitAI : MonoBehaviour
         animator = gameObject.GetComponentInChildren<Animator>();
         pandaBT = gameObject.GetComponent<PandaBehaviour>();
         currentBoatAi = gameObject.GetComponentInParent<BoatAI>();
+        currentAction = "Gunner";
 
-        
     }
 
     #endregion
@@ -266,7 +266,7 @@ public class PandaUnitAI : MonoBehaviour
             Task.current.Succeed();
         }
         else {
-            Debug.Log("failed to find closest");
+            //Debug.Log("failed to find closest");
             Task.current.Fail(); 
         }
     }
@@ -319,14 +319,15 @@ public class PandaUnitAI : MonoBehaviour
     {
         if (nearestCannon == null) {
             Task.current.Fail();
+            return;
         }
 
         if (hasCannonBall && !nearestCannon.GetLoadStatus()) {
             hasCannonBall = false;
             nearestCannon.LoadGun();
             Destroy(cannonBallHand);
-            Task.current.Succeed();
             UnsubscribeCannon();
+            Task.current.Succeed();
             return;
         }
         nearestCannon = null;
