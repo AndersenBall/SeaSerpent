@@ -37,6 +37,7 @@ public class PandaUnitAI : MonoBehaviour
     private PandaBehaviour pandaBT = null;
     private Animator animator; 
     private ShipAmunitionInterface shipAmunitions;
+    private BoatAI boatAi;
     private AIMovement movement;
 
     #endregion
@@ -45,6 +46,7 @@ public class PandaUnitAI : MonoBehaviour
     void Start()
     {
         shipAmunitions = transform.parent.parent.GetComponent<ShipAmunitionInterface>();
+        boatAi = transform.parent.parent.GetComponent<BoatAI>();
         movement = gameObject.GetComponent<AIMovement>();
         animator = gameObject.GetComponentInChildren<Animator>();
         pandaBT = gameObject.GetComponent<PandaBehaviour>();
@@ -218,8 +220,8 @@ public class PandaUnitAI : MonoBehaviour
 
         return cannonList != null && cannonList.Length > 0;
     }
-    
-    
+
+
     [Task]
     public void FindClosestCannon(string input)
     {
@@ -242,10 +244,7 @@ public class PandaUnitAI : MonoBehaviour
         else if (input == "Rotate") {
             cannonList = shipAmunitions.GetRotateCannons();
         }
-        if (cannonList.Length < 1) {
-            //Debug.Log("no Cannons to in list, Idle");
-            SetAction("Idle");
-        }
+        
 
 
         float shortestDistance = 100f;
@@ -297,14 +296,7 @@ public class PandaUnitAI : MonoBehaviour
     }
     [Task]
     public void FindClosestCannonBall() {
-        Task.current.Fail();
-        CannonInterface[] cannonList = shipAmunitions.GetUnloadedCannons();
-        if (cannonList.Length < 1) {
-            //Debug.Log("no Cannons to reload");
-            SetAction("Idle");
-            Task.current.Fail();
-            return;
-        }
+        
         CannonBallSetType[] cannonBallList = shipAmunitions.GetCannonBallPiles();
         
         float shortestDistance = 1000000000;

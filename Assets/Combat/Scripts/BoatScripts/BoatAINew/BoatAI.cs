@@ -361,7 +361,7 @@ public class BoatAI : MonoBehaviour
 
         if (recalcTimer >= 1){
             recalcTimer = 0;
-            attackDirection = ChooseAttackDirection();
+            attackDirection = ChooseAttackDirection(targetEnemy);
             var destination = FindDriveByTarget(attackDirection);
             boatSteeringControl.SetTargetPosition(destination);
             
@@ -467,7 +467,7 @@ public class BoatAI : MonoBehaviour
     public void TurnToFire()
     {
         
-        var side = ChooseAttackDirection();
+        var side = ChooseAttackDirection(targetEnemy);
         boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
         boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
@@ -551,19 +551,19 @@ public class BoatAI : MonoBehaviour
         }
     }
     
-    public AttackSide ChooseAttackDirection()
+    public AttackSide ChooseAttackDirection(BoatAI target)
     {
         Vector2 boatDirect = GetCardDirect();
-        if (_targetEnemy == null) {
+        if (target == null) {
             return AttackSide.Right; // fallback default
         }
 
         Vector2 targetVec = new Vector2(
-            _targetEnemy.transform.position.x - transform.position.x,
-            _targetEnemy.transform.position.z - transform.position.z
+            target.transform.position.x - transform.position.x,
+            target.transform.position.z - transform.position.z
         );
-        targetVec += new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z) 
-                     * 100 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
+        targetVec += new Vector2(target.transform.forward.x, target.transform.forward.z) 
+                     * 100 * (1 - Mathf.Pow(target.GetSpeed() - 1, 2));
 
         Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
         float dotSideways = Vector2.Dot(boatDirect, targetVec90);

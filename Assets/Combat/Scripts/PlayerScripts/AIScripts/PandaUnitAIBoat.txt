@@ -8,9 +8,9 @@ tree("Root")
 		tree("Idle")
 
 tree("Idle")
-	while
-		ActionCheck("Idle")
+	Sequence
 		SetWanderPoint
+		Wait 5
 
 tree("Gunner")
 	while
