@@ -235,6 +235,8 @@ public class BoatAI : MonoBehaviour
     {
         runTime += Time.deltaTime;
         float calculatedDistance = distance;
+
+        boatSteeringControl.circle = false;
         
         if (runTime > 5f) {
             runTime = 0;
@@ -245,7 +247,7 @@ public class BoatAI : MonoBehaviour
         if (distance < 0){
             calculatedDistance = boatControl.boat.GetMaxCannonRange()*3/4;
         }
-
+        Task.current.debugInfo = "distane too" + boatSteeringControl.DistanceToTarget + "distance:" + distance + "calculatedDistance:" + calculatedDistance;;
         if (boatSteeringControl.DistanceToTarget < calculatedDistance){
             runTime = 0;
             Task.current.Succeed();

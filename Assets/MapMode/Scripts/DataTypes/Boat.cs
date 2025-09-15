@@ -152,13 +152,13 @@ public class Boat
         float angle = (-cannon?.MinVerticalAngle ??  -new Cannon(CannonType.LongGun).MinVerticalAngle) * Mathf.Deg2Rad;
         float gravity = 9.81f;
 
-        return (CalculateCannonRange(velocity, gravity) * Mathf.Cos(angle));
+        return (CalculateCannonRange(velocity, gravity, angle) * Mathf.Cos(angle));
     }
 
-    private float CalculateCannonRange(float velocity, float gravity)
+    private float CalculateCannonRange(float velocity, float gravity,float angle)
     {
-        float angle = 25f * Mathf.Deg2Rad;
-        return (velocity * velocity * Mathf.Sin(2 * angle)) / gravity;
+        float radians = 10f * Mathf.Deg2Rad;
+        return (velocity * velocity * Mathf.Sin(2 * radians)) / gravity;
     }
 
     public IDictionary<string, int> getSupplies() {
