@@ -3,5 +3,6 @@ public enum BoatType
 {
     ManOfWar,
     Frigate,
+    Sloop,
     TradeShip
 }

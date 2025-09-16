@@ -17,19 +17,18 @@ namespace MapMode.Scripts.PostBattle
         // enemyFleet: pre-combat fleet (so its inventory is intact)
         // enemyBoatsToRemove: the boats that were destroyed/sunk in the battle
         // sunkFraction: fraction of loot recoverable from sunk ships (e.g., 0.30f)
-        // afloatFraction: fraction of loot recoverable from ships that escaped (often 0f for items)
+        // aliveLootFraction: fraction of loot recoverable from alie ships
         // goldReward: total gold computed from boats (30% for sunk, 100% for the rest)
         public static Dictionary<string, int> ComputeAvailableLoot(
             Fleet enemyFleet,
             IList<Boat> enemyBoatsToRemove,
             float sunkFraction,
-            float afloatFraction,
+            float aliveLootFraction,
             out int goldReward)
         {
             if (enemyFleet == null) throw new ArgumentNullException(nameof(enemyFleet));
 
             sunkFraction = Mathf.Clamp01(sunkFraction);
-            afloatFraction = Mathf.Clamp01(afloatFraction);
 
             var allBoats = enemyFleet.GetBoats() ?? new List<Boat>();
             int totalBoats = allBoats.Count;
@@ -37,12 +36,8 @@ namespace MapMode.Scripts.PostBattle
             int aliveBoats = totalBoats - removedBoats;
 
             float aliveRatio = totalBoats > 0 ? (float)aliveBoats / totalBoats : 0f;
-            float lootFraction = Mathf.Clamp01(sunkFraction * (1f - aliveRatio) + afloatFraction * aliveRatio);
-
-            // Compute gold: sunk -> 30%, others -> 100%
-            const float sunkGoldFraction = 0.30f;
-            const float afloatGoldFraction = 1.0f;
-
+            float lootFraction = Mathf.Clamp01(sunkFraction * (1f - aliveRatio) +  aliveRatio * aliveLootFraction);
+            
             var removedSet = enemyBoatsToRemove != null
                 ? new HashSet<Boat>(enemyBoatsToRemove)
                 : new HashSet<Boat>();
@@ -54,12 +49,12 @@ namespace MapMode.Scripts.PostBattle
                 if (!BoatTypeBaseGold.TryGetValue(boat.boatType, out int baseGold)) continue;
 
                 bool isSunk = removedSet.Contains(boat);
-                float goldFrac = isSunk ? sunkGoldFraction : afloatGoldFraction;
+                float goldFrac = isSunk ? sunkFraction : aliveLootFraction;
                 goldAccumulator += Mathf.RoundToInt(baseGold * goldFrac);
             }
 
             // Clamp to int range
-            goldReward = goldAccumulator > int.MaxValue ? int.MaxValue : (int)Mathf.Max(0, (int)goldAccumulator);
+            goldReward = (int)Mathf.Max(0, (int)goldAccumulator);
 
             // Pull pre-combat inventory and compute item loot by sampling
             var (ids, counts) = enemyFleet.GetInventory();

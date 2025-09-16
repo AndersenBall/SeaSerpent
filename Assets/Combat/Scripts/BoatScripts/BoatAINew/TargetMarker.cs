@@ -22,17 +22,21 @@ public class TargetMarker : MonoBehaviour
     }
     private void Update()
     {
+        MoveToTarget();
+    }
+    
+
+    #endregion
+
+    private void MoveToTarget()
+    {
         if (target != null)
         {
             Vector3 targetPosition = target.transform.position;
             targetPosition.y += 15f;
             transform.position = targetPosition;
-        }
+        }   
     }
-    
-
-    #endregion
-    
 
     public void SetVisible(bool visible)
     {
@@ -51,6 +55,7 @@ public class TargetMarker : MonoBehaviour
     public void FollowTarget(GameObject obj)
     {
         target = obj;
+        MoveToTarget();
     }
 
     #region waypoints

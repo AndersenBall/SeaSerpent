@@ -141,7 +141,7 @@ public class BoatMaster : MonoBehaviour
             SceneTransfer.enemyFleet,
             boatsToRemoveEnemy,
             sunkFraction: 0.30f, 
-            afloatFraction: 0.0f,
+            aliveLootFraction: .8f,
             out goldGained
         );
 

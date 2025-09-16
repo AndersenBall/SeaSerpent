@@ -61,6 +61,13 @@ public class BoatSteeringControls : MonoBehaviour
             targetMarker.AdvanceToNextWaypoint();
         }
     }
+    
+    private void FixedUpdate()
+    {
+        ComputeSteeringXZ(out float steer, out float throttle);
+        boatControls.SetTurn(steer);
+        boatControls.SetForward(throttle);
+    }
 
     public void SetTargetMarker(TargetMarker marker)
     {
@@ -85,13 +92,7 @@ public class BoatSteeringControls : MonoBehaviour
     public void SetTargetPosition(GameObject target)
     {
         targetMarker.FollowTarget(target);
-    }
-    
-    private void FixedUpdate()
-    {
-        ComputeSteeringXZ(out float steer, out float throttle);
-        boatControls.SetTurn(steer);
-        boatControls.SetForward(throttle);
+        DistanceToTarget = Vector3.Distance(transform.position, target.transform.position);
     }
 
     private void ComputeSteeringXZ(out float steerOut, out float throttleOut)
