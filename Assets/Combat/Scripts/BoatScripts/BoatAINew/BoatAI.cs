@@ -470,10 +470,11 @@ public class BoatAI : MonoBehaviour
     {
         
         var side = ChooseAttackDirection(targetEnemy);
+        attackDirection = side;
         boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
-        boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
-        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Left ? new[] { 3 } : new[] { 4 });
+        boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
+        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Right ? new[] { 4 } : new[] { 3 });
         Task.current.Succeed();
     }
 
@@ -556,24 +557,22 @@ public class BoatAI : MonoBehaviour
     
     public AttackSide ChooseAttackDirection(BoatAI target)
     {
-        Vector2 boatDirect = GetCardDirect();
-        if (target == null) {
-            return AttackSide.Right; // fallback default
-        }
+        if (target == null) return 0f;
 
-        Vector2 targetVec = new Vector2(
-            target.transform.position.x - transform.position.x,
-            target.transform.position.z - transform.position.z
-        );
-        targetVec += new Vector2(target.transform.forward.x, target.transform.forward.z) 
-                     * 100 * (1 - Mathf.Pow(target.GetSpeed() - 1, 2));
+        // Forward vector in XZ plane
+        Vector2 fwd = new Vector2(transform.forward.x, transform.forward.z);
 
-        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
+        // Vector to target in XZ plane
+        Vector3 pos = transform.position;
+        Vector3 tpos = target.transform.position;
+        Vector2 toTarget = new Vector2(tpos.x - pos.x, tpos.z - pos.z);
 
-        return dotSideways > 0 ? AttackSide.Right : AttackSide.Left;
+        // Signed angle (positive = target to the right, negative = left)
+        float signedAngle = Vector2.SignedAngle(fwd, toTarget);
+
+        return signedAngle >= 0f ? AttackSide.Right : AttackSide.Left;
+
     }
-    
     
     #endregion
 
