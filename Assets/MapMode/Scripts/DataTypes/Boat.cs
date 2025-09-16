@@ -151,7 +151,7 @@ public class Boat
         var c = cannon ?? new Cannon(CannonType.LongGun);              // cache a default instance somewhere
         float v = c.ShotPower;                         
         float g = Mathf.Abs(Physics.gravity.y);        
-        float theta = Mathf.Abs(c.MinVerticalAngle * Mathf.Deg2Rad); 
+        float theta = Mathf.Abs(c.MaxVerticalAngle * Mathf.Deg2Rad); 
         
         float R = (v * v * Mathf.Sin(2f * theta)) / g;
         return R;

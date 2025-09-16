@@ -8,15 +8,15 @@
         {
             {
                 CannonType.LongGun,
-                new CannonStats(24, 150f, 0, -35f, 10f, 25f, 5f, 0f, 1000)
+                new CannonStats(24, 150f, 0, -10f, 25f, 25f, 5f, 0f, 1000)
             },
             {
                 CannonType.Carronade,
-                new CannonStats(32, 100f, 20, -15f, 10f, 0f, 3f, 2f, 1200)
+                new CannonStats(32, 100f, 20, -10f, 10f, 0f, 3f, 2f, 1200)
             },
             {
                 CannonType.Mortar,
-                new CannonStats(64, 50f, 30, -80f, -25f, 360f, 15f, 5f, 2000)
+                new CannonStats(64, 50f, 30, -45f, 45f, 360f, 15f, 5f, 2000)
             },
             {
                 CannonType.FlameThrower,
@@ -24,7 +24,7 @@
             },
             {
                 CannonType.GrappleHook,
-                new CannonStats(0, 100f, 10, -30f, 60f, 90f, 20f, 1f, 800)
+                new CannonStats(0, 100f, 10, -20f, 60f, 90f, 20f, 1f, 800)
             }
         };
     }
