@@ -41,7 +41,7 @@ tree("ApproachTurnShoot")
 		ActionCheck("ApproachTurnShoot")
 		GetInAttackPosition(-1.0)
 		TurnToFire
-		Wait 5.0
+		Wait 30.0
 
 tree("Ram")
 	sequence

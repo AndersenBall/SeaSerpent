@@ -473,8 +473,9 @@ public class BoatAI : MonoBehaviour
         attackDirection = side;
         boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
         boatSteeringControl.circle = true;
-        boatSteeringControl.CircleClockwise = (side == AttackSide.Right);
-        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Right ? new[] { 4 } : new[] { 3 });
+        boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
+        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Left ? new[] { 3 } : new[] { 4 });
+        Task.current.debugInfo = side.ToString();
         Task.current.Succeed();
     }
 
@@ -570,7 +571,7 @@ public class BoatAI : MonoBehaviour
         // Signed angle (positive = target to the right, negative = left)
         float signedAngle = Vector2.SignedAngle(fwd, toTarget);
 
-        return signedAngle >= 0f ? AttackSide.Right : AttackSide.Left;
+        return signedAngle >= 0f ? AttackSide.Left : AttackSide.Right;
 
     }
     
