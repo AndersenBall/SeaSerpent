@@ -76,7 +76,6 @@ public class PlayerTriggerController : MonoBehaviour
                 if (currentCommand == "fireCommand")
                 {
                     shipCrewCommand.FireCannons();
-                    NewCommand("nothing");
                 }
                 else
                 {

@@ -34,25 +34,9 @@ public class ShipCrewCommand : MonoBehaviour
             //Debug.Log(gameObject.name + "start firing all cannons");
             foreach (PandaUnitAI unit in unitAIs) {
                 unit.cannonGroups = new HashSet<int>(cannonGroups);
-                unit.SetActionNoUn("FireCannons");
+                unit.SetActionNoUn("Gunner");
             }
         }
-        ClearCannons();
-        
-    }
-    
-    public void PrepFireCannons() {
-        if (unitAIs == null) {
-            Debug.Log(gameObject.name + "no players on ship");
-        }
-        else {
-            //Debug.Log(gameObject.name + "start firing all cannons");
-            foreach (PandaUnitAI unit in unitAIs) {
-                unit.cannonGroups = new HashSet<int>(cannonGroups);
-                unit.SetActionNoUn("PrepCannons");
-            }
-        }
-        ClearCannons();
         
     }
 
