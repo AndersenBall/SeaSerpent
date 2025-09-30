@@ -112,7 +112,7 @@ public class BoatAI : MonoBehaviour
     }
     
     public int GetHP() {
-        return boatHP.currentHealth;
+        return boatHP.CurrentHealth;
     
     }
 

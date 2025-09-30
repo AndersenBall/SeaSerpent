@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using MapMode.Scripts.BoatScripts;
 using UnityEngine;
 
 
@@ -34,8 +35,8 @@ public class BombStart : MonoBehaviour
             hasCollided = true;
             Debug.Log("bomb hit: "+ collision.transform.name);
 
-            if ( null != collision.gameObject.GetComponent<BoatHealth>()) {
-                BoatHealth hitBoatHealth = collision.gameObject.GetComponent<BoatHealth>();
+            if ( null != collision.gameObject.GetComponent<ShipHealthComponent>()) {
+                ShipHealthComponent hitBoatHealth = collision.gameObject.GetComponent<ShipHealthComponent>();
                 hitBoatHealth.TakeDamage(damageDeal);
             }
 
