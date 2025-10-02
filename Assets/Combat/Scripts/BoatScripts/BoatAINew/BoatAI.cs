@@ -526,7 +526,8 @@ public class BoatAI : MonoBehaviour
 
             if (enemyBoatHealth != null && rigidBody.velocity.magnitude > 6) {
                 Task.current.debugInfo = "Rammed enemy. Speed: " + rigidBody.velocity.magnitude;
-                enemyBoatHealth.TakeDamage(20);
+                var hitpoint = hitCollider.transform.position;
+                enemyBoatHealth.TakeDamage(40,hitpoint);
                 Task.current.Succeed();
                 SetAction("ApproachTurnShoot");
                 break;

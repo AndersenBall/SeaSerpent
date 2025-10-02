@@ -14,30 +14,23 @@ public class BombStart : MonoBehaviour
     public GameObject impactEffect1;
     public GameObject impactEffect2;
 
-    public Vector3 acceleration;
-    public Vector3 lastVelocity = new Vector3(0,0,0);
-
+ 
     private bool hasCollided = false;
     private void Start() {
         Destroy(this.gameObject, 30);
     }
-    private void Update()
-    {
-        acceleration = (this.GetComponent<Rigidbody>().velocity - lastVelocity) / Time.fixedDeltaTime;
-        lastVelocity = this.GetComponent<Rigidbody>().velocity;
-        //Debug.Log("Velocity:" + this.GetComponent<Rigidbody>().velocity.z + " " + this.GetComponent<Rigidbody>().velocity.y);
-    }
-    //this sets off a bomb explossion on collison. Setting off physics explosion and animation on collision.
+    
     private void OnCollisionEnter(Collision collision)
     {
         
-        if (hasCollided == false) {
+        if (!hasCollided ) {
             hasCollided = true;
             Debug.Log("bomb hit: "+ collision.transform.name);
-
+            Vector3 hitPoint = collision.contacts[0].point;
+            
             if ( null != collision.gameObject.GetComponent<ShipHealthComponent>()) {
                 ShipHealthComponent hitBoatHealth = collision.gameObject.GetComponent<ShipHealthComponent>();
-                hitBoatHealth.TakeDamage(damageDeal);
+                hitBoatHealth.TakeDamage(damageDeal,hitPoint);
             }
 
             if (null != collision.gameObject.GetComponent<Health>()) {

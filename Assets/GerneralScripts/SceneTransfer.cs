@@ -29,7 +29,7 @@ public class SceneTransfer : MonoBehaviour
         
     }
 
-    public static void UpdateBoatsFromBattle() {//calleed after the world map is loaded back
+    public static void UpdateBoatsFromBattle() {//called after the world map is loaded back
         
         if (enemyFleet != null) {
             GameObject boats = GameObject.Find("Boats");

@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine;
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MastControls : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class MastControls : MonoBehaviour
     public bool IsBeyondMaxRotation { get; private set; }
     public bool sweetSpotInMaxRotation{ get; private set; }
 
+    public bool isDead = false;
 
     [SerializeField]
     private float rotationSpeed = 10f; 
@@ -34,6 +36,7 @@ public class MastControls : MonoBehaviour
     private float _targetAngle = 0f; 
     private bool _isPlayerControlling = false;
     private bool _isManned = false; 
+    
     #endregion
 
     #region Unity Methods
@@ -48,7 +51,7 @@ public class MastControls : MonoBehaviour
             }
         }
 
-        if (_isManned || _isPlayerControlling)
+        if (!isDead && (_isManned || _isPlayerControlling))
         {
             UpdateSweetSpotStatus();
             RotateMast();

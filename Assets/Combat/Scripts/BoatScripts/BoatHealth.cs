@@ -17,6 +17,9 @@ public class BoatHealth : ShipHealthComponent
 
     private void Start()
     {
+        spawnMinBounds = new Vector3(-10, 0, -20);
+        spawnMaxBounds = new Vector3(10, 5, 20);
+        
         boatControls = gameObject.GetComponentInParent<BoatControls>();
 
         healthCanvas = GetComponentInChildren<Canvas>();
@@ -45,14 +48,14 @@ public class BoatHealth : ShipHealthComponent
         boatControls.Die();
     }
 
-    private void OnMaxHealthChanged()
+    protected override void OnMaxHealthChanged()
     {
         if (healthSlider is not null){
             healthSlider.maxValue = MaxHealth;
         }
     }
 
-    private void OnHealthChanged()
+    protected override void OnHealthChanged()
     {
         UpdateHUD();
     }

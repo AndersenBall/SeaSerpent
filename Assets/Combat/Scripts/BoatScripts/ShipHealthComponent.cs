@@ -42,18 +42,22 @@ public class ShipHealthComponent : MonoBehaviour
 
     public bool IsDead { get; protected set; } = false;
 
-    [SerializeField] private GameObject repairTaskPrefab;
-    [SerializeField] private Transform healthSpawnLocation;
-    
+    [SerializeField] protected GameObject repairTaskPrefab;
+    [SerializeField] protected Transform healthSpawnLocation;
+    [SerializeField] protected Vector3 spawnMinBounds;
+    [SerializeField] protected Vector3 spawnMaxBounds;
+
     protected virtual void Awake()
     {
+        spawnMinBounds = new Vector3(-5, 0, -5);
+        spawnMaxBounds = new Vector3(5, 5, 5);
         _currentHealth = _maxHealth;
     }
 
     /// <summary>
     /// Applies damage to this entity.
     /// </summary>
-    public virtual void TakeDamage(int damageAmount)
+    public virtual void TakeDamage(int damageAmount, Vector3 hitPoint)
     {
         if (IsDead) return; 
 
@@ -64,7 +68,7 @@ public class ShipHealthComponent : MonoBehaviour
             Die();
         }
 
-        SpawnRepairTask(damageAmount);
+        SpawnRepairTask(damageAmount,hitPoint);
 
     }
 
@@ -103,19 +107,24 @@ public class ShipHealthComponent : MonoBehaviour
     {
         // For HUD slider max update in derived class
     }
-    private void SpawnRepairTask(int healthRestore)
+    private void SpawnRepairTask(int healthRestore, Vector3 spawnPosition)
     {
         if (repairTaskPrefab == null || healthSpawnLocation == null){
             Debug.LogWarning("RepairTask prefab or ship transform missing.");
             return;
         }
 
-        // Generate a position for the repair task
-        Vector3 randomPosition = healthSpawnLocation.position + new Vector3(
-            Random.Range(-5f, 5f), 7f, Random.Range(-5f, 5f));
+        Vector3 localPos = healthSpawnLocation.InverseTransformPoint(spawnPosition);
+        // Clamp in local space
+        localPos.x = Mathf.Clamp(localPos.x, spawnMinBounds.x, spawnMaxBounds.x);
+        localPos.y = Mathf.Clamp(localPos.y, spawnMinBounds.y, spawnMaxBounds.y);
+        localPos.z = Mathf.Clamp(localPos.z, spawnMinBounds.z, spawnMaxBounds.z);
+        // Convert back to world space
+        spawnPosition = healthSpawnLocation.TransformPoint(localPos);
+
 
         // Instantiate the repair task
-        GameObject taskInstance = Instantiate(repairTaskPrefab, randomPosition, Quaternion.identity, healthSpawnLocation);
+        GameObject taskInstance = Instantiate(repairTaskPrefab, spawnPosition, Quaternion.identity, healthSpawnLocation);
         RepairTask repairTask = taskInstance.GetComponent<RepairTask>();
 
         if (repairTask != null){
