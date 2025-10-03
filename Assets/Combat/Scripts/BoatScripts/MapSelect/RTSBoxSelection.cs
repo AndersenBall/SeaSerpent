@@ -81,7 +81,7 @@ public class RTSBoxSelection : MonoBehaviour
                         foreach (var boat in selectedBoats)
                         {
                             boat.targetEnemy = targetEnemy;
-                            boat.SetTargetPosition(targetEnemy.gameObject);
+                            boat.GetComponent<BoatSteeringControls>().AddWaypoint(targetEnemy.gameObject);
                         }
 
                         Debug.Log($"Target enemy set to {targetEnemy.name} for {selectedBoats.Count} selected boats.");
@@ -90,7 +90,7 @@ public class RTSBoxSelection : MonoBehaviour
                 else{
                     foreach (var boat in selectedBoats)
                     {
-                        boat.SetTargetPosition(hit.transform.position);
+                        boat.GetComponent<BoatSteeringControls>().AddWaypoint(hit.transform.position);
                     }
                 }
             }

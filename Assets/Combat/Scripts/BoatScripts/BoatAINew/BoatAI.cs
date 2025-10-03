@@ -103,7 +103,7 @@ public class BoatAI : MonoBehaviour
 
     public void SetTargetPosition(Vector3 pos)
     {
-        boatSteeringControl.SetTargetPosition(pos);
+        boatSteeringControl.AddWaypoint(pos);
     }
     
     public void SetTargetPosition(GameObject target)
@@ -198,7 +198,7 @@ public class BoatAI : MonoBehaviour
             boatSteeringControl.SetTargetPosition(enemyBoat.transform.position); 
         }
         else {
-            boatSteeringControl.SetTargetPosition(Random.Range(-100,100), Random.Range(-100,100));
+            boatSteeringControl.SetTargetPosition(new Vector3(Random.Range(-100,100),0, Random.Range(-100,100)));
         }
         Task.current.Succeed();
     }
@@ -208,7 +208,7 @@ public class BoatAI : MonoBehaviour
     public void ChooseRunAwayLocation()
     {
         // in future maybe have run to spawn... scan nearby areas for enemy ships ext maybe have it activly avaid enemys
-        boatSteeringControl.SetTargetPosition(1000, 1400);
+        boatSteeringControl.SetTargetPosition(new Vector3(1000,0, 1400));
 
         Task.current.Succeed();
     }

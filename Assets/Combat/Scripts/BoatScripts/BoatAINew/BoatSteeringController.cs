@@ -49,6 +49,7 @@ public class BoatSteeringControls : MonoBehaviour
     
     private Rigidbody _rb;
 
+    #region  monobehaviors
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -68,33 +69,42 @@ public class BoatSteeringControls : MonoBehaviour
         boatControls.SetTurn(steer);
         boatControls.SetForward(throttle);
     }
-
-    public void SetTargetMarker(TargetMarker marker)
-    {
-        targetMarker = marker;
-    }
-
+    #endregion
+    
+    #region  target Marker Wrapper
     public void SetTargetMarketVisable(bool visible)
     {
         targetMarker.SetVisible(visible);
     }
-
-    public void SetTargetPosition(int x , int z)
-    {
-        targetMarker.SetPosition(new Vector3(x, 10, z));
-    }
     
     public void SetTargetPosition(Vector3 worldPosition)
     {
-        targetMarker.SetPosition(new Vector3(worldPosition.x, 10, worldPosition.z));
+        targetMarker.ClearWaypoints();
+        targetMarker.AddWaypoint(new Vector3(worldPosition.x, 10, worldPosition.z));
     }
 
     public void SetTargetPosition(GameObject target)
     {
-        targetMarker.FollowTarget(target);
-        DistanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+        targetMarker.ClearWaypoints();
+        targetMarker.AddFollowWaypoint(target.transform, true, 50);
+    }
+    
+    public void AddWaypoint(Vector3 worldPosition)
+    {
+        targetMarker.AddWaypoint(new Vector3(worldPosition.x, 10, worldPosition.z));
     }
 
+    public void AddWaypoint(GameObject target)
+    {
+        targetMarker.AddFollowWaypoint(target.transform, true, 50);
+    }
+
+    public void ClearWaypoint()
+    {
+        targetMarker.ClearWaypoints();
+    }
+
+    #endregion
     private void ComputeSteeringXZ(out float steerOut, out float throttleOut)
     {
         steerOut = 0f;
@@ -104,7 +114,13 @@ public class BoatSteeringControls : MonoBehaviour
 
         // --- positions on XZ ---
         Vector2 self = new Vector2(transform.position.x, transform.position.z);
-        Vector2 goal = new Vector2(targetMarker.transform.position.x,   targetMarker.transform.position.z);
+        var waypoint = targetMarker.PeekNextWayPoint();
+        if (waypoint == null){
+            return;
+        }
+
+        var dest = waypoint.GetWorldPos();
+        Vector2 goal = new Vector2(dest.x, dest.z);
 
         Vector2 toTgt = goal - self;
         float d = toTgt.magnitude;

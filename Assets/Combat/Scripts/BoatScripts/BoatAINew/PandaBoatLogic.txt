@@ -20,6 +20,7 @@ tree("Attack")
 		IsAttacking
 		sequence
 			ChooseEnemy
+			Wait .5
 			fallback
 				tree("DriveBy")
 				tree("ApproachTurnShoot")
