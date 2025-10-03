@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class BoatHealth : ShipHealthComponent
 {
-    [SerializeField] private int _currentHealth;
-    
     private BoatControls boatControls;
     private HUDController hud;
 
@@ -39,7 +37,7 @@ public class BoatHealth : ShipHealthComponent
 
     }
     
-    private void Die()
+    protected override void Die()
     {
         if (healthCanvas != null){
             healthCanvas.enabled = false;

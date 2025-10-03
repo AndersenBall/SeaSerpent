@@ -149,7 +149,7 @@ PrefabInstance:
     - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}
       propertyPath: timeHorizon
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}
@@ -159,7 +159,7 @@ PrefabInstance:
     - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}
       propertyPath: clearanceRadius
-      value: 35
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4576520262543149880, guid: e8bce6ac70a1df646a04371c283bbb67,
         type: 3}

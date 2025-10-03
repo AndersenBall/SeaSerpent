@@ -749,7 +749,9 @@ MonoBehaviour:
   _currentHealth: 0
   repairTaskPrefab: {fileID: 8284009210540312629, guid: 550bc8b8e83c66c45b96087228fbd33e,
     type: 3}
-  shipTransform: {fileID: 117555807658964287}
+  healthSpawnLocation: {fileID: 0}
+  spawnMinBounds: {x: 0, y: 0, z: 0}
+  spawnMaxBounds: {x: 0, y: 0, z: 0}
 --- !u!1 &427348213377470279
 GameObject:
   m_ObjectHideFlags: 0
@@ -15898,11 +15900,8 @@ MonoBehaviour:
   boatControl: {fileID: 0}
   boatSteeringControl: {fileID: 0}
   _targetEnemy: {fileID: 0}
-  attackVector: {x: 0, y: 0}
   attackDirection: 0
   action: 
-  isDead: 0
-  playerOnBoard: 0
   maxRange: 1000
 --- !u!114 &4576520262543149880
 MonoBehaviour:
@@ -16057,6 +16056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalWindDirection: {x: 0, y: 0, z: 1}
+  isDead: 0
   rotationSpeed: 10
   minHorizontalAngle: -90
   maxHorizontalAngle: 90
@@ -16244,7 +16244,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 22, y: 40, z: 2}
   m_Center: {x: -0.048533913, y: 0, z: 0}
@@ -37471,7 +37471,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 22, y: 40, z: 4.2913957}
   m_Center: {x: 0, y: 0, z: -0.0000019073485}

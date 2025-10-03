@@ -298,7 +298,7 @@ public class BoatAI : MonoBehaviour
                 Task.current.Fail();
             }
             
-            else if (closestDistance > Mathf.Pow(500, 2) && !hasCarronade){
+            else if (closestDistance > Mathf.Pow(2000, 2) && !hasCarronade){
                 SetAction("ApproachTurnShoot");
                 shipCrewCommand.SetFireReloadAll(false);
             }else{
