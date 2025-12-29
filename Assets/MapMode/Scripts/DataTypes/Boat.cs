@@ -12,6 +12,9 @@ using UnityEngine;
 public class Boat
 {
     #region Properties
+
+    public string BoatId;
+    
     public string boatName;
     public BoatType boatType { get; private set; }
     public BoatStats baseStats { get; private set; }
