@@ -49,7 +49,14 @@ public class RTSBoxSelection : MonoBehaviour
         HandleInput();
         HandleRightClick();
     }
-
+    
+    private void OnDisable()
+    {
+        foreach (var b in selectedBoats){
+            SetBoatSelected(b, false);
+        }
+    }
+    
     #endregion
 
     #region INPUT HANDLING
@@ -74,9 +81,16 @@ public class RTSBoxSelection : MonoBehaviour
                         foreach (var boat in selectedBoats)
                         {
                             boat.targetEnemy = targetEnemy;
+                            boat.GetComponent<BoatSteeringControls>().AddWaypoint(targetEnemy.gameObject);
                         }
 
                         Debug.Log($"Target enemy set to {targetEnemy.name} for {selectedBoats.Count} selected boats.");
+                    }
+                }
+                else{
+                    foreach (var boat in selectedBoats)
+                    {
+                        boat.GetComponent<BoatSteeringControls>().AddWaypoint(hit.transform.position);
                     }
                 }
             }
@@ -110,6 +124,13 @@ public class RTSBoxSelection : MonoBehaviour
 
     #region SELECTION LOGIC
 
+    private void SetBoatSelected(BoatAI boat, bool selected)
+    {
+        if (boat == null) return;
+        boat.SetSelected(selected);
+        boat.SetTargetMarkerVisible(true);
+    }
+    
     private void SelectBoatsInBox()
     {
 
@@ -129,7 +150,7 @@ public class RTSBoxSelection : MonoBehaviour
         {
             foreach (var boat in selectedBoats)
             {
-                boat.SetSelected(false); // Turn off indicator
+                SetBoatSelected(boat, false); 
             }
             selectedBoats.Clear();
         }
@@ -147,8 +168,9 @@ public class RTSBoxSelection : MonoBehaviour
                 Collider collider = boat.GetComponent<Collider>();
                 if (collider != null && selectionBounds.Intersects(collider.bounds))
                 {
-                    selectedBoats.Add(boat);
-                    boat.SetSelected(true);
+                    if (selectedBoats.Add(boat)){
+                        SetBoatSelected(boat, true);
+                    }
                 }
             }
         }

@@ -1,33 +1,39 @@
-﻿using System.CodeDom;
-using System.Collections;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEngine;
 using Panda;
-using TMPro;
+using Random = UnityEngine.Random;
 
 //methods and functions for panda bt tree
 public class BoatAI : MonoBehaviour
 {
     #region variables
 
+    [Header("Drive by Tuning")]
+    [Tooltip("Meters to stay abeam from the target ship.")]
+    [SerializeField] private float lateralOffset = 25f;
+    [Tooltip("How far ahead of the enemy to aim (seconds of lead).")]
+    [SerializeField] private float leadTime = 3.0f;
+    [Tooltip("Add an extra 'exit' point beyond the enemy so you truly drive past.")]
+    [SerializeField] private float overrunDistance = 40f;
+    
     [SerializeField]
     private GameObject selectionIndicator;
     private BoatMaster boatMaster;
     public BoatControls boatControl;
+    public BoatSteeringControls boatSteeringControl;
     private ShipCrewCommand shipCrewCommand;
     private ShipAmunitionInterface shipAmoInter;
     private BoatHealth boatHP;
 
     private int teamNumber;
 
-    private (int x, int y) prevXYPos = (-1, -1);
-    private (int x, int y) XYDest;
-
     private float runTime = 0;
-
-    private bool turningToTarget = false;//legacy TODO remove? idk
+    private float recalcTimer = float.MaxValue;
+    
 
     private bool targetSetByCommander = false;
     
@@ -39,26 +45,35 @@ public class BoatAI : MonoBehaviour
             if (_targetEnemy != value)
             {
                 _targetEnemy = value;
-                targetSetByCommander = true; 
             }
         }
     }
     [SerializeField]
     private BoatAI _targetEnemy;
-    public Vector2 attackVector;
-    public string attackDirection;
+    public AttackSide attackDirection;
 
     private PandaBehaviour pandaBT = null;
     [Task]
     public string action;
+    
+    private bool _isDead = false;
     [Task]
-    public bool attacking = true;
-    [Task]
-    public bool runningAway = false;
-    [Task]
-    public bool isDead = false;
-    [Task]
-    public bool playerOnBoard = false;
+    public bool isDead
+    {
+        get => _isDead;
+        set
+        {
+            if (_isDead == value) return;
+            _isDead = value;
+
+            if (value)
+            {
+                boatMaster.DestroyBoat(this);
+                Destroy(gameObject, 10f);
+            }
+        }
+    }
+    
     [Task]
     public int maxRange = 1000;
 
@@ -69,51 +84,36 @@ public class BoatAI : MonoBehaviour
     {
         boatMaster = gameObject.GetComponentInParent<BoatMaster>();
         boatControl = gameObject.GetComponent<BoatControls>();
+        boatSteeringControl = gameObject.GetComponent<BoatSteeringControls>();
         shipCrewCommand = gameObject.GetComponent<ShipCrewCommand>();
         shipAmoInter = gameObject.GetComponent<ShipAmunitionInterface>();
         boatHP = gameObject.GetComponentInChildren<BoatHealth>();
         selectionIndicator.SetActive(false);
         maxRange = (int)boatControl.boat.GetMaxCannonRange();
     }
-    
 
     #endregion
     
     #region setters and getters
     //*************setters and getters***************
-    public int GetHP() {
-        return boatHP.currentHealth;
-    
-    }
-    public void SetIsDead(bool dead) {
-        isDead = dead;
-        if (dead == true) {
-            boatMaster.DestroyBoat(this);
-            Destroy(gameObject, 10);
-        }
-    }
-    public bool GetIsDead() {
-        return isDead;
-    }
-    public void SetDestination((int x, int y) XY) {
-        XYDest = XY;
-        return;
-    }
-    public void SetDestination(int x, int y)
+    public void SetTargetMarkerVisible(bool visible)
     {
-        XYDest = (x, y);
-        return;
-    }
-    public (int x, int y) GetDestination() {
-        return XYDest;
-    }
-    //previous xyPos on array
-    public (int x, int y) GetPrevXYPos() {
-        return prevXYPos;
+        boatSteeringControl.SetTargetMarketVisable(visible);
     }
 
-    public void SetPrevXYPos((int x, int y) prev) {
-        prevXYPos = prev;
+    public void SetTargetPosition(Vector3 pos)
+    {
+        boatSteeringControl.AddWaypoint(pos);
+    }
+    
+    public void SetTargetPosition(GameObject target)
+    {
+        boatSteeringControl.SetTargetPosition(target);
+    }
+    
+    public int GetHP() {
+        return boatHP.CurrentHealth;
+    
     }
 
     //sets current action ship is taking
@@ -125,17 +125,7 @@ public class BoatAI : MonoBehaviour
     public string GetAction() {
         return action;
     }
-    //Set side boat hopes to shoot from
-    public bool SetAttackDirection(string act)
-    {
-        attackDirection = act;
-        return true;
-    }
-
-    public string GetAttackDirection()
-    {
-        return attackDirection;
-    }
+    
     //gets team number
     public int GetTeamNumber() {
         return teamNumber;
@@ -161,6 +151,15 @@ public class BoatAI : MonoBehaviour
         return boatControl.GetEnginePower();
     }
 
+    [Task]
+    public bool IsAttacking()
+    {
+        if (action.Equals("FireAtWill") || action.Equals("DriveBy") || action.Equals("Ram") || action.Equals("ApproachTurnShoot"))
+            return true;
+        else{
+            return false;
+        }
+    }
 
     #endregion
 
@@ -181,131 +180,43 @@ public class BoatAI : MonoBehaviour
             foreach (Transform t in trans)
                 AddLayerRecursively(t, layer);
     }
-    public void AllignToDestination()
-    {
-        Debug.Log("allign to destination called");
-        if (turningToTarget == false) {
-            //Debug.Log("Dot: " + Vector2.Dot(boatDirect, targetVec90) + " boat direct:" + boatDirect + " targetVec:" + targetVec90);
-            StartCoroutine(TurnToDest());
-        }
-    }
-
-    IEnumerator TurnToDest()
-    {
-        Debug.Log("boat:" + gameObject.name + " started alligning to:" + XYDest.x + "," + XYDest.y);
-        turningToTarget = true;
-        Vector2 boatDirect = GetCardDirect();
-        Vector2 targetVec90 = new Vector2(XYDest.y - prevXYPos.y, -(XYDest.x - prevXYPos.x));
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
-        while (dotSideways > .01f || dotSideways < -.01f) {
-            //Debug.Log("Dot: " + dotSideways + " boat direct:" + boatDirect + " targetVec:" + targetVec90);
-            if (dotSideways > .01f) {
-                boatControl.SetTurn(-1);
-            }
-            else if (dotSideways < -.1f) {
-                boatControl.SetTurn(1);
-            }
-            yield return new WaitForSeconds(.05f);
-            boatDirect = GetCardDirect();
-            targetVec90 = new Vector2(XYDest.y - prevXYPos.y, -(XYDest.x - prevXYPos.x));
-            dotSideways = Vector2.Dot(boatDirect, targetVec90);
-        }
-        boatControl.SetTurn(0);
-        turningToTarget = false;
-        Debug.Log("alligned with destination");
-    }
-
-
-    //*************** Actions*****************
-
-
+    
     #endregion
 
     #region Panda BT Scripts
-    //************** Panda BT Script **********
-    
     //*****Far away*****
-    
+    [Task]
+    public void Idle()
+    {
+        return;
+    }
+
     [Task]
     public void ChooseWanderDest() {
         BoatAI enemyBoat = boatMaster.GetClosestBoat(transform.position, teamNumber == 1 ? 2 : 1);
         if (enemyBoat != null) {
-            SetDestination(enemyBoat.GetPrevXYPos());
+            boatSteeringControl.SetTargetPosition(enemyBoat.transform.position); 
         }
         else {
-            SetDestination(GetPrevXYPos());
+            boatSteeringControl.SetTargetPosition(new Vector3(Random.Range(-100,100),0, Random.Range(-100,100)));
         }
-        //Debug.Log("wander: setting boat Destination in script 20 ,1");
         Task.current.Succeed();
     }
-
-    [Task]
-    public void AllignToWanderPoint() {
-
-        boatControl.SetForward(.5f);
-        Vector2 boatDirect = GetCardDirect();
-        Vector2 targetVec90 = new Vector2(XYDest.y - prevXYPos.y, -(XYDest.x - prevXYPos.x));
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
-        float dotForward = Vector2.Dot(boatDirect, new Vector2(XYDest.x - prevXYPos.x, XYDest.y - prevXYPos.y));
-        if (dotSideways <= .1f && dotSideways >= -.1f) {
-            if (dotForward < 0) {
-                boatControl.SetTurn(1);
-            }
-            else {
-                boatControl.SetForward(1);
-                boatControl.SetTurn(0);
-                Task.current.Succeed();
-            }
-        }
-
-        if (dotSideways > .1f) {
-            boatControl.SetTurn(-1);
-        }
-        else if (dotSideways < -.1f) {
-            boatControl.SetTurn(1);
-        }
-
-    }
-
-    [Task]
-    public void ScanForShips()
-    {
-        List<BoatAI> boatAI = boatMaster.NearbyBoats(this, 30);
-
-        foreach (BoatAI b in boatAI) {
-            Task.current.debugInfo = "boat:" + b.name;
-            if (b.GetTeamNumber() != this.GetTeamNumber() && b.isDead == false) {
-                attacking = true;
-                Task.current.Fail();
-                return;
-            }
-        }
-        boatAI.Clear();
-        Task.current.Succeed();
-    }
+    
     //*****Run away*****
     [Task]
     public void ChooseRunAwayLocation()
     {
         // in future maybe have run to spawn... scan nearby areas for enemy ships ext maybe have it activly avaid enemys
-        SetDestination(1000, 1400);
+        boatSteeringControl.SetTargetPosition(new Vector3(1000,0, 1400));
 
         Task.current.Succeed();
     }
+    
     [Task]
     public void Reload() {
         shipCrewCommand.ReloadCannons();
         Task.current.Succeed();
-    }
-    [Task]
-    public void CheckReload()
-    {
-        CannonInterface[] cannons = shipAmoInter.GetUnloadedCannons();
-        Task.current.debugInfo = "cannons not loaded:" + cannons.Length;
-        if (cannons.Length == 0) {
-            attacking = false;
-            runningAway = false;
-        }
     }
 
     //****** Close by *****
@@ -318,6 +229,32 @@ public class BoatAI : MonoBehaviour
         else
             Task.current.Fail();
     }
+
+    [Task]
+    public void GetInAttackPosition(float distance)
+    {
+        runTime += Time.deltaTime;
+        float calculatedDistance = distance;
+
+        boatSteeringControl.circle = false;
+        
+        if (runTime > 5f) {
+            runTime = 0;
+            Task.current.Fail();
+            return;
+        }
+        
+        if (distance < 0){
+            calculatedDistance = boatControl.boat.GetMaxCannonRange()*3/4;
+        }
+        Task.current.debugInfo = "distane too" + boatSteeringControl.DistanceToTarget + "distance:" + distance + "calculatedDistance:" + calculatedDistance;;
+        if (boatSteeringControl.DistanceToTarget < calculatedDistance){
+            runTime = 0;
+            Task.current.Succeed();
+            return;
+        }
+    }
+
     [Task] // TODO 12/5 expand into larger sub system with smart overall decisions for choosing who to attack. might be controlled by a seperate "commander" ai.
     public void ChooseEnemy() {
 
@@ -359,110 +296,25 @@ public class BoatAI : MonoBehaviour
             if (closestDistance > Mathf.Pow(3500, 2) && !hasCarronade)
             {
                 Task.current.Fail();
-                attacking = false;
             }
-            //else if (closestDistance > Mathf.Pow(800, 2))
-            //{
-            //    SetAction("PotShot");
-            //}
-            else if (closestDistance > Mathf.Pow(200, 2) && !hasCarronade)
-                SetAction("FireAtWill");
-            else
+            
+            else if (closestDistance > Mathf.Pow(2000, 2) && !hasCarronade){
+                SetAction("ApproachTurnShoot");
+                shipCrewCommand.SetFireReloadAll(false);
+            }else{
                 SetAction("DriveBy");
-
+                shipCrewCommand.SetFireReloadAll(false);
+            }
+            
+            boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
             Task.current.Succeed();
         } else {
-            attacking = false;
             Task.current.Fail();
         }
     }
     
     [Task]
-    public void ChooseAttackDirection()
-    {
-        Vector2 boatDirect = GetCardDirect();
-        if (_targetEnemy == null) {
-            Task.current.Fail();
-            return;
-        }
-        Vector2 targetVec = new Vector2(_targetEnemy.transform.position.x - transform.position.x, _targetEnemy.transform.position.z - transform.position.z);
-        targetVec += new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z) * 100 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-
-        Debug.DrawRay(transform.position, new Vector3(targetVec.x, 0, targetVec.y), Color.white, 1f);
-        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
-        if (dotSideways > 0) {
-            SetAttackDirection("Right");
-            Task.current.debugInfo = "Right";
-        }
-        else {
-            SetAttackDirection("Left");
-            Task.current.debugInfo = "Left";
-        }
-        Task.current.debugInfo = "enemy speed " + _targetEnemy.GetSpeed();
-        Task.current.Succeed();
-    }
-    [Task]
-    public void CreateAttackVector() {
-        if (action == "DriveBy") {
-            if (attackDirection == "Left")
-                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * 2;
-            else
-                attackVector = new Vector2(_targetEnemy.GetPrevXYPos().y - prevXYPos.y, -(_targetEnemy.GetPrevXYPos().x - prevXYPos.x)).normalized * -2;
-            Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
-            Task.current.Succeed();
-        }
-        else if (action == "FireAtWill" || action == "ApproachTurnShoot" || action == "Ram" || action == "PotShot") {
-            attackVector = new Vector2(0, 0);
-
-            Task.current.debugInfo = "attack vector: " + attackVector.x + "," + attackVector.y + " action: " + action;
-            Task.current.Succeed();
-        }
-        else {
-            Task.current.Fail();
-        }
-    }
-    [Task]
-    public void SetUpCannons()
-    {
-        if (attackDirection == "Right") {
-            shipCrewCommand.SetCannonSets(4);
-        }
-        else {
-            shipCrewCommand.SetCannonSets(3);
-        }
-        if (_targetEnemy == null) {
-            
-            Task.current.Fail();
-            return;
-        }
-
-
-        float distance = Vector3.Distance(_targetEnemy.transform.position, transform.position);
-        //Vector3 targetVec = new Vector3(_targetEnemy.transform.forward.x,0 ,_targetEnemy.transform.forward.z) * distance/20 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-        //Debug.DrawLine(_targetEnemy.transform.position + targetVec, _targetEnemy.transform.position + targetVec + new Vector3(0, 100, 0));
-        //distance = Vector3.Distance(_targetEnemy.transform.position + targetVec, transform.position);
-
-
-        Vector3 targetPosition = _targetEnemy.transform.position;
-        Vector3 targetDirection = new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z);
-        float targetSpeed = (_targetEnemy.GetSpeed() * _targetEnemy.GetEngineSpeed());
-        float bulletTravelTime = distance / 200;
-
-        Vector3 predictionVec = targetPosition + targetDirection * targetSpeed * bulletTravelTime;
-        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0), Color.black);
-
-        shipCrewCommand.SetCannonAnglePredictions(0,Mathf.RoundToInt(PredictCannonAngle(distance)*2)/2f);
-        //shipCrewCommand.AdjustCannonAngles();
-        Task.current.debugInfo = "cannons left to update: "+shipAmoInter.GetRotateCannons().Length + " wanted angle: " + Mathf.RoundToInt(PredictCannonAngle(distance));
-        if (shipAmoInter.GetRotateCannons().Length == 0)
-            Task.current.Succeed();
-    }
-    
-
-    [Task]
-    public void SetCannonsNutral()
+    public void SetCannonsNeutral()
     {
         shipCrewCommand.SetCannonSets(3);
         shipCrewCommand.SetCannonAnglePredictions(0,0);
@@ -478,56 +330,99 @@ public class BoatAI : MonoBehaviour
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
         shipCrewCommand.ClearCannons();
-        if (attackDirection == "Left") {
+        if (attackDirection == AttackSide.Left) {
             cannonGroups.Add(3);
             shipCrewCommand.SetCannonSets(3);
         }
-        if (attackDirection == "Right") {
+        if (attackDirection == AttackSide.Right) {
             cannonGroups.Add(4);
             shipCrewCommand.SetCannonSets(4);
         }
-        shipCrewCommand.PrepFireCannons();
         Task.current.Succeed();
     }
 
-
     [Task]
-    public bool GetInAttackPosition(float exitDistance)
+    public void DriveBeside()
     {
         runTime += Time.deltaTime;
+        recalcTimer += Time.deltaTime;
         if (runTime > 5f) {
             runTime = 0;
-            //Debug.Log("reseting tree");
-            ResetTree();
-            return false;
-        }
-
-        float addedX = attackVector.x * boatMaster.tileSize;
-        float addedY = attackVector.y * boatMaster.tileSize;
-        if (_targetEnemy == null)
-        {
-            ResetTree();
-            return false;
-        }
-        (float x, float y) destination = (_targetEnemy.transform.position.x + addedX, _targetEnemy.transform.position.z + addedY);
-        Debug.DrawRay(transform.position, _targetEnemy.transform.position + new Vector3(addedX, 0, addedY) - transform.position, Color.yellow);
-
-        if (Mathf.Pow(destination.x - transform.position.x, 2) + Mathf.Pow(destination.y - transform.position.z, 2) < Mathf.Pow(exitDistance, 2)) {
-            boatControl.SetTurn(0);
-            runTime = 0;
-            Task.current.Succeed();
-            return true;
-        }
-        else {
-            SetDestination(boatMaster.XYCordinates(destination.x, destination.y));
-
-            AllignToVector(new Vector2(destination.x - transform.position.x, destination.y - transform.position.z));
-            Task.current.debugInfo = Task.current.debugInfo + " RunTime:" + runTime;
+            recalcTimer = float.MaxValue;
             Task.current.Fail();
-            return false;
+            return;
+        }
+
+        if (_targetEnemy == null){
+            runTime = 0;
+            recalcTimer = float.MaxValue;
+            Task.current.Fail();
+            return;
+        }
+
+        if (recalcTimer >= 1){
+            recalcTimer = 0;
+            attackDirection = ChooseAttackDirection(targetEnemy);
+            var destination = FindDriveByTarget(attackDirection);
+            boatSteeringControl.SetTargetPosition(destination);
+            
+        }
+
+        
+        if (boatSteeringControl.DistanceToTarget < 100) {
+            Task.current.Succeed();
+            runTime = 0;
+            recalcTimer = float.MaxValue;
+            return;
         }
         
     }
+    
+    /// <summary>
+    /// Computes 1-2 waypoints on the chosen broadside. First is the "entry" point you should steer to now.
+    /// Second (optional) is an "exit" point to ensure you pass and clear.
+    /// </summary>
+    public Vector3 FindDriveByTarget(AttackSide side)
+    {
+        if (_targetEnemy == null)
+        {
+            // Fallback: just go forward a bit
+            return transform.position + transform.forward * 25f;
+        }
+
+        // --- 2D math on XZ plane ---
+        Vector2 meXZ    = new Vector2(transform.position.x, transform.position.z);
+        Vector2 enemyXZ = new Vector2(_targetEnemy.transform.position.x, _targetEnemy.transform.position.z);
+
+        // Direction from ME → ENEMY (defines my right/left as I face the enemy)
+        Vector2 approach  = (enemyXZ - meXZ).normalized;
+
+        // Perpendiculars relative to *my* facing toward the enemy:
+        // Right = (y, -x); Left = -Right
+        Vector2 rightPerp = new Vector2(approach.y, -approach.x);
+        Vector2 sidePerp  = (side == AttackSide.Right) ? rightPerp : -rightPerp;
+
+        // Lead ahead of where the enemy will be
+        Vector2 enemyFwd = new Vector2(_targetEnemy.transform.forward.x, _targetEnemy.transform.forward.z).normalized;
+        float   enemySpd = Mathf.Max(0f, _targetEnemy.GetSpeed());
+        float   leadDist = enemySpd * leadTime;
+
+        // Entry point: ahead of enemy + lateral offset on chosen side
+        Vector2 entryXZ = enemyXZ + enemyFwd * leadDist + sidePerp * lateralOffset;
+
+        // Back to 3D
+        Vector3 entry3D = new Vector3(entryXZ.x, 10, entryXZ.y);
+
+        // Debug gizmos (optional)
+        Debug.DrawLine(transform.position, _targetEnemy.transform.position, Color.yellow, 0.05f);
+        Debug.DrawLine(_targetEnemy.transform.position,
+            new Vector3(entry3D.x, 10, entry3D.z),
+            Color.cyan, 0.05f);
+
+        return entry3D;
+    }
+
+
     [Task]
     public void CheckToFire()
     {
@@ -551,7 +446,7 @@ public class BoatAI : MonoBehaviour
         if (Physics.Raycast(transform.position + transform.forward * 10 + direction * 10, direction, out RaycastHit hit, 120f, layerMask)) {
             Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider +"layer: " + hit.collider.gameObject.layer +" " + GetTeamNumber();
-            SetAttackDirection("Left");
+            attackDirection = AttackSide.Left;
             runTime = 0;
             Task.current.Succeed();
         }
@@ -561,7 +456,7 @@ public class BoatAI : MonoBehaviour
         if (Physics.Raycast(transform.position +transform.forward*10+ direction * 10, direction, out hit, 120f, layerMask)) {
             Debug.DrawRay(transform.position + transform.forward * 10 + direction * 10, direction * hit.distance, Color.red);
             Task.current.debugInfo = "Object hit: " + hit.collider;
-            SetAttackDirection("Right");
+            attackDirection = AttackSide.Right;
             runTime = 0;
             Task.current.Succeed();
         }
@@ -570,185 +465,19 @@ public class BoatAI : MonoBehaviour
 
     }
     [Task]
-    public void TurnToFire() {
-        Vector2 boatDirect = GetCardDirect();
-
-        Vector2 targetVec = new Vector2(_targetEnemy.transform.position.x - this.transform.position.x, _targetEnemy.transform.position.z - this.transform.position.z);
-        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-        float dotForward = Vector2.Dot(boatDirect, targetVec);
-        float dot90 = Vector2.Dot(boatDirect, targetVec90);
-        Task.current.debugInfo = "dot: " + dotForward;
-        if (dot90 < 0) {
-            SetAttackDirection("Left");
-            if (dotForward <= 10f && dotForward >= -10f) {
-                boatControl.SetTurn(0);
-                boatControl.SetForward(1f);
-                Task.current.Succeed();
-            }
-
-            if (dotForward > 10f) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(1);
-            }
-            else if (dotForward < -10f) {
-                boatControl.SetTurn(-1);
-                boatControl.SetForward(.5f);
-            }
-        }
-        else {
-            SetAttackDirection("Right");
-            if (dotForward <= 10f && dotForward >= -10f) {
-                boatControl.SetTurn(0);
-                boatControl.SetForward(1f);
-                Task.current.Succeed();
-            }
-
-            if (dotForward > 10f) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(-1);
-            }
-            else if (dotForward < -10f) {
-                boatControl.SetTurn(1);
-                boatControl.SetForward(.5f);
-            }
-        }
-    }
-
-    [Task]
-    public void TurnToFireFar()
+    public void TurnToFire()
     {
-        int outer = 60;
-        int inner = 8;
-        if (_targetEnemy == null) {
-            Task.current.Fail();
-            return;
-        }
-        Vector2 boatDirect = GetCardDirect();
-        float distance = Vector3.Distance(gameObject.transform.position, _targetEnemy.transform.position);
-        Vector3 predictionVec = _targetEnemy.transform.position + new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z) * distance / 15 * (1 - Mathf.Pow(_targetEnemy.GetSpeed() - 1, 2));
-        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0), Color.red);
         
-        Vector2 targetVec = new Vector2(predictionVec.x - this.transform.position.x, predictionVec.z - this.transform.position.z).normalized * 100;
-        float dotForward = Vector2.Dot(boatDirect, targetVec);
-        
-        Task.current.debugInfo = "dot: " + dotForward;
-        if (attackDirection == "left") {
-            SetAttackDirection("Left");
-            if (dotForward >= -inner && dotForward <= inner) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(0);
-                Task.current.Succeed();
-            }else if (-outer <= dotForward && dotForward < -inner) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(-.5f);
-            }
-            else if (dotForward < -outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(-1f);
-            }
-            else if (inner < dotForward && dotForward <= outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(.5f);
-            }
-            else if (dotForward > outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(1f);
-            }
-        }
-        else {
-            SetAttackDirection("Right");
-            if (dotForward >= -inner && dotForward <= inner) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(0);
-                Task.current.Succeed();
-            }
-            else if (-outer <= dotForward && dotForward < -inner) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(.5f);
-            }
-            else if (dotForward < -outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(1f);
-            }
-            else if (inner < dotForward && dotForward <= outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(-.5f);
-            }
-            else if (dotForward > outer) {
-                boatControl.SetForward(.5f);
-                boatControl.SetTurn(-1f);
-            }
-            
-        }
+        var side = ChooseAttackDirection(targetEnemy);
+        attackDirection = side;
+        boatSteeringControl.SetTargetPosition(targetEnemy.gameObject);
+        boatSteeringControl.circle = true;
+        boatSteeringControl.CircleClockwise = (side == AttackSide.Left);
+        shipCrewCommand.SetCannonGroups(attackDirection == AttackSide.Left ? new[] { 3 } : new[] { 4 });
+        Task.current.debugInfo = side.ToString();
+        Task.current.Succeed();
     }
 
-    [Task]
-    public void KeepAim()//more percise move slower
-    {
-        float min = .0001f;
-        float upperLimit = .15f;
-        Vector2 boatDirect = GetCardDirect();
-        if (_targetEnemy == null) {
-            Task.current.Fail();
-            return;
-        }
-        float distance = Vector3.Distance(gameObject.transform.position,_targetEnemy.transform.position);
-        Vector3 predictionVec = _targetEnemy.transform.position +new Vector3(_targetEnemy.transform.forward.x, 0, _targetEnemy.transform.forward.z)  *distance/15 * (1 - (Mathf.Pow(_targetEnemy.GetSpeed()-1, 2)* _targetEnemy.GetEngineSpeed() / 8));
-        Debug.DrawLine(predictionVec, predictionVec + new Vector3(0, 100, 0),Color.green);
-        Vector2 targetVec = new Vector2(predictionVec.x - this.transform.position.x, predictionVec.z - this.transform.position.z);
-        Vector2 targetVec90 = new Vector2(-targetVec.y, targetVec.x);
-        float dotForward = -3*Vector2.Dot(boatDirect, targetVec)/distance;
-        float dot90 = Vector2.Dot(boatDirect, targetVec90);
-        Task.current.debugInfo = "dot: " + dotForward;
-        if (dot90 < 0) {
-            SetAttackDirection("Left");
-            if(dotForward >= -min && dotForward <= min) {
-                boatControl.SetTurn(0);
-                
-            }
-
-            if (dotForward > min) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(dotForward);
-                if (dotForward > upperLimit) {
-                    boatControl.SetForward(.5f);
-                    boatControl.SetTurn(dotForward);
-                }
-            }
-            else if (dotForward < -min) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(dotForward);
-                if (dotForward < upperLimit) {
-                    boatControl.SetForward(.5f);
-                    boatControl.SetTurn(dotForward);
-                }
-            }
-        }
-        else {
-            SetAttackDirection("Right");
-            if (dotForward >= -min && dotForward <= min ) {
-                boatControl.SetTurn(0);
-        
-            }
-
-            if (dotForward > min) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(dotForward);
-                if (dotForward > upperLimit) {
-                    boatControl.SetForward(.5f);
-                    boatControl.SetTurn(dotForward);
-                }
-            }
-            else if (dotForward < -min) {
-                boatControl.SetForward(.25f);
-                boatControl.SetTurn(dotForward);
-                if (dotForward < -upperLimit) {
-                    boatControl.SetForward(.5f);
-                    boatControl.SetTurn(dotForward);
-                }
-            }
-        }
-    }
 
     [Task]
     public void Fire()
@@ -761,11 +490,11 @@ public class BoatAI : MonoBehaviour
         }
         HashSet<int> cannonGroups = new HashSet<int>();
         Task.current.debugInfo = "attack Direction:" + attackDirection;
-        if (attackDirection == "Left") {
+        if (attackDirection == AttackSide.Left) {
             cannonGroups.Add(3);
             shipCrewCommand.SetCannonSets(3);
         }
-        if (attackDirection == "Right") {
+        if (attackDirection == AttackSide.Right) {
             cannonGroups.Add(4);
             shipCrewCommand.SetCannonSets(4);
         }
@@ -775,131 +504,47 @@ public class BoatAI : MonoBehaviour
             Task.current.Succeed();
         }
     }
-    [Task]
-    public void ChooseToAttack() {
-        attacking = true;
-        Task.current.Succeed();
-    
-    }
-    [Task]
-    public void CheckToRetreat()
-    {
-        runningAway = true;
-        attacking = false;
-        Task.current.Succeed();
-    }
 
-    //[Task]
-    // public void RamSpeed() {
-    //     boatControl.SetForward(1);
-    //     int layerMask;
-    //     BoatHealth enemyBoatHealth;
-    //     Rigidbody rigidBody = gameObject.GetComponent<Rigidbody>();
-    //     if (GetTeamNumber() == 1) {
-    //         layerMask = 1 << 14;
-    //     }
-    //     else {
-    //         layerMask = 1 << 13;
-    //     }
-    //
-    //     Debug.DrawRay(transform.position + transform.forward * 30, transform.forward * 3, Color.cyan);
-    //     Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * 30, 3, layerMask);
-    //     foreach (var hitCollider in hitColliders) {
-    //         Debug.Log("RAM collider hit: " + hitCollider.gameObject + rigidBody.velocity.magnitude);
-    //         enemyBoatHealth = hitCollider.GetComponentInParent<BoatHealth>();
-    //
-    //         if (enemyBoatHealth != null && rigidBody.velocity.magnitude > 6) {
-    //             Task.current.debugInfo = "Rammed enemy. Speed: " + rigidBody.velocity.magnitude;
-    //             enemyBoatHealth.TakeDamage(20);
-    //             Task.current.Succeed();
-    //             SetAction("ApproachTurnShoot");
-    //             break;
-    //         }
-    //
-    //     }
-    //
-    // }
+    [Task]
+    public void RamSpeed() {
+        boatControl.SetForward(1);
+        int layerMask;
+        BoatHealth enemyBoatHealth;
+        Rigidbody rigidBody = gameObject.GetComponent<Rigidbody>();
+        if (GetTeamNumber() == 1) {
+            layerMask = 1 << 14;
+        }
+        else {
+            layerMask = 1 << 13;
+        }
+
+        Debug.DrawRay(transform.position + transform.forward * 30, transform.forward * 3, Color.cyan);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * 30, 3, layerMask);
+        foreach (var hitCollider in hitColliders) {
+            Debug.Log("RAM collider hit: " + hitCollider.gameObject + rigidBody.velocity.magnitude);
+            enemyBoatHealth = hitCollider.GetComponentInParent<BoatHealth>();
+
+            if (enemyBoatHealth != null && rigidBody.velocity.magnitude > 6) {
+                Task.current.debugInfo = "Rammed enemy. Speed: " + rigidBody.velocity.magnitude;
+                var hitpoint = hitCollider.transform.position;
+                enemyBoatHealth.TakeDamage(40,hitpoint);
+                Task.current.Succeed();
+                SetAction("ApproachTurnShoot");
+                break;
+            }
+        }
+
+    }
     [Task]
     public void Die(){
         GetComponent<PandaBehaviour>().enabled = false;
         Task.current.Succeed();
     }
-    [Task]
-    public void Idle() {
-        Task.current.Succeed();
-    }
-    [Task]
-    public void FireAwayCommand() {
-        HashSet<int> cannonGroups = new HashSet<int>();
-        Task.current.debugInfo = "attack Direction:" + attackDirection;
-        if (attackDirection == "Left")
-        {
-            cannonGroups.Add(3);
-            shipCrewCommand.SetCannonSets(3);
-        }
-        if (attackDirection == "Right")
-        {
-            cannonGroups.Add(4);
-            shipCrewCommand.SetCannonSets(4);
-        }
-
-        shipCrewCommand.FireAtWill();
-        Task.current.Fail();
-        
-    }
-    //***********helper methods***************
-    public float PredictCannonAngle(float distance)
-    {
-        float value = Mathf.Asin((distance-7) / 4077.47f) / 2 * (180 / Mathf.PI);
-        if (float.IsNaN(value)) {
-            return 45f;
-        }
-        else {
-            return value;
-        }
-    }
-    private void AllignToVector(Vector2 targetVec) {
-        Vector2 boatDirect = GetCardDirect();
-        Vector2 targetVec90 = new Vector2(targetVec.y,-targetVec.x);
-        string debugInf = "";
-
-        float dotSideways = Vector2.Dot(boatDirect, targetVec90);
-       
-        if (dotSideways <= .75f && dotSideways >= -.75f) {
-            boatControl.SetForward(1);
-            boatControl.SetTurn(0);
-            
-        }
-        else if (dotSideways > .75f) {
-            if (dotSideways < 2f) {
-                boatControl.SetForward(1f);
-                boatControl.SetTurn(-.5f);
-                debugInf = " Turn Left Little ";
-
-            }
-            else {
-                boatControl.SetForward(.75f);
-                boatControl.SetTurn(-1);
-                debugInf = " Turn Left Lot ";
-            }
-        }
-        else if (dotSideways < -.75f) {
-            if (dotSideways > -2f) {
-                boatControl.SetForward(1f);
-                boatControl.SetTurn(.5f);
-                debugInf = " Turn Right Little ";
-            }
-            else {
-                boatControl.SetForward(.75f);
-                boatControl.SetTurn(1);
-                debugInf = " Turn Right Lot ";
-            }
-        }
-        Task.current.debugInfo =  " my location:" + (int)GetPrevXYPos().x + "," + (int)GetPrevXYPos().y  +
-                    _targetEnemy.GetPrevXYPos().x + "," + _targetEnemy.GetPrevXYPos().y + " Dot: " + (int)dotSideways + debugInf;
-    }
+    
     #endregion
 
+    #region helper
+    
     void ResetTree()
     {
         // Assuming the GameObject has a BehaviourTree component
@@ -910,5 +555,26 @@ public class BoatAI : MonoBehaviour
             bt.Reset(); // Resets the entire behavior tree
         }
     }
+    
+    public AttackSide ChooseAttackDirection(BoatAI target)
+    {
+        if (target == null) return 0f;
+
+        // Forward vector in XZ plane
+        Vector2 fwd = new Vector2(transform.forward.x, transform.forward.z);
+
+        // Vector to target in XZ plane
+        Vector3 pos = transform.position;
+        Vector3 tpos = target.transform.position;
+        Vector2 toTarget = new Vector2(tpos.x - pos.x, tpos.z - pos.z);
+
+        // Signed angle (positive = target to the right, negative = left)
+        float signedAngle = Vector2.SignedAngle(fwd, toTarget);
+
+        return signedAngle >= 0f ? AttackSide.Left : AttackSide.Right;
+
+    }
+    
+    #endregion
 
 }

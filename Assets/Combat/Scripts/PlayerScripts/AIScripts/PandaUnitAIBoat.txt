@@ -1,81 +1,73 @@
 tree("Root")
 	FallBack
 		tree("Gunner")
-		tree("FireCannons")
-		tree("PrepFireCannons")
-		tree("ReloadCannons")
-		tree("RotateCannons")
+		tree("ReloadAllCannons")
 		tree("AdjustSail")
 		tree("RepairShip")
 		tree("SteerShip")
 		tree("Idle")
 
 tree("Idle")
-	while
-		ActionCheck("Idle")
-		sequence
-			SetWanderPoint
-			Idle
+	Sequence
+		SetWanderPoint
+		Wait 5
 
 tree("Gunner")
 	while
-        CheckCannonGroupReset()
-		while
-			ActionCheck("Gunner") 
-			sequence
-				FindClosestCannon("Fire")
-				GoToClosest("Fire")
-				RotateCannonNew
-				FireCannon("False")
-				VariableWait("FireCannon")
-				tree("ReloadCannons1")
+		ActionCheck("Gunner")
+		fallback
+			tree("GunnerBroadside")
+			tree("GunnerCycle")
 
-
+tree("GunnerCycle")
+	sequence
+		GetBroadsideMode("normal")
+		FindClosestCannon("Fire")
+		GoToClosest("Fire")
+		RotateCannon
+		FireCannon("False")
+		VariableWait("FireCannon")
+		tree("ReloadCannon")
 		
-tree("ReloadCannons1")
+tree("GunnerBroadside")
+	sequence
+		GetBroadsideMode("broadside")
+		tree("Broadside_FireAll")
+		tree("ReloadAllCannons")
+
+tree("Broadside_FireAll")
+	while
+		HasAnyTargetableCannon("Fire")
+		sequence
+			FindClosestCannon("Fire")
+			GoToClosest("Fire")
+			RotateCannon
+			FireCannon("True")
+			VariableWait("FireCannon")
+
+tree("ReloadAllCannons")
+	while
+		HasAnyTargetableCannon("Reload")
+		tree("ReloadCannon")
+		
+tree("ReloadCannon")
 	sequence
 		FindClosestCannonBall
 		GoToClosest("CannonBall")
 		GetCannonBall
 		Wait(.25)
+		FindClosestCannon("Reload")
 		GoToClosest("Reload")
 		VariableWait("ReloadCannon")
 		Reload
-			
-tree("RotateCannons1")
-	sequence
-		RotateCannonNew
-		FireCannon("False")
-		VariableWait("FireCannon")
 
-tree("FireCannons")
-	while
-		ActionCheck("FireCannons")
-		sequence
-			FindClosestCannon("Fire")
-			GoToClosest("Fire")
-			FireCannon("True")
-			VariableWait("FireCannon")
-			
 tree("PrepFireCannons")
     while
         ActionCheck("PrepCannons")
         sequence
             FindClosestCannon("Fire")
             GoToClosest("Fire")
-tree("ReloadCannons")
-	while
-		ActionCheck("ReloadCannons")
-		sequence
-			FindClosestCannonBall
-			GoToClosest("CannonBall")
-			GetCannonBall
-			Wait(.25)
-			FindClosestCannon("Reload")
-			GoToClosest("Reload")
-			VariableWait("ReloadCannon")
-			Reload
-			
+
 tree("RotateCannons")
 	while
 		ActionCheck("RotateCannons")

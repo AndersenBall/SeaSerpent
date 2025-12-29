@@ -145,21 +145,18 @@ public class Boat
     #endregion
 
     #region Getters
+    
     public float GetMaxCannonRange()
     {
-        float velocity = cannon?.ShotPower ?? new Cannon(CannonType.LongGun).ShotPower;
+        var c = cannon ?? new Cannon(CannonType.LongGun);              // cache a default instance somewhere
+        float v = c.ShotPower;                         
+        float g = Mathf.Abs(Physics.gravity.y);        
+        float theta = Mathf.Abs(c.MaxVerticalAngle * Mathf.Deg2Rad); 
         
-        float angle = (-cannon?.MinVerticalAngle ??  -new Cannon(CannonType.LongGun).MinVerticalAngle) * Mathf.Deg2Rad;
-        float gravity = 9.81f;
-
-        return (CalculateCannonRange(velocity, gravity) * Mathf.Cos(angle));
+        float R = (v * v * Mathf.Sin(2f * theta)) / g;
+        return R;
     }
-
-    private float CalculateCannonRange(float velocity, float gravity)
-    {
-        float angle = 25f * Mathf.Deg2Rad;
-        return (velocity * velocity * Mathf.Sin(2 * angle)) / gravity;
-    }
+    
 
     public IDictionary<string, int> getSupplies() {
         return supplies;

@@ -5,16 +5,15 @@ using Panda;
 
 public class PandaUnitAI : MonoBehaviour
 {
-    // Start is called before the first frame update
     #region variables
-
-    public string currentAction;
-   
+    
+    public string currentAction ;
+    public bool BroadsideMode = false;
+    
     public float fireSpeed;
     private bool hasCannonBall = false;
     [SerializeField]
     private float startTime;
-    public bool resetCannonGroups { get; set; } = false;
 
     public GameObject cannonBallPrefab;
     private BoatAI currentBoatAi;
@@ -32,12 +31,13 @@ public class PandaUnitAI : MonoBehaviour
         }
     }
     [SerializeField]
-    private CannonInterface nearestCannon; // need to set to null on death or action change. Also set the cannon to be not busy
+    private CannonInterface nearestCannon;
     private CannonBallSetType nearestBallPile;
 
     private PandaBehaviour pandaBT = null;
     private Animator animator; 
     private ShipAmunitionInterface shipAmunitions;
+    private BoatAI boatAi;
     private AIMovement movement;
 
     #endregion
@@ -46,12 +46,13 @@ public class PandaUnitAI : MonoBehaviour
     void Start()
     {
         shipAmunitions = transform.parent.parent.GetComponent<ShipAmunitionInterface>();
+        boatAi = transform.parent.parent.GetComponent<BoatAI>();
         movement = gameObject.GetComponent<AIMovement>();
         animator = gameObject.GetComponentInChildren<Animator>();
         pandaBT = gameObject.GetComponent<PandaBehaviour>();
         currentBoatAi = gameObject.GetComponentInParent<BoatAI>();
+        currentAction = "Gunner";
 
-        
     }
 
     #endregion
@@ -70,6 +71,15 @@ public class PandaUnitAI : MonoBehaviour
         return currentAction;
     }
 
+    [Task]
+    public bool GetBroadsideMode(string s) {
+        if (s == "broadside" ? BroadsideMode : !BroadsideMode) {
+            Task.current.Succeed();
+        } else {
+            Task.current.Fail();
+        }
+        return s == "broadside" ? BroadsideMode : !BroadsideMode;
+    }
 
     #endregion
 
@@ -129,8 +139,8 @@ public class PandaUnitAI : MonoBehaviour
 
     [Task]
     public void SetWanderPoint() {
-        //Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
-        //Debug.Log("Info:Unit:Wander point " + wanderPoint);
+        Vector3 wanderPoint = new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10));
+        //Debug.Log("Info:Unit:Wander point" + wanderPoint);
         //movement.SetDestination(shipAmunitions.transform.position + wanderPoint);
         Task.current.Succeed();
     }
@@ -194,6 +204,25 @@ public class PandaUnitAI : MonoBehaviour
     }
 
     [Task]
+    public bool HasAnyTargetableCannon(string input)
+    {
+        CannonInterface[] cannonList = null;
+
+        if (input == "All") {
+            cannonList = shipAmunitions.GetCannons();
+        }
+        else if (input == "Fire") {
+            cannonList = shipAmunitions.GetLoadedCannons(cannonGroups);
+        }
+        else if (input == "Reload") {
+            cannonList = shipAmunitions.GetUnloadedCannons();
+        }
+
+        return cannonList != null && cannonList.Length > 0;
+    }
+
+
+    [Task]
     public void FindClosestCannon(string input)
     {
         CannonInterface[] cannonList = null;
@@ -215,10 +244,7 @@ public class PandaUnitAI : MonoBehaviour
         else if (input == "Rotate") {
             cannonList = shipAmunitions.GetRotateCannons();
         }
-        if (cannonList.Length < 1) {
-            //Debug.Log("no Cannons to in list, Idle");
-            SetAction("Idle");
-        }
+        
 
 
         float shortestDistance = 100f;
@@ -240,7 +266,7 @@ public class PandaUnitAI : MonoBehaviour
             Task.current.Succeed();
         }
         else {
-            Debug.Log("failed to find closest");
+            //Debug.Log("failed to find closest");
             Task.current.Fail(); 
         }
     }
@@ -270,14 +296,7 @@ public class PandaUnitAI : MonoBehaviour
     }
     [Task]
     public void FindClosestCannonBall() {
-        Task.current.Fail();
-        CannonInterface[] cannonList = shipAmunitions.GetUnloadedCannons();
-        if (cannonList.Length < 1) {
-            //Debug.Log("no Cannons to reload");
-            SetAction("Idle");
-            Task.current.Fail();
-            return;
-        }
+        
         CannonBallSetType[] cannonBallList = shipAmunitions.GetCannonBallPiles();
         
         float shortestDistance = 1000000000;
@@ -300,44 +319,23 @@ public class PandaUnitAI : MonoBehaviour
     {
         if (nearestCannon == null) {
             Task.current.Fail();
+            return;
         }
 
         if (hasCannonBall && !nearestCannon.GetLoadStatus()) {
             hasCannonBall = false;
             nearestCannon.LoadGun();
             Destroy(cannonBallHand);
-            Task.current.Succeed();
             UnsubscribeCannon();
+            Task.current.Succeed();
             return;
         }
         nearestCannon = null;
         Task.current.Fail();
     }
+    
     [Task]
-    public void CheckCannonGroupReset() {
-        if (resetCannonGroups)
-        {
-            resetCannonGroups = false;
-            Task.current.Fail();
-        }
-        else {
-            Task.current.Succeed();
-        }
-    }
-    [Task]
-    public void RotateCannon() {
-        if (nearestCannon != null) {
-            nearestCannon.RotateBarrel();
-        }
-        
-        //if statment for if cannon needs to be rotated 
-        animator.SetTrigger("FireCannon");
-        UnsubscribeCannon();
-        Task.current.Succeed();
-
-    }
-    [Task]
-    public void RotateCannonNew()
+    public void RotateCannon()
     {
         if (Task.current.isStarting)
         {

@@ -81,8 +81,6 @@ public class MouseLookBoat : MonoBehaviour
                     cam.fieldOfView = 80;
                 }
             }
-            
-            
         }
     }
 

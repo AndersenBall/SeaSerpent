@@ -1,114 +1,57 @@
 tree("Root")
 	FallBack
 		tree("Dead")
-		tree("Player")
 		tree("RunAway")
-		tree("FarAway")
 		tree("Attack")
+
 tree("Dead")
 	while
 		isDead
 		Die
-
-tree("Player")
-	while
-		playerOnBoard
-		Idle
+		
 tree("RunAway")
-	while
-		runningAway
-		sequence
-			ChooseRunAwayLocation
-			Reload
-			Parallel
-				CheckReload
-				AllignToWanderPoint
-tree ("FarAway")
-	while
-		not attacking
-		Random
-			ChooseToAttack
-			sequence
-				ChooseWanderDest
-				AllignToWanderPoint
-				Wait 5.0
+	sequence
+		ActionCheck("RunAway")
+		ChooseRunAwayLocation
+		Wait 10.0
 
 tree("Attack")
 	while
-		attacking
+		IsAttacking
 		sequence
 			ChooseEnemy
+			Wait .5
 			fallback
 				tree("DriveBy")
 				tree("ApproachTurnShoot")
 				tree("Ram")
-				tree("PotShot")
-				tree("FireAtWill")
-
-
+				tree("BoardEnemyShip")
 
 tree("DriveBy")
 	sequence
 		ActionCheck("DriveBy")
-		SetCannonsNutral
-		fallback
-			while 
-				not GetInAttackPosition(100.0)
-				repeat	
-					sequence
-						ChooseAttackDirection
-						CreateAttackVector
-						Wait 1.0
-			sequence
-				UnitsToCannons
-				CheckToFire
-				Fire
-				CheckToRetreat
+		GetInAttackPosition(100.0)
+		SetCannonsNeutral
+		DriveBeside
+		UnitsToCannons
+		CheckToFire
+		Fire
 
 tree("ApproachTurnShoot")
 	sequence
 		ActionCheck("ApproachTurnShoot")
-		CreateAttackVector
-		GetInAttackPosition(100.0)
+		GetInAttackPosition(-1.0)
 		TurnToFire
-		Fire
-		CheckToRetreat
+		Wait 30.0
 
 tree("Ram")
 	sequence
 		ActionCheck("Ram")
-		CreateAttackVector
 		GetInAttackPosition(100.0)
 		RamSpeed
-		CheckToRetreat
 		
-tree("PotShot")
+tree("BoardEnemyShip")
 	sequence
-		ActionCheck("PotShot")
-		ChooseAttackDirection
-		CreateAttackVector
-		sequence
-			TurnToFireFar
-			race
-				SetUpCannons
-				KeepAim
-		Race
-			sequence
-				Wait 2.0
-				Fire
-			KeepAim
-		Wait 2.0
-		CheckToRetreat
+		ActionCheck("BoardEnemyShip")
 
-tree("FireAtWill")
-	sequence
-		ActionCheck("FireAtWill")
-		ChooseAttackDirection
-		CreateAttackVector
-		TurnToFireFar
-		Race
-			FireAwayCommand
-			KeepAim
-			Wait 20.0
-		Wait 2.0
-		CheckToRetreat
+		

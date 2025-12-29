@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MapMode.Scripts.BoatScripts;
+using UnityEngine;
 
 namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 {
@@ -8,7 +9,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 {
     public class RepairTask : MonoBehaviour
     {
-        private BoatHealth boatHealth;
+        private ShipHealthComponent boatHealth;
         private int maxRepairAmount;
         [SerializeField]
         private GameObject rhythmMiniGamePrefab;
@@ -18,7 +19,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
         
         private RhythmMiniGame rhythmMiniGame; 
         
-        public void Initialize(BoatHealth parentHealth, int healthRestore )
+        public void Initialize(ShipHealthComponent parentHealth, int healthRestore )
         {
             boatHealth = parentHealth;
             maxRepairAmount = healthRestore;
@@ -46,7 +47,7 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             if (boatHealth != null)
             {
                 int repairAmount = Mathf.RoundToInt(maxRepairAmount * accuracy);
-                boatHealth.currentHealth += repairAmount;
+                boatHealth.CurrentHealth += repairAmount;
                 Debug.Log($"Repair successful! Restored {repairAmount } our of {maxRepairAmount} health.");
             }
             

@@ -251,7 +251,7 @@ public class CannonInterface : MonoBehaviour
         cannonType = cannon.CannonType;
         baseCannonDamage = cannon.Damage;
         fireForce = cannon.ShotPower;
-        MinVerticalAngle = cannon.MaxVerticalAngle;//TODO THE CANNONS rotation is FUCKED UP SWAP ROTATION TO NOT BE NEGATIVE LATER
+        MinVerticalAngle = cannon.MaxVerticalAngle;
         MaxVerticalAngle = cannon.MinVerticalAngle;
         minHorizontalAngle = -cannon.MaxHorizontalAngle;
         maxHorizontalAngle = cannon.MaxHorizontalAngle;
