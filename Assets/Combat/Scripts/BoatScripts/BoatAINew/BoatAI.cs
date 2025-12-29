@@ -789,37 +789,36 @@ public class BoatAI : MonoBehaviour
         Task.current.Succeed();
     }
 
-    [Task]
-    public void RamSpeed() {
-        boatControl.SetForward(1);
-        int layerMask;
-        BoatHealth enemyBoatHealth;
-        Rigidbody rigidBody = gameObject.GetComponent<Rigidbody>();
-        if (GetTeamNumber() == 1) {
-            layerMask = 1 << 14;
-        }
-        else {
-            layerMask = 1 << 13;
-        }
-
-        Debug.DrawRay(transform.position + transform.forward * 30, transform.forward * 3, Color.cyan);
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * 30, 3, layerMask);
-        foreach (var hitCollider in hitColliders) {
-            Debug.Log("RAM collider hit: " + hitCollider.gameObject + rigidBody.velocity.magnitude);
-            enemyBoatHealth = hitCollider.GetComponentInParent<BoatHealth>();
-
-            if (enemyBoatHealth != null && rigidBody.velocity.magnitude > 6) {
-                Task.current.debugInfo = "Rammed enemy. Speed: " + rigidBody.velocity.magnitude;
-                enemyBoatHealth.TakeDamage(20);
-                Task.current.Succeed();
-                SetAction("ApproachTurnShoot");
-                break;
-            }
-
-        }
-
-
-    }
+    //[Task]
+    // public void RamSpeed() {
+    //     boatControl.SetForward(1);
+    //     int layerMask;
+    //     BoatHealth enemyBoatHealth;
+    //     Rigidbody rigidBody = gameObject.GetComponent<Rigidbody>();
+    //     if (GetTeamNumber() == 1) {
+    //         layerMask = 1 << 14;
+    //     }
+    //     else {
+    //         layerMask = 1 << 13;
+    //     }
+    //
+    //     Debug.DrawRay(transform.position + transform.forward * 30, transform.forward * 3, Color.cyan);
+    //     Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * 30, 3, layerMask);
+    //     foreach (var hitCollider in hitColliders) {
+    //         Debug.Log("RAM collider hit: " + hitCollider.gameObject + rigidBody.velocity.magnitude);
+    //         enemyBoatHealth = hitCollider.GetComponentInParent<BoatHealth>();
+    //
+    //         if (enemyBoatHealth != null && rigidBody.velocity.magnitude > 6) {
+    //             Task.current.debugInfo = "Rammed enemy. Speed: " + rigidBody.velocity.magnitude;
+    //             enemyBoatHealth.TakeDamage(20);
+    //             Task.current.Succeed();
+    //             SetAction("ApproachTurnShoot");
+    //             break;
+    //         }
+    //
+    //     }
+    //
+    // }
     [Task]
     public void Die(){
         GetComponent<PandaBehaviour>().enabled = false;
