@@ -2,11 +2,14 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+
+
 public enum WaypointKind { Position, Follow }
 
 [System.Serializable]
 public class Waypoint
 {
+    
     public WaypointKind Kind;
     public Vector3 Position;      // used when Kind == Position
     public Transform Target;      // used when Kind == Follow
@@ -30,6 +33,12 @@ public class Waypoint
 public class TargetMarker : MonoBehaviour
 {
     #region  variables 
+    
+    #if UNITY_EDITOR
+    [Header("DEBUG (Read Only)")]
+    [SerializeField] private Waypoint[] _debugWaypoints;
+    #endif
+    
     [Header("Visuals")]
     [Tooltip("Small prefab (quad/disc/flag). It should face up; scale it in the prefab.")]
     [SerializeField] private GameObject markerPrefab;
@@ -80,6 +89,9 @@ public class TargetMarker : MonoBehaviour
             IsEnemy = isEnemy,
             MinDistance = minDistance
         });
+        #if UNITY_EDITOR
+                SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
@@ -93,12 +105,18 @@ public class TargetMarker : MonoBehaviour
             IsEnemy = isEnemy,
             MinDistance = minDistance
         });
+        #if UNITY_EDITOR
+            SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
     public void ClearWaypoints()
     {
         waypoints.Clear();
+        #if UNITY_EDITOR
+            SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
@@ -110,6 +128,9 @@ public class TargetMarker : MonoBehaviour
         if (waypoints.Count > 0)
         {
             waypoints.Dequeue();
+            #if UNITY_EDITOR
+                SyncDebugList();
+            #endif
             if (visualsVisible) RefreshVisuals();
             return true;
         }
@@ -173,5 +194,14 @@ public class TargetMarker : MonoBehaviour
     }
     #endregion
     
+    #region editor
+    #if UNITY_EDITOR
+        private void SyncDebugList()
+        {
+            _debugWaypoints = waypoints.ToArray();
+        }
+    #endif
+
+    #endregion
 }
 

@@ -10284,6 +10284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 556a1f55e499f36449206b37278b528a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cannonType: 0
   muzzleFlash: {fileID: 6813656588266329292}
   firePoint: {fileID: 3933289067434718284}
   rotationPoint: {fileID: 3933289068389749015}
@@ -10291,7 +10292,12 @@ MonoBehaviour:
     type: 3}
   _wantedVerticalAngle: 0
   _wantedHorizontalAngle: 0
+  baseCannonDamage: 0
+  _currentHorizontalAngle: 0
+  _currentVerticalAngle: 0
   cannonVariance: 0
+  _isBeingWorkedOn: 0
+  _isManned: 0
   fireForce: 200
   cannonSetNum: 0
   rotationSpeed: 5

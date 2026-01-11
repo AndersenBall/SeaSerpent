@@ -369,7 +369,7 @@ public class BoatAI : MonoBehaviour
         }
 
         
-        if (boatSteeringControl.DistanceToTarget < 100) {
+        if (boatSteeringControl.DistanceToTarget < 40) {
             Task.current.Succeed();
             runTime = 0;
             recalcTimer = float.MaxValue;
