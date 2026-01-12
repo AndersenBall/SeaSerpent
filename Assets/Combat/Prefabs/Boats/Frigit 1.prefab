@@ -15944,7 +15944,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _debugWaypoints: []
-  markerPrefab: {fileID: 0}
+  markerPrefab: {fileID: 7410044681594688467, guid: 8374de37be961534bab9f70986ef7aa8,
+    type: 3}
   poolSize: 12
   yOffset: 0.05
   nextColor: {r: 1, g: 1, b: 1, a: 1}

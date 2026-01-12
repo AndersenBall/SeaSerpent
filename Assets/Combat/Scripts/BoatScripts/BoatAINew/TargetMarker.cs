@@ -56,7 +56,8 @@ public class TargetMarker : MonoBehaviour
     private Queue<Waypoint> waypoints = new Queue<Waypoint>();
     
     private readonly List<GameObject> pool = new();
-    private bool visualsVisible;
+    [SerializeField] private bool visualsVisible = true;
+    private static Transform s_worldRoot;
 
     #endregion
 
@@ -64,6 +65,8 @@ public class TargetMarker : MonoBehaviour
     
     private void Start()
     {
+        var parent = GetWorldRoot();
+
         if (markerPrefab == null)
         {
             Debug.LogWarning($"{nameof(TargetMarker)} on {name}: markerPrefab not set. Only queue will work; no visuals will render.");
@@ -72,11 +75,19 @@ public class TargetMarker : MonoBehaviour
 
         for (int i = 0; i < poolSize; i++)
         {
-            var go = Instantiate(markerPrefab, transform);
+            var go = Instantiate(markerPrefab, parent);
             go.SetActive(false);
             pool.Add(go);
         }
+        
     }
+    
+    private void OnDestroy()
+    {
+        for (int i = 0; i < pool.Count; i++)
+            if (pool[i]) Destroy(pool[i]);
+    }
+
 
     #endregion
     
@@ -191,6 +202,17 @@ public class TargetMarker : MonoBehaviour
 
         for (; i < pool.Count; i++)
             pool[i].SetActive(false);
+    }
+    
+    private Transform GetWorldRoot()
+    {
+        if (s_worldRoot != null) return s_worldRoot;
+
+        var existing = GameObject.Find("WaypointMarkersRoot");
+        if (existing != null) return s_worldRoot = existing.transform;
+
+        var go = new GameObject("WaypointMarkersRoot");
+        return s_worldRoot = go.transform;
     }
     #endregion
     
