@@ -44,6 +44,15 @@ namespace GerneralScripts.BattleManagement
         private void ReturnAndApply()
         {
             var returnScene = CurrentSession.ReturnSceneName;
+
+            // If we're already in the return scene, don't reload it—just apply immediately.
+            var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (activeScene.name == returnScene)
+            {
+                FinalizeBattle();
+                return;
+            }
+
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnReturnLoaded;
             UnityEngine.SceneManagement.SceneManager.LoadScene(returnScene);
         }
@@ -53,6 +62,11 @@ namespace GerneralScripts.BattleManagement
             if (scene.name != CurrentSession.ReturnSceneName) return;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnReturnLoaded;
 
+            FinalizeBattle();
+        }
+
+        private void FinalizeBattle()
+        {
             BattleResultApplier.Apply(CurrentSession, PendingResult);
 
             CurrentSession = null;

@@ -18,8 +18,8 @@ namespace GerneralScripts.BattleManagement
 
         while (aSim.Count > 0 && bSim.Count > 0)
         {
-            SimulateRound(aSim, bSim, rng);
-            SimulateRound(bSim, aSim, rng);
+            SimulateAttackCycle(aSim, bSim, rng);
+            SimulateAttackCycle(bSim, aSim, rng);
 
             aSim.RemoveAll(b => b.HP <= 0);
             bSim.RemoveAll(b => b.HP <= 0);
@@ -54,7 +54,7 @@ namespace GerneralScripts.BattleManagement
 
     // -----------------------------
 
-    private static void SimulateRound(
+    private static void SimulateAttackCycle(
         List<SimBoat> attackers,
         List<SimBoat> defenders,
         System.Random rng)

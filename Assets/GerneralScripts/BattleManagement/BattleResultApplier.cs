@@ -6,20 +6,19 @@ namespace GerneralScripts.BattleManagement
     {
         public static void Apply(BattleSession session, BattleResult result)
         {
-            ApplyFleet(session.SideA.Fleet, result.A);
-            ApplyFleet(session.SideB.Fleet, result.B);
+            ApplySide(session.SideA.Fleet, result.A);
+            ApplySide(session.SideB.Fleet, result.B);
 
-            // Reconcile world objects for both fleets (destroy if empty, etc.)
-            UpdateWorldFleetObject(session.SideA.Fleet);
-            UpdateWorldFleetObject(session.SideB.Fleet);
-
-            // Special-case *only* the “player aftermath”
             if (session.HasPlayer)
-            {
                 ApplyPlayerAftermath(session, result);
-            }
 
             GameEvents.SaveGame();
+        }
+
+        private static void ApplySide(Fleet fleet, SideResult side)
+        {
+            ApplyFleet(fleet, side);
+            UpdateWorldFleetObject(fleet);
         }
 
         private static void ApplyFleet(Fleet fleet, SideResult side)
@@ -32,18 +31,6 @@ namespace GerneralScripts.BattleManagement
                     b.currentBoatHealth = hp;
 
             fleet.SetBoats(boats);
-        }
-
-        private static void ApplyPlayerAftermath(BattleSession session, BattleResult result)
-        {
-            // “Only difference is player might have to respawn”
-            // Put respawn logic here so battle logic remains identical for AI/Player.
-            if (result.PlayerDefeated)
-            {
-                // Example hooks:
-                // PlayerRespawnService.RespawnAtNearestPort();
-                // InventoryService.DropLoot(...);
-            }
         }
 
         private static void UpdateWorldFleetObject(Fleet fleet)
@@ -62,6 +49,17 @@ namespace GerneralScripts.BattleManagement
                 break;
             }
         }
+        
+        private static void ApplyPlayerAftermath(BattleSession session, BattleResult result)
+        {
+            // “Only difference is player might have to respawn”
+            // Put respawn logic here so battle logic remains identical for AI/Player.
+            if (result.PlayerDefeated)
+            {
+                // Example hooks:
+                // PlayerRespawnService.RespawnAtNearestPort();
+                // InventoryService.DropLoot(...);
+            }
+        }
     }
-
 }
