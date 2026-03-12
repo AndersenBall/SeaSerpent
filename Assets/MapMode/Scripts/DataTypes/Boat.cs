@@ -38,6 +38,7 @@ public class Boat
     #region Constructor
     public Boat(string name, BoatType type)
     {
+        BoatId = System.Guid.NewGuid().ToString("N");
         boatName = name;
         boatType = type;
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GerneralScripts.BattleManagement
 {
@@ -24,13 +25,24 @@ namespace GerneralScripts.BattleManagement
         private static void ApplyFleet(Fleet fleet, SideResult side)
         {
             var boats = fleet.GetBoats();
-            boats.RemoveAll(b => side.DestroyedBoatIds.Contains(b.BoatId));
+            boats.RemoveAll(b => side.DestroyedBoatIds.Contains(GetBoatKey(b)));
 
             foreach (var b in boats)
-                if (side.HpByBoatId.TryGetValue(b.BoatId, out int hp))
+                if (side.HpByBoatId.TryGetValue(GetBoatKey(b), out int hp))
                     b.currentBoatHealth = hp;
 
             fleet.SetBoats(boats);
+        }
+
+
+        private static string GetBoatKey(Boat boat)
+        {
+            if (!string.IsNullOrWhiteSpace(boat.BoatId))
+            {
+                return boat.BoatId;
+            }
+
+            return boat.boatName;
         }
 
         private static void UpdateWorldFleetObject(Fleet fleet)
