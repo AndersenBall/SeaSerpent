@@ -40,17 +40,11 @@ public class PlayerFleetMapController : MonoBehaviour
 
     void Start()
     {
+        InitializeDefaultsIfNeeded();
 
-        //UpdateBoatNames();
-        SceneTransfer.playerFleet = new Fleet(Nation.PlayerNation,"Andersen");
-        SceneTransfer.playerFleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
-        SceneTransfer.playerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
+        BoatAILead.RemoveID(PlayerStateService.PlayerFleet.FleetID);
 
-        PlayerGlobal.money = 5000000;
-
-        BoatAILead.RemoveID(SceneTransfer.playerFleet.FleetID);
-
-        (float fleetSpeed, float fleetAcceleration) = SceneTransfer.playerFleet.CalculateSpeed();
+        (float fleetSpeed, float fleetAcceleration) = PlayerStateService.PlayerFleet.CalculateSpeed();
         navAgent.speed = fleetSpeed;
         navAgent.acceleration = fleetAcceleration;
 
@@ -63,9 +57,6 @@ public class PlayerFleetMapController : MonoBehaviour
     }
     private void Update()
     {
-        // TODO 12/28 performance improvement is possible here. Does not need to be on every frame. Can be on event. 
-        //UpdateBoatNames();
-        
         if (target != null)
         {
             navAgent.SetDestination(target.position);
@@ -79,12 +70,10 @@ public class PlayerFleetMapController : MonoBehaviour
         FleetMapController otherFleet = other.GetComponent<FleetMapController>();
         if (otherFleet != null) {
             meetShipUI.ContactShip(otherFleet.GetFleet());
-            Debug.Log("Fleet: " + SceneTransfer.playerFleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
+            Debug.Log("Fleet: " + PlayerStateService.PlayerFleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
 
         }
         else if (town != null) {
-            //           Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
-            
             townOptionsUI.DisplayOptionsMenu(town);
             currentTown = town;
             TownEvents.InvokeTownVisited(town);
@@ -94,13 +83,11 @@ public class PlayerFleetMapController : MonoBehaviour
     #endregion
 
     #region Methods
-    public Fleet GetFleet() { return SceneTransfer.playerFleet; }
-
-
+    public Fleet GetFleet() { return PlayerStateService.PlayerFleet; }
 
     public void DockFleet(Town town)
     {
-        town.DockFleet(SceneTransfer.playerFleet);
+        town.DockFleet(PlayerStateService.PlayerFleet);
         Destroy(gameObject, 1);
     }
 
@@ -109,41 +96,60 @@ public class PlayerFleetMapController : MonoBehaviour
     #region Developer methods
     public void UpdateBoatNames()
     {
-        boatNames += SceneTransfer.playerFleet.ToString();
+        boatNames += PlayerStateService.PlayerFleet.ToString();
 
     }
 
     public void SaveFleet()
     {
-        SceneTransfer.playerFleet.CalculateSpeed();
-        PlayerFleetData saveFleet = new PlayerFleetData
+        if (PlayerStateService.PlayerFleet == null)
         {
-            fleet = SceneTransfer.playerFleet, 
-            pos = new float[] 
-            {
+            return;
+        }
+
+        PlayerStateService.PlayerFleet.CalculateSpeed();
+        PlayerStateService.MapPosition = new float[]
+        {
             transform.position.x,
             transform.position.y,
             transform.position.z
-            }
         };
-        SaveLoad.Save(saveFleet, "Player");
-        Debug.Log("Player Fleet saved successfully.");
     }
+
     public void LoadFleet()
     {
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
-            
-            SceneTransfer.playerFleet = playerData.fleet;
+        if (PlayerStateService.PlayerFleet == null)
+        {
+            return;
+        }
 
-            navAgent.speed = SceneTransfer.playerFleet.fleetSpeed;
-            navAgent.acceleration = SceneTransfer.playerFleet.fleetAcceleration;
-            Vector3 targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
+        navAgent.speed = PlayerStateService.PlayerFleet.fleetSpeed;
+        navAgent.acceleration = PlayerStateService.PlayerFleet.fleetAcceleration;
+
+        float[] pos = PlayerStateService.MapPosition;
+        if (pos != null && pos.Length >= 3)
+        {
+            Vector3 targetPosition = new(pos[0], pos[1], pos[2]);
             gameObject.transform.position = targetPosition;
             navAgent.Warp(targetPosition);
-
         }
+
         UpdateBoatNames();
+    }
+
+    private void InitializeDefaultsIfNeeded()
+    {
+        if (PlayerStateService.PlayerFleet == null)
+        {
+            PlayerStateService.PlayerFleet = new Fleet(Nation.PlayerNation, "Andersen");
+            PlayerStateService.PlayerFleet.AddBoat(new Boat("Hogger2", BoatType.Frigate));
+            PlayerStateService.PlayerFleet.AddBoat(new Boat("Floater", BoatType.TradeShip));
+        }
+
+        if (PlayerStateService.Money <= 0)
+        {
+            PlayerStateService.Money = 5000000;
+        }
     }
 
     private void OnDestroy()

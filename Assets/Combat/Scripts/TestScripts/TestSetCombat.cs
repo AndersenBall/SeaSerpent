@@ -33,7 +33,7 @@ public class TestSetCombat : MonoBehaviour
         
             //enemFleet.AddBoat(new Boat("e3", "TradeShip"));
 
-            SceneTransfer.playerFleet = playerFleet;
+            PlayerStateService.PlayerFleet = playerFleet;
             SceneTransfer.enemyFleet = enemFleet;
             //SceneManager.LoadScene("MainScene");
             

@@ -25,20 +25,23 @@ public class GameEvents : MonoBehaviour
 
     public static void SaveGame()
     {
+        SaveInitiated?.Invoke();
+        GameStateRepository.SaveCurrent();
+
         int i = 0;
         SaveLoad.Save(i, "GameMeta");
-        GameEvents.SaveInitiated.Invoke();
     }
+
     public static void LoadGame()
     {
-        if (SaveLoad.SaveExists("GameMeta"))
+        if (GameStateRepository.TryLoadCurrent())
         {
-            GameEvents.LoadInitiated.Invoke();
+            LoadInitiated?.Invoke();
+            return;
         }
-        else { 
-            SaveGame(); 
-            Debug.Log("No file to load"); 
-        }
+
+        SaveGame();
+        Debug.Log("No file to load");
     }
 
     public static void ClearEvents() {

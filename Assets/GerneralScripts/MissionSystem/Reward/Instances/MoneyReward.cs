@@ -16,7 +16,7 @@ namespace GerneralScripts.MissionSystem.Reward
         {
             if (Amount <= 0f) return;
             
-            PlayerGlobal.AddMoney(Amount);
+            PlayerStateService.AddMoney(Amount);
         }
 
         public string GetDescription()

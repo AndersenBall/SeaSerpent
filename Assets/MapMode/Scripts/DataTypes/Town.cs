@@ -341,7 +341,7 @@ public class Town : MonoBehaviour
     }
 
     public bool FillCargoPlayer(Fleet fle, string resource,int amount) {
-        if (PlayerGlobal.money < CalculateTransactionPrice( resource, amount)) {
+        if (PlayerStateService.Money < CalculateTransactionPrice( resource, amount)) {
             Debug.Log("not enough money");
             return false;
         }

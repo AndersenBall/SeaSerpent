@@ -34,10 +34,10 @@ public class BoatMaster : MonoBehaviour
     private void SpawnBoats()
     {
         
-        if (SceneTransfer.playerFleet?.GetBoats() != null) {
+        if (PlayerStateService.PlayerFleet?.GetBoats() != null) {
             var teamOneBoatTeam = boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == 1);
-            var boats = SceneTransfer.playerFleet.GetBoats();
-            int flagshipIndex = boats.FindIndex(boat => boat.boatName == SceneTransfer.playerFleet.FlagShip);
+            var boats = PlayerStateService.PlayerFleet.GetBoats();
+            int flagshipIndex = boats.FindIndex(boat => boat.boatName == PlayerStateService.PlayerFleet.FlagShip);
 
             for (int i = 0; i < boats.Count; i++) {
                 if (i == flagshipIndex || (flagshipIndex == -1 && i == 0)) {
@@ -110,8 +110,8 @@ public class BoatMaster : MonoBehaviour
     
     public void DestroyBoat(BoatAI boat) {
         if (boat.GetTeamNumber() == 1) {
-            Debug.Log("Deleted:" +SceneTransfer.playerFleet.commander + boat.name);
-            SceneTransfer.playerFleet.RemoveBoat(boat.name);
+            Debug.Log("Deleted:" +PlayerStateService.PlayerFleet.commander + boat.name);
+            PlayerStateService.PlayerFleet.RemoveBoat(boat.name);
         }
         else {
             Debug.Log("Destroyed:" +SceneTransfer.enemyFleet.commander + boat.name);
@@ -152,9 +152,9 @@ public class BoatMaster : MonoBehaviour
         UpdatePlayerFleet();
         UpdateEnemyFleet();
         
-        if (SceneTransfer.playerFleet.GetBoats().Count == 0){
+        if (PlayerStateService.PlayerFleet.GetBoats().Count == 0){
             SceneTransfer.TransferToTownUI();
-            PlayerGlobal.money -= PlayerGlobal.money / 2;
+            PlayerStateService.TrySpendMoney(PlayerStateService.Money / 2f);
             return;
         }
         SceneTransfer.TransferToMap();
@@ -162,7 +162,7 @@ public class BoatMaster : MonoBehaviour
 
     private void UpdatePlayerFleet() {
         BoatAI[] allyBoatsAI = GetTeamBoats(1);
-        List<Boat> allyBoatsData = SceneTransfer.playerFleet.GetBoats();
+        List<Boat> allyBoatsData = PlayerStateService.PlayerFleet.GetBoats();
 
         var boatsToRemove = allyBoatsData
             .Where(boatData => !allyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -181,8 +181,7 @@ public class BoatMaster : MonoBehaviour
                 }
             }
         }
-        SceneTransfer.playerFleet.SetBoats(allyBoatsData);
-        SavePlayerFleet(SceneTransfer.playerFleet);
+        PlayerStateService.PlayerFleet.SetBoats(allyBoatsData);
     }
 
     private void UpdateEnemyFleet() {
@@ -206,41 +205,14 @@ public class BoatMaster : MonoBehaviour
     }
     
     #region save load
-    public void SavePlayerFleet(Fleet fleet)
-    {
-        Vector3 targetPosition = new(0, 0, 0); //TODO PUT TO base cordinates of a town
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
-            targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
-        }
-      
-        
-        fleet.CalculateSpeed();
-        PlayerFleetMapController.PlayerFleetData saveFleet = new PlayerFleetMapController.PlayerFleetData
-        {
-            fleet = fleet, 
-            pos = new float[] 
-            {
-                targetPosition.x,
-                targetPosition.y,
-                targetPosition.z
-            }
-        };
-        SaveLoad.Save(saveFleet, "Player");
-        Debug.Log("Player Fleet saved successfully.");
-    }
-    
-    
     public void LoadFleet()
     {
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
-            SceneTransfer.playerFleet = playerData.fleet;
+        if (PlayerStateService.PlayerFleet == null)
+        {
+            GameStateRepository.TryLoadCurrent();
         }
-
     }
 
-    
     #endregion
     
 }

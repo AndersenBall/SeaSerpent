@@ -46,9 +46,9 @@ public class MeetShipUI : MonoBehaviour
     public void FightFleet() {
         panel.SetActive(false);
         Time.timeScale = 1f;
-        SceneTransfer.playerFleet = playerFleetMap.GetFleet();
+        PlayerStateService.PlayerFleet = playerFleetMap.GetFleet();
         SceneTransfer.enemyFleet = oppositeFleet;
-        GameEvents.SaveInitiated();
+        GameEvents.SaveGame();
         SceneManager.LoadScene(2);
     }
 }
