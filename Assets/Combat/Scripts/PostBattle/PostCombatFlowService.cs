@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GerneralScripts.BattleManagement;
 using UnityEngine;
 
 namespace MapMode.Scripts.PostBattle
@@ -12,9 +13,12 @@ namespace MapMode.Scripts.PostBattle
         public static PostCombatData CurrentPostCombatData { get; private set; }
         public static bool IsPostCombatActive => CurrentPostCombatData != null;
 
-        public static void BeginPostCombat(PostCombatData postCombatData)
+        private static BattleResult pendingBattleResult;
+
+        public static void BeginPostCombat(PostCombatData postCombatData, BattleResult battleResult = null)
         {
             CurrentPostCombatData = postCombatData;
+            pendingBattleResult = battleResult;
             PostCombatReady?.Invoke(postCombatData);
 
             // If no UI has subscribed yet, continue with a safe default so combat does not soft-lock.
@@ -40,8 +44,24 @@ namespace MapMode.Scripts.PostBattle
             ApplySelectedCapturedShips(selection.SelectedCapturedBoatNames, data.CapturableBoats, data.EnemyFleet);
             PlayerStateService.AddMoney(data.GoldReward);
 
+            var resultToSubmit = pendingBattleResult;
+
             CurrentPostCombatData = null;
-            SceneTransfer.TransferToMap();
+            pendingBattleResult = null;
+
+            if (BattleManager.Instance == null || BattleManager.Instance.CurrentSession == null)
+            {
+                Debug.LogError("PostCombatFlowService requires an active BattleSession to resolve combat.");
+                return;
+            }
+
+            if (resultToSubmit == null)
+            {
+                Debug.LogError("PostCombatFlowService expected a BattleResult but none was provided.");
+                return;
+            }
+
+            BattleManager.Instance.SubmitCombatResult(resultToSubmit);
         }
 
         private static void ApplySelectedLoot(
