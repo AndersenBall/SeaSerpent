@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using GerneralScripts.Utils;
@@ -10,30 +9,38 @@ public class BoatMaster : MonoBehaviour
 {
     public int tileSize = 25;
     private BoatTeamManager[] boatTeamManagers;
-    
-  
+
+    private readonly List<string> sunkEnemyBoatNames = new List<string>();
+    private readonly List<Boat> initialEnemyBoats = new List<Boat>();
+    private bool combatEnded;
+
     List<BoatAI> allBoatsList;
-    
+
     private void Awake()
     {
-   
         LoadFleet();
+
+        if (SceneTransfer.enemyFleet?.GetBoats() != null)
+        {
+            initialEnemyBoats.Clear();
+            initialEnemyBoats.AddRange(SceneTransfer.enemyFleet.GetBoats());
+        }
     }
 
     void Start()
     {
         boatTeamManagers = gameObject.GetComponentsInChildren<BoatTeamManager>();
-        
+
         SpawnBoats();
         allBoatsList = new List<BoatAI>(gameObject.GetComponentsInChildren<BoatAI>());
         Debug.Log("Log:BoatMaster:total boats count:" + allBoatsList.Count());
 
     }
-  
+
 
     private void SpawnBoats()
     {
-        
+
         if (PlayerStateService.PlayerFleet?.GetBoats() != null) {
             var teamOneBoatTeam = boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == 1);
             var boats = PlayerStateService.PlayerFleet.GetBoats();
@@ -50,7 +57,7 @@ public class BoatMaster : MonoBehaviour
                 Debug.Log("team:" + teamOneBoatTeam.GetTeam());
             }
         }
-        
+
         if (SceneTransfer.enemyFleet != null) {
             foreach (Boat b in SceneTransfer.enemyFleet.GetBoats()) {
                 foreach (BoatTeamManager boatTeam in boatTeamManagers) {
@@ -61,10 +68,9 @@ public class BoatMaster : MonoBehaviour
                 }
             }
         }
-        
+
     }
-    //adds all boats into array and sets their previous position
- 
+
 
 
     //returns all boats on a team
@@ -92,7 +98,7 @@ public class BoatMaster : MonoBehaviour
         if (teamBoats != null && teamBoats.Length != 0) {
             foreach (BoatAI boatCont in teamBoats) {
                 if (!boatCont.isDead) {
-                    
+
                     distance = Mathf.Pow((position.x - boatCont.transform.position.x),2) + Mathf.Pow(position.z - boatCont.transform.position.z,2);
                     //Debug.Log("Cannon: " + cannon.name + "Distance: " + distance);
                     if (distance > .1f) {
@@ -107,7 +113,7 @@ public class BoatMaster : MonoBehaviour
         }
         return closestBoat;
     }
-    
+
     public void DestroyBoat(BoatAI boat) {
         if (boat.GetTeamNumber() == 1) {
             Debug.Log("Deleted:" +PlayerStateService.PlayerFleet.commander + boat.name);
@@ -115,49 +121,73 @@ public class BoatMaster : MonoBehaviour
         }
         else {
             Debug.Log("Destroyed:" +SceneTransfer.enemyFleet.commander + boat.name);
+            sunkEnemyBoatNames.Add(boat.name);
             SceneTransfer.enemyFleet.RemoveBoat(boat.name);
         }
 
         Debug.Log("boat removed from boat list?:" + allBoatsList.Remove(boat));
-        if (GetTeamBoats(1).Length == 0 || GetTeamBoats(2).Length == 0) {
-            ActivatePostBattleLooting();
+
+        EvaluateCombatEnd();
+    }
+
+    private void EvaluateCombatEnd()
+    {
+        if (combatEnded)
+        {
+            return;
+        }
+        var playerAliveCount = GetTeamBoats(1)?.Length ?? 0;
+        var enemyAliveCount = GetTeamBoats(2)?.Length ?? 0;
+
+        if (playerAliveCount > 0 && enemyAliveCount > 0)
+        {
+            return;
         }
 
-
-        
+        combatEnded = true;
+        ActivatePostBattleLooting();
     }
-    
+
     public void ActivatePostBattleLooting()
     {
-        BoatAI[] enemyBoatsAI = GetTeamBoats(1);
-        List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
-        int goldGained; 
-        
-        var boatsToRemoveEnemy = enemyBoatsData
-            .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
-            .ToList();
-        
-        var loot = LootUtils.ComputeAvailableLoot(
-            SceneTransfer.enemyFleet,
-            boatsToRemoveEnemy,
-            sunkFraction: 0.30f, 
-            aliveLootFraction: .8f,
-            out goldGained
-        );
-
-    }
-
-    
-    public void EndBattle() {
         UpdatePlayerFleet();
         UpdateEnemyFleet();
-        
-        if (PlayerStateService.PlayerFleet.GetBoats().Count == 0){
+
+        if (PlayerStateService.PlayerFleet == null || PlayerStateService.PlayerFleet.GetBoats().Count == 0)
+        {
             SceneTransfer.TransferToTownUI();
             PlayerStateService.TrySpendMoney(PlayerStateService.Money / 2f);
             return;
         }
-        SceneTransfer.TransferToMap();
+
+        var postCombatData = BuildPostCombatData();
+        PostCombatFlowService.BeginPostCombat(postCombatData);
+    }
+
+    private PostCombatData BuildPostCombatData()
+    {
+        var survivingEnemyBoats = SceneTransfer.enemyFleet?.GetBoats() ?? new List<Boat>();
+
+        var sunkEnemyBoats = initialEnemyBoats
+            .Where(boat => sunkEnemyBoatNames.Contains(boat.boatName))
+            .ToList();
+
+        var loot = LootUtils.ComputeAvailableLoot(
+            survivingEnemyBoats,
+            sunkEnemyBoats,
+            sunkLootFraction: 0.25f,
+            out int goldGained);
+
+        return new PostCombatData(
+            SceneTransfer.enemyFleet,
+            survivingEnemyBoats,
+            loot,
+            goldGained);
+    }
+
+    public void EndBattle() {
+        // Retained for compatibility with existing references.
+        ActivatePostBattleLooting();
     }
 
     private void UpdatePlayerFleet() {
@@ -185,7 +215,7 @@ public class BoatMaster : MonoBehaviour
     }
 
     private void UpdateEnemyFleet() {
-        BoatAI[] enemyBoatsAI = GetTeamBoats(1);
+        BoatAI[] enemyBoatsAI = GetTeamBoats(2);
         List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
 
         var boatsToRemoveEnemy = enemyBoatsData
@@ -203,7 +233,7 @@ public class BoatMaster : MonoBehaviour
         }
         SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
     }
-    
+
     #region save load
     public void LoadFleet()
     {
@@ -214,5 +244,5 @@ public class BoatMaster : MonoBehaviour
     }
 
     #endregion
-    
+
 }
