@@ -8,14 +8,12 @@ using MapMode.Scripts.DataTypes.boatComponents.Cannons;
 using UnityEditor.SearchService;
 using SlimUI.ModernMenu;
 using UnityEditor.ShaderGraph.Internal;
-using static PlayerFleetMapController;
 
 public class UITownManager : MonoBehaviour {
     private static readonly int Animate = Animator.StringToHash("Animate");
 
     #region Variables
     private Animator CameraObject;
-    private Vector3 loadedPosition;
 
     public string[] pirateAdjectives = {
         "Black", "Bloody", "Crimson", "Golden", "Iron", "Salty", "Stormy", "Vengeful", "Wicked", "Ghostly"
@@ -84,8 +82,6 @@ public class UITownManager : MonoBehaviour {
 
     #region Monobehaviours
     public void Awake() {
-        GameEvents.SaveInitiated += SavePlayerFleet;
-        GameEvents.LoadInitiated += LoadPlayerFleet;
     }
 
     void Start() {
@@ -99,49 +95,24 @@ public class UITownManager : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        GameEvents.SaveInitiated -= SavePlayerFleet;
-        GameEvents.LoadInitiated -= LoadPlayerFleet;
     }
     #endregion
 
-    #region Load/Save Methods
-    private void LoadPlayerFleet() {
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetData playerData = SaveLoad.Load<PlayerFleetData>("Player");
-            SceneTransfer.playerFleet = playerData.fleet;
-            loadedPosition = new Vector3(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
-            Debug.Log("Player fleet loaded successfully.");
-        }
-        else {
-            Debug.LogWarning("No saved player fleet data found.");
-        }
-    }
-
-    private void SavePlayerFleet() {
-        PlayerFleetData updatedFleetData = new PlayerFleetData {
-            fleet = SceneTransfer.playerFleet,
-            pos = new float[] { loadedPosition.x, loadedPosition.y, loadedPosition.z }
-        };
-
-        SaveLoad.Save(updatedFleetData, "Player");
-        Debug.Log("Player fleet saved successfully.");
-    }
-    #endregion
 
     #region Boat Management Methods
     public void BuyBoat() {
         Boat newBoat = new Boat(inputField.text, selectedBoatType);
 
-        Debug.Log($"Attempting to buy: {PlayerGlobal.money} : {newBoat.baseStats.boatCost}");
+        Debug.Log($"Attempting to buy: {PlayerStateService.Money} : {newBoat.baseStats.boatCost}");
 
-        if (SceneTransfer.playerFleet.HasBoatWithName(inputField.text) || inputField.text.Length > inputField.characterLimit || inputField.text.Length < 3 || inputField.text.Contains("does not work")) {
+        if (PlayerStateService.PlayerFleet.HasBoatWithName(inputField.text) || inputField.text.Length > inputField.characterLimit || inputField.text.Length < 3 || inputField.text.Contains("does not work")) {
             Debug.Log($"A boat named '{inputField.text}' already exists in your fleet.");
             inputField.text = $"{inputField.text} does not work.";
             return;
         }
 
-        if (PlayerGlobal.BuyItem(newBoat.baseStats.boatCost)) {
-            SceneTransfer.playerFleet.AddBoat(newBoat);
+        if (PlayerStateService.TrySpendMoney(newBoat.baseStats.boatCost)) {
+            PlayerStateService.PlayerFleet.AddBoat(newBoat);
             Debug.Log("Boat purchased successfully.");
             GameEvents.SaveGame();
             RefreshUi();
@@ -167,8 +138,8 @@ public class UITownManager : MonoBehaviour {
             totalRefund += selectedPlayerShip.baseStats.boatCost * 0.7f;
 
             // Remove boat and add money
-            SceneTransfer.playerFleet.RemoveBoat(selectedPlayerShip);
-            PlayerGlobal.AddMoney(totalRefund);
+            PlayerStateService.PlayerFleet.RemoveBoat(selectedPlayerShip);
+            PlayerStateService.AddMoney(totalRefund);
 
             Debug.Log($"Sold {selectedPlayerShip.boatName} and all sailors for {totalRefund} gold");
             GameEvents.SaveGame();
@@ -222,8 +193,8 @@ public class UITownManager : MonoBehaviour {
     }
 
     public void UpdateMoney() {
-        moneyField.text = "Gold: " + PlayerGlobal.money;
-        moneyFieldSailor.text = "Gold: " + PlayerGlobal.money; 
+        moneyField.text = "Gold: " + PlayerStateService.Money;
+        moneyFieldSailor.text = "Gold: " + PlayerStateService.Money; 
     }
 
     public void RandomBoatName() {
@@ -294,7 +265,7 @@ public class UITownManager : MonoBehaviour {
 
     public void BuyCannonComponent() {
         Cannon cannon = new Cannon(selectedCannonType);
-        if (selectedPlayerShip != null && PlayerGlobal.BuyItem(cannon.Cost)) {
+        if (selectedPlayerShip != null && PlayerStateService.TrySpendMoney(cannon.Cost)) {
             selectedPlayerShip.SetCannon(cannon);
             Debug.Log($"Added {cannon.CannonType} cannon to {selectedPlayerShip.boatName}");
             GameEvents.SaveGame();
@@ -349,7 +320,7 @@ public class UITownManager : MonoBehaviour {
         if (selectedSailor != null && selectedPlayerShip != null) {
             int sailorCost = selectedSailor.SailorStats.baseCost;
 
-            if (PlayerGlobal.BuyItem(sailorCost) && selectedPlayerShip.sailors.Count < selectedPlayerShip.maxSailorCount) {
+            if (PlayerStateService.TrySpendMoney(sailorCost) && selectedPlayerShip.sailors.Count < selectedPlayerShip.maxSailorCount) {
                 selectedPlayerShip.AddSailor(selectedSailor);
                 Debug.Log($"Added {selectedSailor.Name} to {selectedPlayerShip.boatName}. Cost: {sailorCost}");
                 GameEvents.SaveGame();
@@ -368,7 +339,7 @@ public class UITownManager : MonoBehaviour {
         if (selectedSailor != null && selectedPlayerShip != null) {
             int sailorRefund = (int)(selectedSailor.SailorStats.baseCost * 0.7f);
             selectedPlayerShip.RemoveSailor(selectedSailor);
-            PlayerGlobal.AddMoney(sailorRefund);
+            PlayerStateService.AddMoney(sailorRefund);
             Debug.Log($"Sold {selectedSailor.Name} for {sailorRefund} gold");
             GameEvents.SaveGame();
             RefreshUi();
@@ -380,7 +351,7 @@ public class UITownManager : MonoBehaviour {
 
     private void SellSailor(Sailor sailor) {
         int sailorRefund = (int)(sailor.SailorStats.baseCost * 0.7f);
-        PlayerGlobal.AddMoney(sailorRefund);
+        PlayerStateService.AddMoney(sailorRefund);
     }
 
     public void LoadPlayerBoats(Transform verticalLayoutParent) {
@@ -388,7 +359,7 @@ public class UITownManager : MonoBehaviour {
             Destroy(child.gameObject);
         }
         
-        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats()) {
+        foreach (Boat boat in PlayerStateService.PlayerFleet.GetBoats()) {
             GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
             newButton.name = "Btn_" + boat.boatName;
 
@@ -414,7 +385,7 @@ public class UITownManager : MonoBehaviour {
             Destroy(child.gameObject);
         }
         
-        foreach (Boat boat in SceneTransfer.playerFleet.GetBoats()) {
+        foreach (Boat boat in PlayerStateService.PlayerFleet.GetBoats()) {
             GameObject newButton = Instantiate(buttonPrefab, verticalLayoutParent);
             newButton.name = "Btn_" + boat.boatName;
 

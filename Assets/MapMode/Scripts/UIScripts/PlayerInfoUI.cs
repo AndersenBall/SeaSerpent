@@ -42,7 +42,7 @@ public class PlayerInfoUI : MonoBehaviour
         playerName = fleet.commander;
         playerNameUI.text = "  Commander " + playerName;
 
-        playerMoney = PlayerGlobal.money.ToString();
+        playerMoney = PlayerStateService.Money.ToString();
         moneyUI.text = "$" + playerMoney;
     }
 

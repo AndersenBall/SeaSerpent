@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,7 +7,14 @@ using UnityEngine.SceneManagement;
 public class SceneTransfer : MonoBehaviour
 {
 
-    public static Fleet playerFleet { get; set; }
+    [Obsolete("SceneTransfer.playerFleet is deprecated. Use PlayerStateService.PlayerFleet instead.")]
+    public static Fleet playerFleet
+    {
+        get => PlayerStateService.PlayerFleet;
+        set => PlayerStateService.PlayerFleet = value;
+    }
+
+    // Kept as transfer-only runtime data in phase 1.
     public static Fleet enemyFleet { get; set; }
     
 

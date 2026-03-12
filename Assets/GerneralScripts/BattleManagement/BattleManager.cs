@@ -22,7 +22,7 @@ namespace GerneralScripts.BattleManagement
             CurrentSession = session;
             PendingResult = null;
 
-            GameEvents.SaveInitiated();
+            GameEvents.SaveGame();
 
             if (session.Mode == ResolutionMode.Auto)
             {

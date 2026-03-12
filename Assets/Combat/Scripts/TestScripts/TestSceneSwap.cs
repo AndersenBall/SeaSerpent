@@ -25,7 +25,7 @@ public class TestSceneSwap : MonoBehaviour
                 player.AddBoat(new Boat("Gust" + i, BoatType.Frigate));
             }
             SceneTransfer.enemyFleet = enemy;
-            SceneTransfer.playerFleet = player;
+            PlayerStateService.PlayerFleet = player;
             SceneManager.LoadScene("MainScene");
         }
     }

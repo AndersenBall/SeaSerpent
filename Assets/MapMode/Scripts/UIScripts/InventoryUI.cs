@@ -39,7 +39,7 @@ public class InventoryUI : MonoBehaviour
 
         Transform commanderText = transform.Find("InventoryUI/CommanderName");
         commanderText.GetComponent<Text>().text = "Commander:" + commandName;
-        transform.Find("InventoryUI/Money").GetComponent<Text>().text = "money:" + PlayerGlobal.money;
+        transform.Find("InventoryUI/Money").GetComponent<Text>().text = "money:" + PlayerStateService.Money;
 
         float templateHeight = 30f;
 
