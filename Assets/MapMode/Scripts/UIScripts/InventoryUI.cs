@@ -32,7 +32,7 @@ public class InventoryUI : MonoBehaviour
     {
         fleet = GameObject.Find("PlayerBoat").GetComponent<PlayerFleetMapController>().GetFleet();
         Debug.Log("open inventory"+fleet.FleetID);
-        string commandName = fleet.commander;
+        string commandName = fleet.CommanderName;
         (string[], int[]) displayInfo = fleet.GetInventory();
 
         inventoryUI.gameObject.SetActive(true);

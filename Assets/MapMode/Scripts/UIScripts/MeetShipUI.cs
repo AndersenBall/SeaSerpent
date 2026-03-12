@@ -28,7 +28,7 @@ public class MeetShipUI : MonoBehaviour
         Transform fleetCommander = transform.Find("Panel/ParchmentPanel/Image/FleetCommander");
         Transform fleetNum = transform.Find("Panel/ParchmentPanel/Image/FleetNum");
         Transform fleetNationality = transform.Find("Panel/ParchmentPanel/Image/FleetNationality");
-        fleetCommander.GetComponent<TMP_Text>().text = " Commander: " + f.commander;
+        fleetCommander.GetComponent<TMP_Text>().text = " Commander: " + f.CommanderName;
         fleetNum.GetComponent<TMP_Text>().text = " Number of Ships: " + f.getNumberBoats();
         fleetNationality.GetComponent<TMP_Text>().text = " Nationality: " + f.Nationality;
         Time.timeScale = 0f;
