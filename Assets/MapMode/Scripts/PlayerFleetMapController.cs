@@ -70,7 +70,7 @@ public class PlayerFleetMapController : MonoBehaviour
         FleetMapController otherFleet = other.GetComponent<FleetMapController>();
         if (otherFleet != null) {
             meetShipUI.ContactShip(otherFleet.GetFleet());
-            Debug.Log("Fleet: " + PlayerStateService.PlayerFleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
+            Debug.Log("Fleet: " + PlayerStateService.PlayerFleet.CommanderName + " contacted: " + other.transform.name + otherFleet.GetFleet().CommanderName);
 
         }
         else if (town != null) {

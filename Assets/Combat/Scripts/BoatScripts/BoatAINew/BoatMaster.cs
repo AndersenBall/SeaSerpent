@@ -88,7 +88,7 @@ public class BoatMaster : MonoBehaviour
             }
 
             var boats = playerFleet.GetBoats();
-            int flagshipIndex = boats.FindIndex(boat => boat.boatName == playerFleet.FlagShip);
+            int flagshipIndex = boats.FindIndex(boat => boat.boatName == playerFleet.FlagShipName);
 
             for (int i = 0; i < boats.Count; i++) {
                 if (i == flagshipIndex || (flagshipIndex == -1 && i == 0)) {
@@ -160,11 +160,11 @@ public class BoatMaster : MonoBehaviour
 
     public void DestroyBoat(BoatAI boat) {
         if (boat.GetTeamNumber() == 1) {
-            Debug.Log("Deleted:" + playerFleet.commander + boat.name);
+            Debug.Log("Deleted:" + playerFleet.CommanderName + boat.name);
             playerFleet.RemoveBoat(boat.name);
         }
         else {
-            Debug.Log("Destroyed:" + enemyFleet.commander + boat.name);
+            Debug.Log("Destroyed:" + enemyFleet.CommanderName + boat.name);
             sunkEnemyBoatNames.Add(boat.name);
             enemyFleet.RemoveBoat(boat.name);
         }

@@ -39,7 +39,7 @@ public class PlayerInfoUI : MonoBehaviour
 
     public void setUserInformation()
     {
-        playerName = fleet.commander;
+        playerName = fleet.CommanderName;
         playerNameUI.text = "  Commander " + playerName;
 
         playerMoney = PlayerStateService.Money.ToString();

@@ -45,7 +45,7 @@ public class SceneTransfer : MonoBehaviour
             foreach (FleetMapController fleet in fleetList) {
                 if (fleet.GetFleet().FleetID == enemyFleet.FleetID) {
                     fleet.SetFleet(enemyFleet);
-                    Debug.Log("Fleet updated from battle" + enemyFleet.FleetID + enemyFleet.commander);
+                    Debug.Log("Fleet updated from battle" + enemyFleet.FleetID + enemyFleet.CommanderName);
                     if (enemyFleet.getNumberBoats() == 0) {
                         Destroy(fleet.gameObject);
                     }

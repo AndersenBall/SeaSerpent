@@ -8,10 +8,12 @@ public class Sailor
 {
     public string Name { get; private set; }
     public SailorStats SailorStats { get; private set; }
+    public SailorType OriginalOccupation { get; private set; }
 
     public Sailor(string n, SailorType type)
     {
         Name = n;
+        OriginalOccupation = type;
 
         // Fetch stats from the database
         if (SailorStatsDatabase.BaseStats.TryGetValue(type, out SailorStats stats))
@@ -27,6 +29,6 @@ public class Sailor
 
     public override string ToString()
     {
-        return $"name: {Name}" + SailorStats.ToString();
+        return $"name: {Name} (origin: {OriginalOccupation})" + SailorStats.ToString();
     }
 }
