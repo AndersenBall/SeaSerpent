@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using MapMode.Scripts;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -88,15 +89,95 @@ public class FleetMapController : MonoBehaviour
     {
         Town town = other.GetComponent<Town>();
         FleetMapController otherFleet = other.GetComponent<FleetMapController>();
-        if (otherFleet != null) {
-            //Debug.Log("Fleet: " + fleet.commander + " contacted: " + other.transform.name + otherFleet.GetFleet().commander);
+
+        if (otherFleet != null)
+        {
+            ResolveFleetEncounter(otherFleet);
         }
-        else if (town != null && town.name == destination.name) {
-            //Debug.Log("Fleet: " + fleet.commander + " contacted town: " + other.transform.name);
-            town.SellItemsInCargo(fleet,10000,"All");
+        else if (town != null && destination != null && town.name == destination.name)
+        {
+            if (fleet.FleetType == AIFleetType.Trade)
+            {
+                town.SellItemsInCargo(fleet, 10000, "All");
+            }
+
             UpdateBoatNames();
             DockFleet(town);
         }
+    }
+
+
+    private void ResolveFleetEncounter(FleetMapController otherFleetController)
+    {
+        Fleet otherFleet = otherFleetController.GetFleet();
+        if (fleet == null || otherFleet == null)
+        {
+            return;
+        }
+
+        if (fleet.FleetType == AIFleetType.Pirate && otherFleet.FleetType == AIFleetType.Trade)
+        {
+            BattlePredicter.ApplyBattleDamage(fleet, otherFleet);
+            UpdateAfterEncounter(otherFleetController);
+        }
+        else if (fleet.FleetType == AIFleetType.Trade && otherFleet.FleetType == AIFleetType.Pirate)
+        {
+            BattlePredicter.ApplyBattleDamage(otherFleet, fleet);
+            otherFleetController.UpdateAfterEncounter(this);
+        }
+    }
+
+    public void UpdateAfterEncounter(FleetMapController otherFleetController)
+    {
+        if (fleet == null)
+        {
+            return;
+        }
+
+        if (fleet.getNumberBoats() <= 0)
+        {
+            RemoveFleet();
+            return;
+        }
+
+        if (fleet.FleetType == AIFleetType.Pirate)
+        {
+            FleetMapController newTarget = FindClosestTradeFleet();
+            if (newTarget != null)
+            {
+                destination = newTarget.transform;
+            }
+        }
+    }
+
+    private FleetMapController FindClosestTradeFleet()
+    {
+        FleetMapController[] allFleets = FindObjectsOfType<FleetMapController>();
+        FleetMapController closestFleet = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (FleetMapController fleetController in allFleets)
+        {
+            if (fleetController == this)
+            {
+                continue;
+            }
+
+            Fleet candidate = fleetController.GetFleet();
+            if (candidate == null || candidate.FleetType != AIFleetType.Trade)
+            {
+                continue;
+            }
+
+            float distance = (fleetController.transform.position - transform.position).sqrMagnitude;
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestFleet = fleetController;
+            }
+        }
+
+        return closestFleet;
     }
 
     void OnDestroy()
@@ -137,7 +218,7 @@ public class FleetMapController : MonoBehaviour
         Vector3 location = gameObject.transform.position;
         data.pos = new float[] { location.x, location.y, location.z };
         Debug.Log("save fleet:" + name + ":" + data.pos[0] + "," + data.pos[1] + "," + data.pos[2]);
-        data.destName = destination.name;
+        data.destName = destination != null ? destination.name : string.Empty;
         SaveLoad.Save<FleetData>(data, "boat"+fleet.FleetID);
     }
     public void LoadNPCFleet(int id) {

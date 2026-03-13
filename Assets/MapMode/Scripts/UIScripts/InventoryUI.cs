@@ -32,14 +32,14 @@ public class InventoryUI : MonoBehaviour
     {
         fleet = GameObject.Find("PlayerBoat").GetComponent<PlayerFleetMapController>().GetFleet();
         Debug.Log("open inventory"+fleet.FleetID);
-        string commandName = fleet.commander;
+        string commandName = fleet.CommanderName;
         (string[], int[]) displayInfo = fleet.GetInventory();
 
         inventoryUI.gameObject.SetActive(true);
 
         Transform commanderText = transform.Find("InventoryUI/CommanderName");
         commanderText.GetComponent<Text>().text = "Commander:" + commandName;
-        transform.Find("InventoryUI/Money").GetComponent<Text>().text = "money:" + PlayerGlobal.money;
+        transform.Find("InventoryUI/Money").GetComponent<Text>().text = "money:" + PlayerStateService.Money;
 
         float templateHeight = 30f;
 

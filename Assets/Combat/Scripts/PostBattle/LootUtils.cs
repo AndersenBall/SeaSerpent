@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MapMode.Scripts.PostBattle
 {
-    
+
     public static class LootUtils
     {
         private static readonly Dictionary<BoatType, int> BoatTypeBaseGold = new Dictionary<BoatType, int>
@@ -14,74 +14,94 @@ namespace MapMode.Scripts.PostBattle
             { BoatType.TradeShip, 5000 }
         };
 
-        // enemyFleet: pre-combat fleet (so its inventory is intact)
-        // enemyBoatsToRemove: the boats that were destroyed/sunk in the battle
-        // sunkFraction: fraction of loot recoverable from sunk ships (e.g., 0.30f)
-        // aliveLootFraction: fraction of loot recoverable from alie ships
-        // goldReward: total gold computed from boats (30% for sunk, 100% for the rest)
         public static Dictionary<string, int> ComputeAvailableLoot(
-            Fleet enemyFleet,
-            IList<Boat> enemyBoatsToRemove,
-            float sunkFraction,
-            float aliveLootFraction,
+            IList<Boat> survivingEnemyBoats,
+            IList<Boat> sunkEnemyBoats,
+            float sunkLootFraction,
             out int goldReward)
         {
-            if (enemyFleet == null) throw new ArgumentNullException(nameof(enemyFleet));
-
-            sunkFraction = Mathf.Clamp01(sunkFraction);
-
-            var allBoats = enemyFleet.GetBoats() ?? new List<Boat>();
-            int totalBoats = allBoats.Count;
-            int removedBoats = enemyBoatsToRemove != null ? Mathf.Clamp(enemyBoatsToRemove.Count, 0, totalBoats) : 0;
-            int aliveBoats = totalBoats - removedBoats;
-
-            float aliveRatio = totalBoats > 0 ? (float)aliveBoats / totalBoats : 0f;
-            float lootFraction = Mathf.Clamp01(sunkFraction * (1f - aliveRatio) +  aliveRatio * aliveLootFraction);
-            
-            var removedSet = enemyBoatsToRemove != null
-                ? new HashSet<Boat>(enemyBoatsToRemove)
-                : new HashSet<Boat>();
-
+            var availableLoot = new Dictionary<string, int>();
             long goldAccumulator = 0;
-            for (int i = 0; i < allBoats.Count; i++)
-            {
-                var boat = allBoats[i];
-                if (!BoatTypeBaseGold.TryGetValue(boat.boatType, out int baseGold)) continue;
 
-                bool isSunk = removedSet.Contains(boat);
-                float goldFrac = isSunk ? sunkFraction : aliveLootFraction;
-                goldAccumulator += Mathf.RoundToInt(baseGold * goldFrac);
+            sunkLootFraction = Mathf.Clamp01(sunkLootFraction);
+            survivingEnemyBoats ??= new List<Boat>();
+            sunkEnemyBoats ??= new List<Boat>();
+
+            foreach (var boat in survivingEnemyBoats)
+            {
+                goldAccumulator += GetBoatGold(boat, 1f);
+                AddBoatSuppliesToLoot(boat, availableLoot, 1f);
             }
 
-            // Clamp to int range
-            goldReward = (int)Mathf.Max(0, (int)goldAccumulator);
-
-            // Pull pre-combat inventory and compute item loot by sampling
-            var (ids, counts) = enemyFleet.GetInventory();
-            var result = new Dictionary<string, int>(ids.Length);
-
-            for (int i = 0; i < ids.Length; i++)
+            foreach (var boat in sunkEnemyBoats)
             {
-                string id = ids[i];
-                int qty = counts[i];
-                if (qty <= 0) continue;
+                goldAccumulator += GetBoatGold(boat, sunkLootFraction);
+                AddBoatSuppliesToLoot(boat, availableLoot, sunkLootFraction);
+            }
 
-                int kept = 0;
-                for (int n = 0; n < qty; n++)
+            goldReward = Mathf.Max(0, (int)goldAccumulator);
+            return availableLoot;
+        }
+
+        private static int GetBoatGold(Boat boat, float amountFraction)
+        {
+            if (boat == null || !BoatTypeBaseGold.TryGetValue(boat.boatType, out var baseGold))
+            {
+                return 0;
+            }
+
+            return Mathf.RoundToInt(baseGold * Mathf.Clamp01(amountFraction));
+        }
+
+        private static void AddBoatSuppliesToLoot(Boat boat, Dictionary<string, int> loot, float amountFraction)
+        {
+            if (boat == null)
+            {
+                return;
+            }
+
+            foreach (var itemKvp in boat.getSupplies())
+            {
+                if (itemKvp.Value <= 0)
                 {
-                    if (UnityEngine.Random.value < lootFraction) kept++;
+                    continue;
                 }
 
-                if (kept > 0)
+                int recovered = RollRecoveredQuantity(itemKvp.Value, amountFraction);
+                if (recovered <= 0)
                 {
-                    if (result.TryGetValue(id, out int cur))
-                        result[id] = cur + kept;
-                    else
-                        result[id] = kept;
+                    continue;
+                }
+
+                if (loot.TryGetValue(itemKvp.Key, out var existing))
+                {
+                    loot[itemKvp.Key] = existing + recovered;
+                }
+                else
+                {
+                    loot[itemKvp.Key] = recovered;
+                }
+            }
+        }
+
+        private static int RollRecoveredQuantity(int totalItems, float probability)
+        {
+            probability = Mathf.Clamp01(probability);
+            if (probability >= 1f)
+            {
+                return totalItems;
+            }
+
+            int recovered = 0;
+            for (int i = 0; i < totalItems; i++)
+            {
+                if (UnityEngine.Random.value <= probability)
+                {
+                    recovered++;
                 }
             }
 
-            return result;
+            return recovered;
         }
     }
 

@@ -12,6 +12,9 @@ using UnityEngine;
 public class Boat
 {
     #region Properties
+
+    public string BoatId;
+    
     public string boatName;
     public BoatType boatType { get; private set; }
     public BoatStats baseStats { get; private set; }
@@ -35,6 +38,7 @@ public class Boat
     #region Constructor
     public Boat(string name, BoatType type)
     {
+        BoatId = System.Guid.NewGuid().ToString("N");
         boatName = name;
         boatType = type;
 

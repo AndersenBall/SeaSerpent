@@ -1,20 +1,36 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TownManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-
+    [Header("Trade")]
     public float baseCostPerShip = 100000;
     public float costPerUnitDistance = 100;
 
+    [Header("AI Fleet Spawning")]
+    public bool enablePirateSpawns = true;
+    public bool enableNavalPatrolSpawns = true;
+    public bool enableWarFleetSpawns = false;
+
+    public float pirateSpawnInterval = 45f;
+    public float navalPatrolSpawnInterval = 60f;
+    public float warFleetSpawnInterval = 90f;
+
+    [Range(1, 6)] public int pirateFleetSize = 2;
+    [Range(1, 6)] public int patrolFleetSize = 2;
+    [Range(1, 8)] public int warFleetSize = 3;
+
     public Town[] towns { get; set; }
-    public IDictionary<string, float> standardPrices = new Dictionary<string,float>();
+    public IDictionary<string, float> standardPrices = new Dictionary<string, float>();
+
+    private float _pirateSpawnTimer;
+    private float _navalPatrolSpawnTimer;
+    private float _warFleetSpawnTimer;
+
     void Start()
     {
-        towns= GetComponentsInChildren<Town>();
+        towns = GetComponentsInChildren<Town>();
         standardPrices.Add("fish", 100);
         standardPrices.Add("lumber", 150);
         standardPrices.Add("fur", 2000);
@@ -25,32 +41,36 @@ public class TownManager : MonoBehaviour
         standardPrices.Add("tea", 200);
         standardPrices.Add("tobacco", 400);
         standardPrices.Add("cotton", 150);
-       
     }
 
+    private void Update()
+    {
+        if (towns == null || towns.Length == 0)
+        {
+            return;
+        }
+
+        HandleAIFleetSpawning();
+    }
 
     public (Fleet, int) RequestItemNonSurplus(string item, int amount, Town originTown)
     {
-        // Validate input
         if (originTown == null)
         {
             throw new ArgumentNullException(nameof(originTown), "Origin town cannot be null.");
         }
 
         float highestProfit = 0;
-        int lessAmount = int.MaxValue; // Using int.MaxValue for clarity
+        int lessAmount = int.MaxValue;
         Town chosenTown = null;
 
-        // Iterate through all towns to find the most profitable trade route
         foreach (Town t in towns)
         {
-            // Skip the origin town (no trading with itself)
             if (t.name == originTown.name)
             {
-                continue; // Use continue instead of break to avoid exiting the loop entirely
+                continue;
             }
 
-            // Determine the amount of goods to trade
             int equalAmount = BlanceResourceAmount(t, originTown, item);
 
             if (equalAmount <= 0)
@@ -59,33 +79,22 @@ public class TownManager : MonoBehaviour
             }
 
             equalAmount = Math.Max(equalAmount, ((equalAmount - 20) / 50) * 50);
-
-            // Calculate the cost of the journey between towns
             float transportationCost = JourneyCost(t, originTown, equalAmount);
-
-            // Calculate the profit from goods alone (revenue - cost of acquisition)
             float profitGoods = originTown.CalculateTransactionPrice(item, equalAmount);
-
             float cost = -t.CalculateTransactionPrice(item, -equalAmount);
-
-            // Total profit after including transportation cost
             float totalProfit = profitGoods - transportationCost - cost;
 
-            // Check if this trade is the most profitable and meets the minimum profit threshold
-            if (totalProfit > highestProfit )
+            if (totalProfit > highestProfit)
             {
                 highestProfit = totalProfit;
                 chosenTown = t;
                 lessAmount = equalAmount;
-                Debug.Log("item:" +item + " cost:" + cost + "journy cost:" + transportationCost +  "profit Goods:" + profitGoods+ "totalprofit:" + totalProfit + this.name);
+                Debug.Log("item:" + item + " cost:" + cost + "journy cost:" + transportationCost + "profit Goods:" + profitGoods + "totalprofit:" + totalProfit + this.name);
             }
         }
 
-
-        // Adjust the amount to be less if it was more profittable to not fill the entire order
         amount = Mathf.Min(amount, lessAmount);
 
-        // If a viable trade route is found
         if (chosenTown != null)
         {
             Fleet fleet = chosenTown.MakeTradeFleet(item, amount);
@@ -99,24 +108,193 @@ public class TownManager : MonoBehaviour
             return (fleet, amount);
         }
 
-        // No viable trade route found
-        //Debug.Log($"No viable trade route found for item: {item} from origin town: {originTown.name}.");
         return (null, -1);
     }
 
+    public bool TrySpawnFleet(AIFleetType fleetType)
+    {
+        switch (fleetType)
+        {
+            case AIFleetType.Pirate:
+                return TrySpawnPirateFleet();
+            case AIFleetType.NavalPatrol:
+                return TrySpawnNavalPatrolFleet();
+            case AIFleetType.War:
+                return TrySpawnWarFleet();
+            default:
+                return false;
+        }
+    }
+
+    private void HandleAIFleetSpawning()
+    {
+        _pirateSpawnTimer += Time.deltaTime;
+        _navalPatrolSpawnTimer += Time.deltaTime;
+        _warFleetSpawnTimer += Time.deltaTime;
+
+        if (enablePirateSpawns && _pirateSpawnTimer >= pirateSpawnInterval)
+        {
+            if (TrySpawnPirateFleet())
+            {
+                _pirateSpawnTimer = 0f;
+            }
+        }
+
+        if (enableNavalPatrolSpawns && _navalPatrolSpawnTimer >= navalPatrolSpawnInterval)
+        {
+            if (TrySpawnNavalPatrolFleet())
+            {
+                _navalPatrolSpawnTimer = 0f;
+            }
+        }
+
+        if (enableWarFleetSpawns && _warFleetSpawnTimer >= warFleetSpawnInterval)
+        {
+            if (TrySpawnWarFleet())
+            {
+                _warFleetSpawnTimer = 0f;
+            }
+        }
+    }
+
+    private bool TrySpawnPirateFleet()
+    {
+        FleetMapController tradeFleetTarget = FindRandomFleet(AIFleetType.Trade);
+        if (tradeFleetTarget == null)
+        {
+            return false;
+        }
+
+        Town spawnTown = GetClosestTown(tradeFleetTarget.transform.position);
+        if (spawnTown == null)
+        {
+            return false;
+        }
+
+        Fleet pirateFleet = spawnTown.CreateFleet(AIFleetType.Pirate, pirateFleetSize);
+        spawnTown.SendOutFleet(pirateFleet, tradeFleetTarget.transform);
+        return true;
+    }
+
+    private bool TrySpawnNavalPatrolFleet()
+    {
+        if (towns.Length < 2)
+        {
+            return false;
+        }
+
+        Town originTown = towns[UnityEngine.Random.Range(0, towns.Length)];
+        Town destinationTown = GetRandomTown(originTown);
+        if (destinationTown == null)
+        {
+            return false;
+        }
+
+        Fleet patrolFleet = originTown.CreateFleet(AIFleetType.NavalPatrol, patrolFleetSize);
+        originTown.SendOutFleet(patrolFleet, destinationTown.transform);
+        return true;
+    }
+
+    private bool TrySpawnWarFleet()
+    {
+        // Future-proofing for wartime fleet behavior:
+        // currently just sends a heavy fleet between two random towns.
+        if (towns.Length < 2)
+        {
+            return false;
+        }
+
+        Town originTown = towns[UnityEngine.Random.Range(0, towns.Length)];
+        Town destinationTown = GetRandomTown(originTown);
+        if (destinationTown == null)
+        {
+            return false;
+        }
+
+        Fleet warFleet = originTown.CreateFleet(AIFleetType.War, warFleetSize);
+        originTown.SendOutFleet(warFleet, destinationTown.transform);
+        return true;
+    }
+
+    private Town GetRandomTown(Town excludingTown)
+    {
+        if (towns.Length < 2)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            Town randomTown = towns[UnityEngine.Random.Range(0, towns.Length)];
+            if (randomTown != null && randomTown != excludingTown)
+            {
+                return randomTown;
+            }
+        }
+
+        foreach (Town town in towns)
+        {
+            if (town != excludingTown)
+            {
+                return town;
+            }
+        }
+
+        return null;
+    }
+
+    private Town GetClosestTown(Vector3 worldPosition)
+    {
+        Town closestTown = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (Town town in towns)
+        {
+            float currentDistance = (town.transform.position - worldPosition).sqrMagnitude;
+            if (currentDistance < closestDistance)
+            {
+                closestDistance = currentDistance;
+                closestTown = town;
+            }
+        }
+
+        return closestTown;
+    }
+
+    private FleetMapController FindRandomFleet(AIFleetType fleetType)
+    {
+        FleetMapController[] allFleets = FindObjectsOfType<FleetMapController>();
+        List<FleetMapController> matchingFleets = new List<FleetMapController>();
+
+        foreach (FleetMapController fleetController in allFleets)
+        {
+            Fleet fleet = fleetController.GetFleet();
+            if (fleet != null && fleet.FleetType == fleetType)
+            {
+                matchingFleets.Add(fleetController);
+            }
+        }
+
+        if (matchingFleets.Count == 0)
+        {
+            return null;
+        }
+
+        return matchingFleets[UnityEngine.Random.Range(0, matchingFleets.Count)];
+    }
+
     //amount of a resource to transfer between the 2 towns
-    public int BlanceResourceAmount(Town t1, Town t2, string r) {//amount to remove from t1 -> t2 to balance
-        int amount = ((t2.DemandOfItem(r) * t1.SupplyOfItem(r)) - (t1.DemandOfItem(r) * t2.SupplyOfItem(r))) 
+    public int BlanceResourceAmount(Town t1, Town t2, string r)
+    {
+        int amount = ((t2.DemandOfItem(r) * t1.SupplyOfItem(r)) - (t1.DemandOfItem(r) * t2.SupplyOfItem(r)))
             / (t2.DemandOfItem(r) + t1.DemandOfItem(r));
 
-        //Debug.Log(t1.name + t2.name + "amount to send, to equal is:" + amount + " d1:"+t1.DemandOfItem(r)+ " d2:" + t2.DemandOfItem(r) + " s1:" + t1.SupplyOfItem(r) + " s2:" + t2.SupplyOfItem(r));
         return Mathf.Max(amount, 0);
     }
 
-    public float JourneyCost(Town t1, Town t2,int amount) {
+    public float JourneyCost(Town t1, Town t2, int amount)
+    {
         int numberOfShips = Mathf.CeilToInt((float)amount / 100);
-
         return numberOfShips * ((t1.transform.position - t2.transform.position).magnitude * costPerUnitDistance + baseCostPerShip);
-
     }
 }

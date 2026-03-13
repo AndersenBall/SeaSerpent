@@ -115,7 +115,7 @@ public class Town : MonoBehaviour
 
     #region Methods
     public void DockFleet(Fleet fleet) {
-        if (fleet.commander != "Trader") {
+        if (fleet.FleetType != AIFleetType.Trade) {
             dockedFleets.Add(fleet);
         }
     }
@@ -140,18 +140,63 @@ public class Town : MonoBehaviour
 
     public Fleet MakeTradeFleet(string resource, int amount)
     {
-
         int numberOfBoats = Mathf.CeilToInt((float)amount / 100);
-        
-        Fleet f1 = new Fleet(nationality,"Trader");
+        Fleet f1 = CreateFleet(AIFleetType.Trade, numberOfBoats);
+        FillCargo(f1, resource, amount);
+        return f1;
+    }
+
+    public Fleet CreateFleet(AIFleetType fleetType, int numberOfBoats)
+    {
+        numberOfBoats = Mathf.Max(1, numberOfBoats);
+        string fleetRoleName = GetFleetRoleName(fleetType);
+        string commanderName = GenerateCommanderName(fleetRoleName);
+        BoatType boatType = GetBoatTypeForFleet(fleetType);
+
+        Fleet fleet = new Fleet(nationality, commanderName, fleetType);
         for (int i = 0; i < numberOfBoats; i++)
         {
-            f1.AddBoat(new Boat(name+"HMS V" + i, BoatType.TradeShip));
+            fleet.AddBoat(new Boat($"{name}{fleetRoleName} {i}", boatType));
         }
-        FillCargo(f1, resource, amount);
-        //Debug.Log("Boats in new trade fleet:" + f1.boats.Count);
 
-        return f1;
+        return fleet;
+    }
+
+    private string GetFleetRoleName(AIFleetType fleetType)
+    {
+        switch (fleetType)
+        {
+            case AIFleetType.Pirate:
+                return "Pirate";
+            case AIFleetType.NavalPatrol:
+                return "Patrol";
+            case AIFleetType.War:
+                return "Admiral";
+            default:
+                return "Trader";
+        }
+    }
+
+
+    private string GenerateCommanderName(string fleetRoleName)
+    {
+        int captainNumber = Random.Range(100, 1000);
+        return $"Captain {fleetRoleName} {captainNumber}";
+    }
+
+    private BoatType GetBoatTypeForFleet(AIFleetType fleetType)
+    {
+        switch (fleetType)
+        {
+            case AIFleetType.Pirate:
+                return BoatType.Sloop;
+            case AIFleetType.NavalPatrol:
+                return BoatType.Frigate;
+            case AIFleetType.War:
+                return BoatType.ManOfWar;
+            default:
+                return BoatType.TradeShip;
+        }
     }
 
     private void RequestGoods() {
@@ -341,7 +386,7 @@ public class Town : MonoBehaviour
     }
 
     public bool FillCargoPlayer(Fleet fle, string resource,int amount) {
-        if (PlayerGlobal.money < CalculateTransactionPrice( resource, amount)) {
+        if (PlayerStateService.Money < CalculateTransactionPrice( resource, amount)) {
             Debug.Log("not enough money");
             return false;
         }
@@ -497,7 +542,7 @@ public class Town : MonoBehaviour
         
         DebugText += "\nFleets in Dock:";
         foreach (Fleet f in dockedFleets) {
-            DebugText += f.commander + ",";
+            DebugText += f.CommanderName + ",";
         }
         DebugText += "\nIncoming Fleet IDs:";
         foreach (int id in incomingFleets.Keys) {

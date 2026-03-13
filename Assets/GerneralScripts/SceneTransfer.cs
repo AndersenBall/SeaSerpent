@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,7 +7,14 @@ using UnityEngine.SceneManagement;
 public class SceneTransfer : MonoBehaviour
 {
 
-    public static Fleet playerFleet { get; set; }
+    [Obsolete("SceneTransfer.playerFleet is deprecated. Use PlayerStateService.PlayerFleet instead.")]
+    public static Fleet playerFleet
+    {
+        get => PlayerStateService.PlayerFleet;
+        set => PlayerStateService.PlayerFleet = value;
+    }
+
+    // Kept as transfer-only runtime data in phase 1.
     public static Fleet enemyFleet { get; set; }
     
 
@@ -37,7 +45,7 @@ public class SceneTransfer : MonoBehaviour
             foreach (FleetMapController fleet in fleetList) {
                 if (fleet.GetFleet().FleetID == enemyFleet.FleetID) {
                     fleet.SetFleet(enemyFleet);
-                    Debug.Log("Fleet updated from battle" + enemyFleet.FleetID + enemyFleet.commander);
+                    Debug.Log("Fleet updated from battle" + enemyFleet.FleetID + enemyFleet.CommanderName);
                     if (enemyFleet.getNumberBoats() == 0) {
                         Destroy(fleet.gameObject);
                     }

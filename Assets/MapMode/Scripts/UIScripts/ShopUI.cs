@@ -48,12 +48,12 @@ public class ShopUI : MonoBehaviour
         displayBuyTab(PlayerFleetMapController.currentTown);
         purchaseBtn.interactable = false;
         sellBtn.interactable=false;
-        playerMoney.text = PlayerGlobal.money.ToString();
+        playerMoney.text = PlayerStateService.Money.ToString();
         fillInventoryBuyPage();
     }
     private void Update()
     {
-        playerMoney.text = PlayerGlobal.money.ToString();
+        playerMoney.text = PlayerStateService.Money.ToString();
     }
 
     public void displayBuyTab(Town t)
@@ -215,7 +215,7 @@ public class ShopUI : MonoBehaviour
             multiplePrice = int.Parse(itemAmountInputField.text) * float.Parse(ogPrice);
             priceText.text = multiplePrice.ToString();
 
-            if ((PlayerGlobal.money - multiplePrice) >= 0)
+            if ((PlayerStateService.Money - multiplePrice) >= 0)
             {
                 purchaseBtn.interactable = true;
             }
@@ -360,8 +360,10 @@ public class ShopUI : MonoBehaviour
         float price = float.Parse(priceText.text);
 
         PlayerFleetMapController.currentTown.FillCargoPlayer(fleet, itemName.text, itemAmount);
-        PlayerGlobal.money -= price;
-        fillInventoryBuyPage();
+        if (PlayerStateService.TrySpendMoney(price))
+        {
+            fillInventoryBuyPage();
+        }
     }
 
     public void sellItem()
@@ -370,7 +372,7 @@ public class ShopUI : MonoBehaviour
         float price = float.Parse(sellPriceText.text);
 
         PlayerFleetMapController.currentTown.SellItemsInCargo(fleet, itemAmount, itemNameSell.text);
-        PlayerGlobal.money += price;
+        PlayerStateService.AddMoney(price);
         displaySellTab();
         fillInventoryBuyPage();
     }

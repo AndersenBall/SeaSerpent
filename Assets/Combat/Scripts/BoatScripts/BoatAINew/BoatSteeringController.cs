@@ -55,17 +55,13 @@ public class BoatSteeringControls : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         if (!boatControls) boatControls = GetComponent<BoatControls>();
     }
-
-    private void Update()
-    {
-        if (_distanceToTarget < stopDistance){
-            targetMarker.AdvanceToNextWaypoint();
-        }
-    }
     
     private void FixedUpdate()
     {
         ComputeSteeringXZ(out float steer, out float throttle);
+        if (_distanceToTarget < stopDistance){
+            targetMarker.AdvanceToNextWaypoint();
+        }
         boatControls.SetTurn(steer);
         boatControls.SetForward(throttle);
     }

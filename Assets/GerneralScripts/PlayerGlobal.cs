@@ -1,22 +1,29 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Obsolete("PlayerGlobal is deprecated. Use PlayerStateService instead.")]
 public class PlayerGlobal : MonoBehaviour
 {
-    public static Boat playerBoat { get; set; }
-    public static float money { get; set; }
+    public static Boat playerBoat
+    {
+        get => PlayerStateService.ActiveBoat;
+        set => PlayerStateService.ActiveBoat = value;
+    }
+
+    public static float money
+    {
+        get => PlayerStateService.Money;
+        set => PlayerStateService.Money = value;
+    }
 
     public static bool BuyItem(float amount) {
 
-        if (money - amount >= 0) { 
-            money -= amount;
-            return true;
-        }
-        return false;
+        return PlayerStateService.TrySpendMoney(amount);
     }
 
     public static void AddMoney(float amount) {
-        money += amount;
+        PlayerStateService.AddMoney(amount);
     }
 }

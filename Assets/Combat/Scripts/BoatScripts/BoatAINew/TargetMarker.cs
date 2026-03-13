@@ -2,11 +2,14 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+
+
 public enum WaypointKind { Position, Follow }
 
 [System.Serializable]
 public class Waypoint
 {
+    
     public WaypointKind Kind;
     public Vector3 Position;      // used when Kind == Position
     public Transform Target;      // used when Kind == Follow
@@ -30,6 +33,12 @@ public class Waypoint
 public class TargetMarker : MonoBehaviour
 {
     #region  variables 
+    
+    #if UNITY_EDITOR
+    [Header("DEBUG (Read Only)")]
+    [SerializeField] private Waypoint[] _debugWaypoints;
+    #endif
+    
     [Header("Visuals")]
     [Tooltip("Small prefab (quad/disc/flag). It should face up; scale it in the prefab.")]
     [SerializeField] private GameObject markerPrefab;
@@ -47,7 +56,8 @@ public class TargetMarker : MonoBehaviour
     private Queue<Waypoint> waypoints = new Queue<Waypoint>();
     
     private readonly List<GameObject> pool = new();
-    private bool visualsVisible;
+    [SerializeField] private bool visualsVisible = true;
+    private static Transform s_worldRoot;
 
     #endregion
 
@@ -55,6 +65,8 @@ public class TargetMarker : MonoBehaviour
     
     private void Start()
     {
+        var parent = GetWorldRoot();
+
         if (markerPrefab == null)
         {
             Debug.LogWarning($"{nameof(TargetMarker)} on {name}: markerPrefab not set. Only queue will work; no visuals will render.");
@@ -63,11 +75,19 @@ public class TargetMarker : MonoBehaviour
 
         for (int i = 0; i < poolSize; i++)
         {
-            var go = Instantiate(markerPrefab, transform);
+            var go = Instantiate(markerPrefab, parent);
             go.SetActive(false);
             pool.Add(go);
         }
+        
     }
+    
+    private void OnDestroy()
+    {
+        for (int i = 0; i < pool.Count; i++)
+            if (pool[i]) Destroy(pool[i]);
+    }
+
 
     #endregion
     
@@ -80,6 +100,9 @@ public class TargetMarker : MonoBehaviour
             IsEnemy = isEnemy,
             MinDistance = minDistance
         });
+        #if UNITY_EDITOR
+                SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
@@ -93,12 +116,18 @@ public class TargetMarker : MonoBehaviour
             IsEnemy = isEnemy,
             MinDistance = minDistance
         });
+        #if UNITY_EDITOR
+            SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
     public void ClearWaypoints()
     {
         waypoints.Clear();
+        #if UNITY_EDITOR
+            SyncDebugList();
+        #endif
         if (visualsVisible) RefreshVisuals();
     }
 
@@ -110,6 +139,9 @@ public class TargetMarker : MonoBehaviour
         if (waypoints.Count > 0)
         {
             waypoints.Dequeue();
+            #if UNITY_EDITOR
+                SyncDebugList();
+            #endif
             if (visualsVisible) RefreshVisuals();
             return true;
         }
@@ -171,7 +203,27 @@ public class TargetMarker : MonoBehaviour
         for (; i < pool.Count; i++)
             pool[i].SetActive(false);
     }
+    
+    private Transform GetWorldRoot()
+    {
+        if (s_worldRoot != null) return s_worldRoot;
+
+        var existing = GameObject.Find("WaypointMarkersRoot");
+        if (existing != null) return s_worldRoot = existing.transform;
+
+        var go = new GameObject("WaypointMarkersRoot");
+        return s_worldRoot = go.transform;
+    }
     #endregion
     
+    #region editor
+    #if UNITY_EDITOR
+        private void SyncDebugList()
+        {
+            _debugWaypoints = waypoints.ToArray();
+        }
+    #endif
+
+    #endregion
 }
 

@@ -369,7 +369,7 @@ public class BoatAI : MonoBehaviour
         }
 
         
-        if (boatSteeringControl.DistanceToTarget < 100) {
+        if (boatSteeringControl.DistanceToTarget < 40) {
             Task.current.Succeed();
             runTime = 0;
             recalcTimer = float.MaxValue;
@@ -567,11 +567,10 @@ public class BoatAI : MonoBehaviour
         Vector3 pos = transform.position;
         Vector3 tpos = target.transform.position;
         Vector2 toTarget = new Vector2(tpos.x - pos.x, tpos.z - pos.z);
-
-        // Signed angle (positive = target to the right, negative = left)
+        
         float signedAngle = Vector2.SignedAngle(fwd, toTarget);
 
-        return signedAngle >= 0f ? AttackSide.Left : AttackSide.Right;
+        return signedAngle >= 0f ? AttackSide.Right : AttackSide.Left;
 
     }
     

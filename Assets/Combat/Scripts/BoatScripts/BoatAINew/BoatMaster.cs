@@ -1,43 +1,94 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using GerneralScripts.BattleManagement;
 using GerneralScripts.Utils;
 using MapMode.Scripts.PostBattle;
-
+using UnityEngine;
 
 public class BoatMaster : MonoBehaviour
 {
     public int tileSize = 25;
     private BoatTeamManager[] boatTeamManagers;
-    
-  
+
+    private readonly List<string> sunkEnemyBoatNames = new();
+    private readonly List<Boat> initialEnemyBoats = new();
+    private readonly List<Boat> initialPlayerBoats = new();
+    private bool combatEnded;
+
+    private Fleet playerFleet;
+    private Fleet enemyFleet;
+    private BattleSession activeSession;
+
     List<BoatAI> allBoatsList;
-    
+
     private void Awake()
     {
-   
-        LoadFleet();
+        ResolveBattleContext();
+        CacheInitialBoats();
     }
 
     void Start()
     {
         boatTeamManagers = gameObject.GetComponentsInChildren<BoatTeamManager>();
-        
+
         SpawnBoats();
         allBoatsList = new List<BoatAI>(gameObject.GetComponentsInChildren<BoatAI>());
         Debug.Log("Log:BoatMaster:total boats count:" + allBoatsList.Count());
 
     }
-  
+
+    private void ResolveBattleContext()
+    {
+        activeSession = BattleManager.Instance?.CurrentSession;
+        if (activeSession == null)
+        {
+            Debug.LogError("BoatMaster requires an active BattleSession from BattleManager.");
+            enabled = false;
+            return;
+        }
+
+        if (activeSession.PlayerSide == BattleSide.A)
+        {
+            playerFleet = activeSession.SideA.Fleet;
+            enemyFleet = activeSession.SideB.Fleet;
+        }
+        else
+        {
+            playerFleet = activeSession.SideB.Fleet;
+            enemyFleet = activeSession.SideA.Fleet;
+        }
+
+        if (playerFleet == null || enemyFleet == null)
+        {
+            Debug.LogError("BoatMaster resolved a BattleSession with missing fleet references.");
+            enabled = false;
+        }
+    }
+
+    private void CacheInitialBoats()
+    {
+        initialPlayerBoats.Clear();
+        if (playerFleet?.GetBoats() != null)
+            initialPlayerBoats.AddRange(playerFleet.GetBoats());
+
+        initialEnemyBoats.Clear();
+        if (enemyFleet?.GetBoats() != null)
+            initialEnemyBoats.AddRange(enemyFleet.GetBoats());
+    }
 
     private void SpawnBoats()
     {
-        
-        if (SceneTransfer.playerFleet?.GetBoats() != null) {
+
+        if (playerFleet?.GetBoats() != null) {
             var teamOneBoatTeam = boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == 1);
-            var boats = SceneTransfer.playerFleet.GetBoats();
-            int flagshipIndex = boats.FindIndex(boat => boat.boatName == SceneTransfer.playerFleet.FlagShip);
+            if (teamOneBoatTeam == null)
+            {
+                Debug.LogError("BoatMaster missing team 1 BoatTeamManager.");
+                return;
+            }
+
+            var boats = playerFleet.GetBoats();
+            int flagshipIndex = boats.FindIndex(boat => boat.boatName == playerFleet.FlagShipName);
 
             for (int i = 0; i < boats.Count; i++) {
                 if (i == flagshipIndex || (flagshipIndex == -1 && i == 0)) {
@@ -50,9 +101,9 @@ public class BoatMaster : MonoBehaviour
                 Debug.Log("team:" + teamOneBoatTeam.GetTeam());
             }
         }
-        
-        if (SceneTransfer.enemyFleet != null) {
-            foreach (Boat b in SceneTransfer.enemyFleet.GetBoats()) {
+
+        if (enemyFleet != null) {
+            foreach (Boat b in enemyFleet.GetBoats()) {
                 foreach (BoatTeamManager boatTeam in boatTeamManagers) {
                     if (2 == boatTeam.GetTeam()) {
                         Debug.Log("team:" + boatTeam.GetTeam());
@@ -61,10 +112,9 @@ public class BoatMaster : MonoBehaviour
                 }
             }
         }
-        
+
     }
-    //adds all boats into array and sets their previous position
- 
+
 
 
     //returns all boats on a team
@@ -92,7 +142,7 @@ public class BoatMaster : MonoBehaviour
         if (teamBoats != null && teamBoats.Length != 0) {
             foreach (BoatAI boatCont in teamBoats) {
                 if (!boatCont.isDead) {
-                    
+
                     distance = Mathf.Pow((position.x - boatCont.transform.position.x),2) + Mathf.Pow(position.z - boatCont.transform.position.z,2);
                     //Debug.Log("Cannon: " + cannon.name + "Distance: " + distance);
                     if (distance > .1f) {
@@ -107,62 +157,99 @@ public class BoatMaster : MonoBehaviour
         }
         return closestBoat;
     }
-    
+
     public void DestroyBoat(BoatAI boat) {
         if (boat.GetTeamNumber() == 1) {
-            Debug.Log("Deleted:" +SceneTransfer.playerFleet.commander + boat.name);
-            SceneTransfer.playerFleet.RemoveBoat(boat.name);
+            Debug.Log("Deleted:" + playerFleet.CommanderName + boat.name);
+            playerFleet.RemoveBoat(boat.name);
         }
         else {
-            Debug.Log("Destroyed:" +SceneTransfer.enemyFleet.commander + boat.name);
-            SceneTransfer.enemyFleet.RemoveBoat(boat.name);
+            Debug.Log("Destroyed:" + enemyFleet.CommanderName + boat.name);
+            sunkEnemyBoatNames.Add(boat.name);
+            enemyFleet.RemoveBoat(boat.name);
         }
 
         Debug.Log("boat removed from boat list?:" + allBoatsList.Remove(boat));
-        if (GetTeamBoats(1).Length == 0 || GetTeamBoats(2).Length == 0) {
-            ActivatePostBattleLooting();
-        }
 
-
-        
+        EvaluateCombatEnd();
     }
-    
-    public void ActivatePostBattleLooting()
+
+    private void EvaluateCombatEnd()
     {
-        BoatAI[] enemyBoatsAI = GetTeamBoats(1);
-        List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
-        int goldGained; 
-        
-        var boatsToRemoveEnemy = enemyBoatsData
-            .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
-            .ToList();
-        
-        var loot = LootUtils.ComputeAvailableLoot(
-            SceneTransfer.enemyFleet,
-            boatsToRemoveEnemy,
-            sunkFraction: 0.30f, 
-            aliveLootFraction: .8f,
-            out goldGained
-        );
-
-    }
-
-    
-    public void EndBattle() {
-        UpdatePlayerFleet();
-        UpdateEnemyFleet();
-        
-        if (SceneTransfer.playerFleet.GetBoats().Count == 0){
-            SceneTransfer.TransferToTownUI();
-            PlayerGlobal.money -= PlayerGlobal.money / 2;
+        if (combatEnded)
+        {
             return;
         }
-        SceneTransfer.TransferToMap();
+        var playerAliveCount = GetTeamBoats(1)?.Length ?? 0;
+        var enemyAliveCount = GetTeamBoats(2)?.Length ?? 0;
+
+        if (playerAliveCount > 0 && enemyAliveCount > 0)
+        {
+            return;
+        }
+
+        combatEnded = true;
+        ActivatePostBattleLooting();
+    }
+
+    public void ActivatePostBattleLooting()
+    {
+        UpdatePlayerFleet();
+        UpdateEnemyFleet();
+
+        if (playerFleet == null || playerFleet.GetBoats().Count == 0)
+        {
+            PlayerStateService.TrySpendMoney(PlayerStateService.Money / 2f);
+            var resultOnDefeat = BuildBattleResult(playerDefeated: true);
+            BattleManager.Instance.SubmitCombatResult(resultOnDefeat);
+            return;
+        }
+
+        var postCombatData = BuildPostCombatData();
+        var battleResult = BuildBattleResult(playerDefeated: false);
+        PostCombatFlowService.BeginPostCombat(postCombatData, battleResult);
+    }
+
+    private PostCombatData BuildPostCombatData()
+    {
+        var survivingEnemyBoats = enemyFleet?.GetBoats() ?? new List<Boat>();
+
+        var sunkEnemyBoats = initialEnemyBoats
+            .Where(boat => sunkEnemyBoatNames.Contains(boat.boatName))
+            .ToList();
+
+        var loot = LootUtils.ComputeAvailableLoot(
+            survivingEnemyBoats,
+            sunkEnemyBoats,
+            sunkLootFraction: 0.25f,
+            out int goldGained);
+
+        return new PostCombatData(
+            enemyFleet,
+            survivingEnemyBoats,
+            loot,
+            goldGained);
+    }
+
+    private BattleResult BuildBattleResult(bool playerDefeated)
+    {
+        return BattleResultFactory.BuildFromPlayableCombat(
+            activeSession,
+            initialPlayerBoats,
+            playerFleet?.GetBoats(),
+            initialEnemyBoats,
+            enemyFleet?.GetBoats(),
+            playerDefeated);
+    }
+
+    public void EndBattle() {
+        // Retained for compatibility with existing references.
+        ActivatePostBattleLooting();
     }
 
     private void UpdatePlayerFleet() {
         BoatAI[] allyBoatsAI = GetTeamBoats(1);
-        List<Boat> allyBoatsData = SceneTransfer.playerFleet.GetBoats();
+        List<Boat> allyBoatsData = playerFleet.GetBoats();
 
         var boatsToRemove = allyBoatsData
             .Where(boatData => !allyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -181,13 +268,12 @@ public class BoatMaster : MonoBehaviour
                 }
             }
         }
-        SceneTransfer.playerFleet.SetBoats(allyBoatsData);
-        SavePlayerFleet(SceneTransfer.playerFleet);
+        playerFleet.SetBoats(allyBoatsData);
     }
 
     private void UpdateEnemyFleet() {
-        BoatAI[] enemyBoatsAI = GetTeamBoats(1);
-        List<Boat> enemyBoatsData = SceneTransfer.enemyFleet.GetBoats();
+        BoatAI[] enemyBoatsAI = GetTeamBoats(2);
+        List<Boat> enemyBoatsData = enemyFleet.GetBoats();
 
         var boatsToRemoveEnemy = enemyBoatsData
             .Where(boatData => !enemyBoatsAI.Any(boatAI => boatAI.name == boatData.boatName))
@@ -202,45 +288,6 @@ public class BoatMaster : MonoBehaviour
                 }
             }
         }
-        SceneTransfer.enemyFleet.SetBoats(enemyBoatsData);
+        enemyFleet.SetBoats(enemyBoatsData);
     }
-    
-    #region save load
-    public void SavePlayerFleet(Fleet fleet)
-    {
-        Vector3 targetPosition = new(0, 0, 0); //TODO PUT TO base cordinates of a town
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
-            targetPosition = new(playerData.pos[0], playerData.pos[1], playerData.pos[2]);
-        }
-      
-        
-        fleet.CalculateSpeed();
-        PlayerFleetMapController.PlayerFleetData saveFleet = new PlayerFleetMapController.PlayerFleetData
-        {
-            fleet = fleet, 
-            pos = new float[] 
-            {
-                targetPosition.x,
-                targetPosition.y,
-                targetPosition.z
-            }
-        };
-        SaveLoad.Save(saveFleet, "Player");
-        Debug.Log("Player Fleet saved successfully.");
-    }
-    
-    
-    public void LoadFleet()
-    {
-        if (SaveLoad.SaveExists("Player")) {
-            PlayerFleetMapController.PlayerFleetData playerData = SaveLoad.Load<PlayerFleetMapController.PlayerFleetData>("Player");
-            SceneTransfer.playerFleet = playerData.fleet;
-        }
-
-    }
-
-    
-    #endregion
-    
 }
