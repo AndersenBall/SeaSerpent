@@ -9,6 +9,7 @@ public class Sailor
     public string Name { get; private set; }
     public SailorStats SailorStats { get; private set; }
     public SailorType OriginalOccupation { get; private set; }
+    public Sailor() { }
 
     public Sailor(string n, SailorType type)
     {

@@ -24,6 +24,11 @@ public class Fleet
     public string CommanderName => commander?.Name ?? "Unknown Commander";
     public string FlagShipName => FlagShip?.boatName ?? "None";
 
+    public Fleet()
+    {
+        boats = new List<Boat>();
+    }
+    
     public Fleet(Nation natio, string commanderName, AIFleetType fleetType = AIFleetType.Trade)
         : this(natio, new Sailor(commanderName, SailorType.Captain), fleetType)
     {
