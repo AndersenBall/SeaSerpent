@@ -15,14 +15,12 @@ public class PlayerFleetMapController : MonoBehaviour
         public float[] pos;
     }
 
-    public GameObject Canvas;
-    private MeetShipUI meetShipUI;
-    private TownUI townUI;
-    private TownOptionsUI townOptionsUI;
+    [SerializeField] private MeetShipUI meetShipUI;
+    [SerializeField] private TownOptionsUI townOptionsUI;
+    [SerializeField] private TownUIContext townUIContext;
 
     public NavMeshAgent navAgent;
     public Transform target;
-    public static Town currentTown;
     
     [TextArea]
     public string _boatNames = "";
@@ -50,10 +48,6 @@ public class PlayerFleetMapController : MonoBehaviour
 
         UpdateBoatNames();
 
-        meetShipUI = Canvas.transform.Find("MeetShip").GetComponent<MeetShipUI>();
-        townUI = GameObject.Find("ShopPanel").GetComponent<TownUI>();
-        townOptionsUI = GameObject.Find("TownOptions").GetComponent<TownOptionsUI>();
-
     }
     private void Update()
     {
@@ -74,8 +68,8 @@ public class PlayerFleetMapController : MonoBehaviour
 
         }
         else if (town != null) {
+            townUIContext.SetContext(town, PlayerStateService.PlayerFleet);
             townOptionsUI.DisplayOptionsMenu(town);
-            currentTown = town;
             TownEvents.InvokeTownVisited(town);
             GameEvents.SaveGame();
         }

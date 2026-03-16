@@ -59,19 +59,13 @@ public class Town : MonoBehaviour
     Dictionary<int, (int,float,string)> incomingFleets = new Dictionary<int, (int, float,string)>();//incoming fleet id, amount its carrying, expected time till it arrives
     public List<Fleet> dockedFleets = new List<Fleet>();
 
-    private TownInfoUI townUI;
+    [SerializeField] private TownInfoUI townUI;
     private float _productionTimer=0;
-    private Town _town;
 
     #endregion
 
     #region Monobehaviour
 
-    private void Awake()
-    {
-        _town = gameObject.GetComponent<Town>();
-        townUI = GameObject.Find("TownOverview").GetComponent<TownInfoUI>();
-    }
     void Start()
     {
         GameEvents.SaveInitiated += Save;// add events to happen when save and load is called
@@ -122,11 +116,17 @@ public class Town : MonoBehaviour
 
     private void OnMouseOver()
     {
-        townUI.DisplayTownUI(gameObject.GetComponent<Town>());
+        if (townUI != null)
+        {
+            townUI.DisplayTownUI(this);
+        }
     }
     private void OnMouseExit()
     {
-        townUI.CloseTownUI();
+        if (townUI != null)
+        {
+            townUI.CloseTownUI();
+        }
     }
 
 
@@ -217,7 +217,7 @@ public class Town : MonoBehaviour
             else
                 amountWant = 800;
 
-            (Fleet, int) sentOutFleet = townManager.RequestItemNonSurplus(itemToRequest.Item2, amountWant, _town);
+            (Fleet, int) sentOutFleet = townManager.RequestItemNonSurplus(itemToRequest.Item2, amountWant, this);
 
             if (sentOutFleet.Item2 > 0 && sentOutFleet.Item1 != null) {
                 StartCoroutine(RunExpected(itemToRequest.Item2, sentOutFleet.Item2, sentOutFleet.Item1));

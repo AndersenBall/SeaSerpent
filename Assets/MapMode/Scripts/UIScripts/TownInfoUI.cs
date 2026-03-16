@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -8,76 +6,48 @@ using UnityEngine.UI;
 
 public class TownInfoUI : MonoBehaviour
 {
-    private Town town;
-    private Fleet fleet;
-    private TMP_Text townNameUI;
-    private TMP_Text townDescriptionUI;
-    private Image townImageUI;
+    [Header("Overview References")]
+    [SerializeField] private TMP_Text townNameUI;
+    [SerializeField] private TMP_Text townDescriptionUI;
+    [SerializeField] private Image townImageUI;
 
-    private TMP_Text largestDemandPrice;
-    private TMP_Text largestSupplyPrice;
-    private TMP_Text largestDemandName;
-    private TMP_Text largestSupplyName;
-    private Image largestDemandIcon;
-    private Image largestSupplyIcon;
+    [Header("Supply / Demand References")]
+    [SerializeField] private TMP_Text largestDemandPrice;
+    [SerializeField] private TMP_Text largestSupplyPrice;
+    [SerializeField] private TMP_Text largestDemandName;
+    [SerializeField] private TMP_Text largestSupplyName;
+    [SerializeField] private Image largestDemandIcon;
+    [SerializeField] private Image largestSupplyIcon;
 
-
-
-    private void Start()
+    private void Awake()
     {
-        townNameUI = GameObject.Find("TownName").GetComponent<TMP_Text>();
-        townImageUI = GameObject.Find("TownImage").GetComponent<Image>();
-        townDescriptionUI = GameObject.Find("TownDescription").GetComponent<TMP_Text>();
-        largestDemandPrice = GameObject.Find("HighestDemandPrice").GetComponent<TMP_Text>();
-        largestSupplyPrice = GameObject.Find("HighestSupplyPrice").GetComponent <TMP_Text>();
-        largestSupplyName = GameObject.Find("HighestSupplyName").GetComponent<TMP_Text>();
-        largestDemandName = GameObject.Find("HighestDemandName").GetComponent<TMP_Text>();
-        largestDemandIcon = GameObject.Find("HighestDemandImage").GetComponent<Image>();
-        largestSupplyIcon = GameObject.Find("HighestSupplyImage").GetComponent<Image>();
         gameObject.SetActive(false);
-
     }
-    public void DisplayTownUI(Town t)
+
+    public void DisplayTownUI(Town town)
     {
-        town = t;
+        if (town == null)
+        {
+            return;
+        }
 
-        string townName = t.name;
-        string townDescription = t.townDescription;
-        Sprite townPic = t.townIcon;
+        (string[] itemNames, int[] supply, int[] demand, float[] prices) = town.SupplyDemandPrice();
 
+        int maxDemand = demand.Max();
+        int maxDemandIndex = Array.IndexOf(demand, maxDemand);
+        int maxSupply = supply.Max();
+        int maxSupplyIndex = Array.IndexOf(supply, maxSupply);
 
+        largestDemandName.text = itemNames[maxDemandIndex];
+        largestSupplyName.text = itemNames[maxSupplyIndex];
+        largestDemandIcon.sprite = town.setupSupplyIcons[maxDemandIndex];
+        largestSupplyIcon.sprite = town.setupSupplyIcons[maxSupplyIndex];
+        largestDemandPrice.text = "$" + prices[maxDemandIndex];
+        largestSupplyPrice.text = "$" + prices[maxSupplyIndex];
 
-
-        (string[], int[], int[], float[]) displayInfo = t.SupplyDemandPrice();
-
-        int maxDemand = displayInfo.Item3.Max();
-        int maxDemandIndex = Array.IndexOf(displayInfo.Item3, maxDemand);
-        string maxDemandItem = displayInfo.Item1[maxDemandIndex];
-        largestDemandName.text = maxDemandItem;
-
-        int maxSupply = displayInfo.Item2.Max();
-        int maxSupplyIndex = Array.IndexOf(displayInfo.Item2, maxSupply);
-        string maxSupplyItem = displayInfo.Item1[maxSupplyIndex];
-        largestSupplyName.text = maxSupplyItem;
-
-        for (int i = 0; i < displayInfo.Item1.Length; i++)
-              {
-                  if(displayInfo.Item1[i] == maxDemandItem)
-                  {
-                      largestDemandIcon.sprite = t.setupSupplyIcons[i];
-                      largestDemandPrice.text = "$" + displayInfo.Item4[i].ToString();
-                  }
-
-                  if(displayInfo.Item1[i] == maxSupplyItem)
-                  { 
-                      largestSupplyIcon.sprite = t.setupSupplyIcons[i];
-                      largestSupplyPrice.text = "$" + displayInfo.Item4[i].ToString();
-                  }
-             } 
-
-        townNameUI.text = townName;
-        townDescriptionUI.text = townDescription;
-        townImageUI.sprite = townPic;
+        townNameUI.text = town.name;
+        townDescriptionUI.text = town.townDescription;
+        townImageUI.sprite = town.townIcon;
 
         gameObject.SetActive(true);
     }

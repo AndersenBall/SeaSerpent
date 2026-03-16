@@ -1,118 +1,114 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TownUI : MonoBehaviour
 {
-    private Transform entryContainer;
-    private Transform entryTemplate;
-    private Transform shopUI;
-
-    private Transform quanityContainerBuy;
-    private Transform quanityTemplateBuy;
-
-    private Transform quanityContainerSell;
-    private Transform quanityTemplateSell;
+    [Header("References")]
+    [SerializeField] private Transform entryContainer;
+    [SerializeField] private Transform entryTemplate;
+    [SerializeField] private GameObject shopUI;
+    [SerializeField] private Text townLabel;
+    [SerializeField] private Transform quantityContainerBuy;
+    [SerializeField] private Transform quantityTemplateBuy;
+    [SerializeField] private Transform quantityContainerSell;
+    [SerializeField] private Transform quantityTemplateSell;
 
     private Town town;
     private Fleet fleet;
-    private List<Transform> transformList = new List<Transform>();
-
+    private readonly List<Transform> rowInstances = new List<Transform>();
     private int amount = 50;
-    
 
-    private void Start(){
-        entryContainer = transform.Find("ShopUI/townUiContainer");
-        entryTemplate = entryContainer.transform.Find("ColExample");
+    private void Awake()
+    {
         entryTemplate.gameObject.SetActive(false);
-
-        quanityContainerBuy = transform.Find("QuantityBuy");
-        quanityTemplateBuy = quanityContainerBuy.Find("QuantityEx");
-        quanityContainerSell = transform.Find("QuantitySell");
-        quanityTemplateSell = quanityContainerSell.Find("QuantityEx");
-
-
-        shopUI = transform.Find("ShopUI");
     }
-        
-    
-    public void DisplayTownUI(Town t, Fleet f) {
-        Time.timeScale = .000f;
 
-        string townName = t.name;
-        fleet = f;
-        town = t;
-        (string[], int[], int[], float[]) displayInfo = t.SupplyDemandPrice();
+    public void DisplayTownUI(Town selectedTown, Fleet selectedFleet)
+    {
+        Time.timeScale = 0f;
 
-        shopUI.gameObject.SetActive(true);
+        fleet = selectedFleet;
+        town = selectedTown;
+        (string[] itemNames, int[] supply, int[] demand, float[] prices) = selectedTown.SupplyDemandPrice();
 
-        Transform townText = transform.Find("ShopUI/Town");
-        townText.GetComponent<Text>().text = "Town: " + townName;
+        shopUI.SetActive(true);
+        townLabel.text = "Town: " + selectedTown.name;
 
         float templateHeight = 30f;
-
-        for (int i = 0; i < displayInfo.Item1.Length; i++) {
+        for (int i = 0; i < itemNames.Length; i++)
+        {
             Transform entryTransform = Instantiate(entryTemplate, entryContainer);
-            transformList.Add(entryTransform);
+            rowInstances.Add(entryTransform);
+
             RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
-            entryRectTransform.anchoredPosition = new Vector2(0, -templateHeight * (i+1));
+            entryRectTransform.anchoredPosition = new Vector2(0, -templateHeight * (i + 1));
             entryTransform.gameObject.SetActive(true);
 
-            entryTransform.Find("item").GetComponent<Text>().text = ""+displayInfo.Item1[i];
-            entryTransform.Find("suply").GetComponent<Text>().text = ""+ displayInfo.Item2[i];
-            entryTransform.Find("demand").GetComponent<Text>().text = ""+ displayInfo.Item3[i];
-            entryTransform.Find("price").GetComponent<Text>().text = ""+ displayInfo.Item4[i];
-         
-            string r = displayInfo.Item1[i];
-            entryTransform.Find("buttons/Buy").GetComponent<Button>().onClick.AddListener(delegate { OpenAmountUI(r); });
-            entryTransform.Find("buttons/Sell").GetComponent<Button>().onClick.AddListener(delegate { OpenSellAmountUI(r); });
+            entryTransform.Find("item").GetComponent<Text>().text = itemNames[i];
+            entryTransform.Find("suply").GetComponent<Text>().text = supply[i].ToString();
+            entryTransform.Find("demand").GetComponent<Text>().text = demand[i].ToString();
+            entryTransform.Find("price").GetComponent<Text>().text = prices[i].ToString();
+
+            string resource = itemNames[i];
+            entryTransform.Find("buttons/Buy").GetComponent<Button>().onClick.AddListener(() => OpenAmountUI(resource));
+            entryTransform.Find("buttons/Sell").GetComponent<Button>().onClick.AddListener(() => OpenSellAmountUI(resource));
         }
-    
     }
-    public void CloseTownUI() {
-        foreach (Transform t in transformList) {
-            GameObject.Destroy(t.gameObject);
+
+    public void CloseTownUI()
+    {
+        foreach (Transform row in rowInstances)
+        {
+            Destroy(row.gameObject);
         }
-        transformList = new List<Transform>();
-        shopUI.gameObject.SetActive(false);
-        quanityContainerBuy.gameObject.SetActive(false);
-        quanityContainerSell.gameObject.SetActive(false);
+
+        rowInstances.Clear();
+        shopUI.SetActive(false);
+        quantityContainerBuy.gameObject.SetActive(false);
+        quantityContainerSell.gameObject.SetActive(false);
         Time.timeScale = 1f;
     }
 
-    public void OpenAmountUI(string resource) {
-        quanityContainerBuy.gameObject.SetActive(true);
-        quanityTemplateBuy.Find("Buy").GetComponent<Button>().onClick.RemoveAllListeners();
-        quanityTemplateBuy.Find("Buy").GetComponent<Button>().onClick.AddListener(delegate { BuyItems(resource); });
+    public void OpenAmountUI(string resource)
+    {
+        quantityContainerBuy.gameObject.SetActive(true);
+        Button buyButton = quantityTemplateBuy.Find("Buy").GetComponent<Button>();
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(() => BuyItems(resource));
+
         amount = 50;
-        quanityTemplateBuy.Find("Amount").GetComponent<Text>().text = "" + amount;
+        quantityTemplateBuy.Find("Amount").GetComponent<Text>().text = amount.ToString();
     }
 
-    public void BuyItems(string resource) {
-        town.FillCargoPlayer(fleet,resource,amount);
+    public void BuyItems(string resource)
+    {
+        town.FillCargoPlayer(fleet, resource, amount);
         CloseTownUI();
-        DisplayTownUI(town,fleet);
-        
+        DisplayTownUI(town, fleet);
     }
 
-    public void ChangeCount(int a) {
-        amount += a;
-        quanityTemplateBuy.Find("Amount").GetComponent<Text>().text = ""+amount;
-        quanityTemplateSell.Find("Amount").GetComponent<Text>().text = "" + amount;
+    public void ChangeCount(int change)
+    {
+        amount += change;
+        quantityTemplateBuy.Find("Amount").GetComponent<Text>().text = amount.ToString();
+        quantityTemplateSell.Find("Amount").GetComponent<Text>().text = amount.ToString();
     }
-    public void OpenSellAmountUI(string resource) {
-        quanityContainerSell.gameObject.SetActive(true);
-        quanityTemplateSell.transform.Find("Sell").GetComponent<Button>().onClick.RemoveAllListeners();
-        quanityTemplateSell.transform.Find("Sell").GetComponent<Button>().onClick.AddListener(delegate { SellItem(resource); });
+
+    public void OpenSellAmountUI(string resource)
+    {
+        quantityContainerSell.gameObject.SetActive(true);
+        Button sellButton = quantityTemplateSell.Find("Sell").GetComponent<Button>();
+        sellButton.onClick.RemoveAllListeners();
+        sellButton.onClick.AddListener(() => SellItem(resource));
+
         amount = 50;
-        quanityTemplateSell.transform.Find("Amount").GetComponent<Text>().text = "" + amount;
-
+        quantityTemplateSell.Find("Amount").GetComponent<Text>().text = amount.ToString();
     }
 
-    public void SellItem(string resource) {//player sell item
-        town.SellItemsInCargo(fleet,amount,resource);
+    public void SellItem(string resource)
+    {
+        town.SellItemsInCargo(fleet, amount, resource);
         CloseTownUI();
         DisplayTownUI(town, fleet);
     }
@@ -120,10 +116,5 @@ public class TownUI : MonoBehaviour
     public void LoadSceneBoatShop()
     {
         SceneTransfer.TransferToTownUI();
-        
-        
     }
-
-    
-
 }
