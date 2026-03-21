@@ -2375,15 +2375,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29031ddcdbbb20540814d0fce0b8be4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  townNameUI: {fileID: 0}
-  townDescriptionUI: {fileID: 0}
-  townImageUI: {fileID: 0}
-  largestDemandPrice: {fileID: 0}
-  largestSupplyPrice: {fileID: 0}
-  largestDemandName: {fileID: 0}
-  largestSupplyName: {fileID: 0}
-  largestDemandIcon: {fileID: 0}
-  largestSupplyIcon: {fileID: 0}
+  townNameUI: {fileID: 441275095}
+  townDescriptionUI: {fileID: 653283905}
+  townImageUI: {fileID: 1090357110}
+  largestDemandPrice: {fileID: 1640565238}
+  largestSupplyPrice: {fileID: 1449210073}
+  largestDemandName: {fileID: 1706439842}
+  largestSupplyName: {fileID: 1333568807}
+  largestDemandIcon: {fileID: 1592541054}
+  largestSupplyIcon: {fileID: 484784856}
 --- !u!1 &202119736
 GameObject:
   m_ObjectHideFlags: 0
@@ -10410,9 +10410,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   townNameUI: {fileID: 712269537}
-  townDescriptionUI: {fileID: 0}
-  townImageUI: {fileID: 0}
-  optionsContainer: {fileID: 0}
+  townDescriptionUI: {fileID: 712269537}
+  townImageUI: {fileID: 2134784385}
+  optionsContainer: {fileID: 202119736}
 --- !u!114 &908102731
 MonoBehaviour:
   m_ObjectHideFlags: 0
