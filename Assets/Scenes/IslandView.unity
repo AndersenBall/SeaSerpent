@@ -799,6 +799,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: townIcon
       value: 
       objectReference: {fileID: 21300000, guid: fbd62b85b632cc541ad78d0a775f955f,
@@ -1868,6 +1873,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -2365,6 +2375,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29031ddcdbbb20540814d0fce0b8be4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  townNameUI: {fileID: 0}
+  townDescriptionUI: {fileID: 0}
+  townImageUI: {fileID: 0}
+  largestDemandPrice: {fileID: 0}
+  largestSupplyPrice: {fileID: 0}
+  largestDemandName: {fileID: 0}
+  largestSupplyName: {fileID: 0}
+  largestDemandIcon: {fileID: 0}
+  largestSupplyIcon: {fileID: 0}
 --- !u!1 &202119736
 GameObject:
   m_ObjectHideFlags: 0
@@ -6745,6 +6764,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: townIcon
       value: 
       objectReference: {fileID: 21300000, guid: fbd62b85b632cc541ad78d0a775f955f,
@@ -7791,6 +7815,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: townIcon
       value: 
       objectReference: {fileID: 21300000, guid: fbd62b85b632cc541ad78d0a775f955f,
@@ -8815,6 +8844,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03aab51fe73af824f862bb88389f5705, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  townUIContext: {fileID: 908102731}
   scrollViewContent: {fileID: 883984829}
   buyInfoPanel: {fileID: 8899877140558855287, guid: f4904b7147b7fd847afc4234527d9d2e,
     type: 3}
@@ -8867,6 +8897,11 @@ PrefabInstance:
       propertyPath: parent
       value: 
       objectReference: {fileID: 1252930511}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Enabled
@@ -10326,6 +10361,7 @@ GameObject:
   - component: {fileID: 908102727}
   - component: {fileID: 908102729}
   - component: {fileID: 908102730}
+  - component: {fileID: 908102731}
   m_Layer: 5
   m_Name: TownOptions
   m_TagString: Untagged
@@ -10371,6 +10407,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7def2a4216fd6d142ba229ea126391a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  townNameUI: {fileID: 712269537}
+  townDescriptionUI: {fileID: 0}
+  townImageUI: {fileID: 0}
+  optionsContainer: {fileID: 0}
+--- !u!114 &908102731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908102726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bad909f6c1599244b959ac1dbfb6b91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &913128102
@@ -10762,6 +10814,11 @@ PrefabInstance:
       propertyPath: parent
       value: 
       objectReference: {fileID: 1252930511}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Enabled
@@ -13861,6 +13918,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -16028,6 +16090,11 @@ PrefabInstance:
       objectReference: {fileID: 1252930511}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -17897,7 +17964,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2266d5c0b5573ca43a9e749593d91299, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Canvas: {fileID: 481727670}
+  meetShipUI: {fileID: 1037125098}
+  townOptionsUI: {fileID: 908102730}
+  townUIContext: {fileID: 908102731}
   navAgent: {fileID: 1439832478}
   target: {fileID: 753358948}
   _boatNames: 
@@ -17959,6 +18028,11 @@ PrefabInstance:
       propertyPath: parent
       value: 
       objectReference: {fileID: 1252930511}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Enabled
@@ -20076,6 +20150,11 @@ PrefabInstance:
       propertyPath: parent
       value: 
       objectReference: {fileID: 1252930511}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: m_Enabled
@@ -23080,6 +23159,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c5ab0b9adebbe40a00c5c6f27206c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entryContainer: {fileID: 0}
+  entryTemplate: {fileID: 0}
+  shopUI: {fileID: 0}
+  townLabel: {fileID: 0}
+  quantityContainerBuy: {fileID: 0}
+  quantityTemplateBuy: {fileID: 0}
+  quantityContainerSell: {fileID: 0}
+  quantityTemplateSell: {fileID: 0}
 --- !u!1 &1982377350
 GameObject:
   m_ObjectHideFlags: 0
@@ -23138,6 +23225,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseCostPerShip: 200
   costPerUnitDistance: 1
+  enablePirateSpawns: 1
+  enableNavalPatrolSpawns: 1
+  enableWarFleetSpawns: 0
+  pirateSpawnInterval: 45
+  navalPatrolSpawnInterval: 60
+  warFleetSpawnInterval: 90
+  pirateFleetSize: 2
+  patrolFleetSize: 2
+  warFleetSize: 3
 --- !u!1 &1984374136
 GameObject:
   m_ObjectHideFlags: 0
@@ -23722,6 +23818,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1982377351}
     m_Modifications:
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: nationality
@@ -25630,6 +25731,11 @@ PrefabInstance:
       propertyPath: parent
       value: 
       objectReference: {fileID: 1252930511}
+    - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
+        type: 3}
+      propertyPath: townUI
+      value: 
+      objectReference: {fileID: 197484706}
     - target: {fileID: 2356750811951124822, guid: ed590d6da9fa7df4a93fabd75a23e647,
         type: 3}
       propertyPath: townIcon
