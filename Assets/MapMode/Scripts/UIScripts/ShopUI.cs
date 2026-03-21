@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ShopUI : MonoBehaviour
 {
+    [Header("Context")]
+    [SerializeField] private TownUIContext townUIContext;
+
     private Town town;
     private Fleet fleet;
     private string ogPrice;
     private string ogPriceSell;
-
 
     [Header("Buy Panel Objects")]
     public Transform scrollViewContent;
@@ -24,6 +23,7 @@ public class ShopUI : MonoBehaviour
     public TMP_Text itemName;
     public Button purchaseBtn;
     public GameObject buyMode;
+
     [Header("Sell Panel Objects")]
     public Transform scrollViewContentSell;
     public GameObject sellMode;
@@ -33,224 +33,201 @@ public class ShopUI : MonoBehaviour
     public Image itemInfoImageSell;
     public TMP_Text itemDescriptionSell;
     public TMP_Text itemNameSell;
+
     [Header("Inventory")]
     public Image inventoryIconPrefab;
     public Text inventoryItemNamePrefab;
     public Text inventoryNumberPrefab;
     public Sprite[] inventoryIcons;
     public Transform inventoryScrollViewContent;
+
     [Header("Choice Buttons")]
     public Button buyButton;
     public Button sellButton;
+
+    private void OnEnable()
+    {
+        if (townUIContext != null)
+        {
+            townUIContext.ContextChanged += HandleContextChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (townUIContext != null)
+        {
+            townUIContext.ContextChanged -= HandleContextChanged;
+        }
+    }
+
     private void Start()
     {
-        fleet = GameObject.Find("PlayerBoat").GetComponent<PlayerFleetMapController>().GetFleet();
-        displayBuyTab(PlayerFleetMapController.currentTown);
         purchaseBtn.interactable = false;
-        sellBtn.interactable=false;
+        sellBtn.interactable = false;
+
+        if (townUIContext == null)
+        {
+            Debug.LogError($"[{nameof(ShopUI)}] Missing {nameof(TownUIContext)} reference.");
+            enabled = false;
+            return;
+        }
+
+        HandleContextChanged(townUIContext.CurrentTown, townUIContext.CurrentFleet);
         playerMoney.text = PlayerStateService.Money.ToString();
-        fillInventoryBuyPage();
     }
+
     private void Update()
     {
         playerMoney.text = PlayerStateService.Money.ToString();
     }
 
-    public void displayBuyTab(Town t)
+    private void HandleContextChanged(Town newTown, Fleet newFleet)
     {
+        town = newTown;
+        fleet = newFleet;
 
-        foreach (Transform contentChild in scrollViewContent.transform)
+        if (town == null || fleet == null)
         {
-            Destroy(contentChild.gameObject);
+            return;
         }
 
-
-        buyMode.SetActive(true);
-        sellMode.SetActive(false);
-
-        string townName = t.name;
-        town = t;
-        (string[], int[], int[], float[]) itemInfo = t.SupplyDemandPrice();
-        Debug.Log(townName);
-
-        for (int i = 0; i < itemInfo.Item1.Length; i++)
-        {
-            GameObject buyPanel = Instantiate(buyInfoPanel);
-            Button itemButton = buyPanel.GetComponent<Button>();
-            itemButton.onClick.AddListener(() => { displayItemInfo(itemButton);});
-
-            buyPanel.transform.GetChild(0).GetComponent<Image>().sprite = t.setupSupplyIcons[i];
-             buyPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemInfo.Item1[i];
-             buyPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = itemInfo.Item2[i].ToString();
-             buyPanel.transform.GetChild(3).GetComponent<TMP_Text>().text = itemInfo.Item3[i].ToString();
-             buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
-
-            buyPanel.transform.SetParent(scrollViewContent, false);
-
-            if (i == 0)
-            {
-                itemButton.onClick.Invoke();
-            }
-
-        }
-
+        displayBuyTab(town);
+        fillInventoryBuyPage();
     }
+
+    public void displayBuyTab(Town selectedTown)
+    {
+        if (selectedTown == null)
+        {
+            return;
+        }
+
+        town = selectedTown;
+        PopulateTradeList(scrollViewContent, true);
+    }
+
     public void displayBuyTabBtn()
     {
-        foreach (Transform contentChild in scrollViewContent.transform)
+        if (town == null)
         {
-            Destroy(contentChild.gameObject);
+            return;
         }
 
-
-        buyMode.SetActive(true);
-        sellMode.SetActive(false);
-
-
-        town = PlayerFleetMapController.currentTown;
-        string townName = town.name;
-        (string[], int[], int[], float[]) itemInfo = town.SupplyDemandPrice();
-
-        for (int i = 0; i < itemInfo.Item1.Length; i++)
-        {
-            GameObject buyPanel = Instantiate(buyInfoPanel);
-            Button itemButton = buyPanel.GetComponent<Button>();
-            itemButton.onClick.AddListener(() => { displayItemInfo(itemButton); });
-
-            buyPanel.transform.GetChild(0).GetComponent<Image>().sprite = town.setupSupplyIcons[i];
-            buyPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemInfo.Item1[i];
-            buyPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = itemInfo.Item2[i].ToString();
-            buyPanel.transform.GetChild(3).GetComponent<TMP_Text>().text = itemInfo.Item3[i].ToString();
-            buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
-
-            buyPanel.transform.SetParent(scrollViewContent, false);
-            if(i == 0)
-            {
-                itemButton.onClick.Invoke();
-            }
-
-        }
-
+        PopulateTradeList(scrollViewContent, true);
     }
 
     public void displaySellTab()
     {
-        foreach (Transform contentChild in scrollViewContentSell.transform)
+        if (town == null)
+        {
+            return;
+        }
+
+        PopulateTradeList(scrollViewContentSell, false);
+    }
+
+    private void PopulateTradeList(Transform container, bool isBuy)
+    {
+        foreach (Transform contentChild in container)
         {
             Destroy(contentChild.gameObject);
         }
 
-        buyMode.SetActive(false);
-        sellMode.SetActive(true);
+        buyMode.SetActive(isBuy);
+        sellMode.SetActive(!isBuy);
 
+        (string[] itemNames, int[] supply, int[] demand, float[] prices) = town.SupplyDemandPrice();
 
-
-        town = PlayerFleetMapController.currentTown;
-        string townName = town.name;
-        (string[], int[], int[], float[]) itemInfo = town.SupplyDemandPrice();
-
-        for (int i = 0; i < itemInfo.Item1.Length; i++)
+        for (int i = 0; i < itemNames.Length; i++)
         {
-            GameObject buyPanel = Instantiate(buyInfoPanel);
-            Button itemButton = buyPanel.GetComponent<Button>();
-            itemButton.onClick.AddListener(() => { displayItemInfoSell(itemButton); });
+            GameObject panel = Instantiate(buyInfoPanel, container, false);
+            Button itemButton = panel.GetComponent<Button>();
 
-            buyPanel.transform.GetChild(0).GetComponent<Image>().sprite = town.setupSupplyIcons[i];
-            buyPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemInfo.Item1[i];
-            buyPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = itemInfo.Item2[i].ToString();
-            buyPanel.transform.GetChild(3).GetComponent<TMP_Text>().text = itemInfo.Item3[i].ToString();
-            buyPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = itemInfo.Item4[i].ToString();
+            int index = i;
+            if (isBuy)
+            {
+                itemButton.onClick.AddListener(() => displayItemInfo(itemButton));
+            }
+            else
+            {
+                itemButton.onClick.AddListener(() => displayItemInfoSell(itemButton));
+            }
 
-            buyPanel.transform.SetParent(scrollViewContentSell, false);
+            panel.transform.GetChild(0).GetComponent<Image>().sprite = town.setupSupplyIcons[index];
+            panel.transform.GetChild(1).GetComponent<TMP_Text>().text = itemNames[index];
+            panel.transform.GetChild(2).GetComponent<TMP_Text>().text = supply[index].ToString();
+            panel.transform.GetChild(3).GetComponent<TMP_Text>().text = demand[index].ToString();
+            panel.transform.GetChild(4).GetComponent<TMP_Text>().text = prices[index].ToString();
 
             if (i == 0)
             {
                 itemButton.onClick.Invoke();
             }
         }
-
     }
 
     public void increaseItemAmount()
     {
-        int inputAmount;
-        if(buyMode.activeSelf == true)
+        if (buyMode.activeSelf)
         {
-            inputAmount = int.Parse(itemAmountInputField.text) + 1;
-            itemAmountInputField.text = inputAmount.ToString();
-        }
-        if(sellMode.activeSelf == true)
-        {
-            inputAmount = int.Parse(itemSellAmountInputField.text) + 1;
-            itemSellAmountInputField.text = inputAmount.ToString();
+            itemAmountInputField.text = (int.Parse(itemAmountInputField.text) + 1).ToString();
         }
 
-        
+        if (sellMode.activeSelf)
+        {
+            itemSellAmountInputField.text = (int.Parse(itemSellAmountInputField.text) + 1).ToString();
+        }
     }
 
     public void decreaseItemAmount()
     {
-        int inputAmount;
-
-        if(int.Parse(itemAmountInputField.text) > 0)
+        if (buyMode.activeSelf && int.Parse(itemAmountInputField.text) > 0)
         {
-            if (buyMode.activeSelf == true)
-            {
-                inputAmount = int.Parse(itemAmountInputField.text) - 1;
-                itemAmountInputField.text = inputAmount.ToString();
-            }
-            if (sellMode.activeSelf == true)
-            {
-                inputAmount = int.Parse(itemSellAmountInputField.text) - 1;
-                itemSellAmountInputField.text = inputAmount.ToString();
-            }
+            itemAmountInputField.text = (int.Parse(itemAmountInputField.text) - 1).ToString();
+        }
+
+        if (sellMode.activeSelf && int.Parse(itemSellAmountInputField.text) > 0)
+        {
+            itemSellAmountInputField.text = (int.Parse(itemSellAmountInputField.text) - 1).ToString();
         }
     }
 
     public void multiplyPrice()
     {
-        float multiplePrice;
-        if(itemAmountInputField.text != "")
+        if (itemAmountInputField.text == "")
         {
-            multiplePrice = int.Parse(itemAmountInputField.text) * float.Parse(ogPrice);
-            priceText.text = multiplePrice.ToString();
-
-            if ((PlayerStateService.Money - multiplePrice) >= 0)
-            {
-                purchaseBtn.interactable = true;
-            }
-            else
-            {
-                purchaseBtn.interactable = false;
-            }
+            return;
         }
 
+        float multiplePrice = int.Parse(itemAmountInputField.text) * float.Parse(ogPrice);
+        priceText.text = multiplePrice.ToString();
+        purchaseBtn.interactable = (PlayerStateService.Money - multiplePrice) >= 0;
     }
 
     public void multiplySellPrice()
     {
-        float multiplePrice;
-        if(itemSellAmountInputField.text != "")
+        if (itemSellAmountInputField.text == "")
         {
-            multiplePrice = int.Parse(itemSellAmountInputField.text) * float.Parse(ogPriceSell);
-            sellPriceText.text = multiplePrice.ToString();
-
-            (string[], int[]) inventoryContent = fleet.GetInventory();
-            for(int i =0; i<inventoryContent.Item1.Length; i++)
-            {
-                if (inventoryContent.Item1[i].ToLower().Equals(itemNameSell.text.ToLower())){
-                    if(int.Parse(itemSellAmountInputField.text) > inventoryContent.Item2[i])
-                    {
-                        sellBtn.interactable = false;
-                    }
-                    else
-                    {
-                        sellBtn.interactable = true;
-                    }
-                }
-            }
+            return;
         }
 
+        float multiplePrice = int.Parse(itemSellAmountInputField.text) * float.Parse(ogPriceSell);
+        sellPriceText.text = multiplePrice.ToString();
+
+        (string[] names, int[] amounts) inventoryContent = fleet.GetInventory();
+        for (int i = 0; i < inventoryContent.names.Length; i++)
+        {
+            if (!inventoryContent.names[i].ToLower().Equals(itemNameSell.text.ToLower()))
+            {
+                continue;
+            }
+
+            sellBtn.interactable = int.Parse(itemSellAmountInputField.text) <= inventoryContent.amounts[i];
+            return;
+        }
+
+        sellBtn.interactable = false;
     }
 
     public void displayItemInfo(Button itemPanel)
@@ -258,49 +235,12 @@ public class ShopUI : MonoBehaviour
         itemAmountInputField.text = "";
 
         ogPrice = itemPanel.transform.GetChild(4).GetComponent<TMP_Text>().text;
-        priceText.text = itemPanel.transform.GetChild(4).GetComponent<TMP_Text>().text;
+        priceText.text = ogPrice;
         itemInfoImage.sprite = itemPanel.transform.GetChild(0).GetComponent<Image>().sprite;
-        itemName.text = itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text;
 
-        if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "fish")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[0];
-        }else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "lumber")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[1];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "fur")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[2];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "guns")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[3];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "sugar")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[4];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "coffee")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[5];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "salt")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[6];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "tea")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[7];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "tobacco")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[8];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "cotton")
-        {
-            itemDescription.text = PlayerFleetMapController.currentTown.setupSupplyDescription[9];
-        }
+        string selectedItemName = itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text;
+        itemName.text = selectedItemName;
+        itemDescription.text = GetItemDescription(selectedItemName);
     }
 
     public void displayItemInfoSell(Button itemPanel)
@@ -308,58 +248,25 @@ public class ShopUI : MonoBehaviour
         itemSellAmountInputField.text = "";
 
         ogPriceSell = itemPanel.transform.GetChild(4).GetComponent<TMP_Text>().text;
-        sellPriceText.text = itemPanel.transform.GetChild(4).GetComponent<TMP_Text>().text;
+        sellPriceText.text = ogPriceSell;
         itemInfoImageSell.sprite = itemPanel.transform.GetChild(0).GetComponent<Image>().sprite;
-        itemNameSell.text = itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text;
 
-        if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "fish")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[0];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "lumber")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[1];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "fur")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[2];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "guns")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[3];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "sugar")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[4];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "coffee")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[5];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "salt")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[6];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "tea")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[7];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "tobacco")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[8];
-        }
-        else if (itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text == "cotton")
-        {
-            itemDescriptionSell.text = PlayerFleetMapController.currentTown.setupSupplyDescription[9];
-        }
+        string selectedItemName = itemPanel.transform.GetChild(1).GetComponent<TMP_Text>().text;
+        itemNameSell.text = selectedItemName;
+        itemDescriptionSell.text = GetItemDescription(selectedItemName);
     }
 
     public void purchaseItem()
     {
+        if (town == null || fleet == null)
+        {
+            return;
+        }
+
         int itemAmount = int.Parse(itemAmountInputField.text);
         float price = float.Parse(priceText.text);
 
-        PlayerFleetMapController.currentTown.FillCargoPlayer(fleet, itemName.text, itemAmount);
+        town.FillCargoPlayer(fleet, itemName.text, itemAmount);
         if (PlayerStateService.TrySpendMoney(price))
         {
             fillInventoryBuyPage();
@@ -368,10 +275,15 @@ public class ShopUI : MonoBehaviour
 
     public void sellItem()
     {
+        if (town == null || fleet == null)
+        {
+            return;
+        }
+
         int itemAmount = int.Parse(itemSellAmountInputField.text);
         float price = float.Parse(sellPriceText.text);
 
-        PlayerFleetMapController.currentTown.SellItemsInCargo(fleet, itemAmount, itemNameSell.text);
+        town.SellItemsInCargo(fleet, itemAmount, itemNameSell.text);
         PlayerStateService.AddMoney(price);
         displaySellTab();
         fillInventoryBuyPage();
@@ -379,33 +291,43 @@ public class ShopUI : MonoBehaviour
 
     public void fillInventoryBuyPage()
     {
-        (string[], int[]) inventoryContent = fleet.GetInventory();
+        if (fleet == null)
+        {
+            return;
+        }
+
+        (string[] names, int[] amounts) inventoryContent = fleet.GetInventory();
 
         foreach (Transform contentChild in inventoryScrollViewContent.transform)
         {
             Destroy(contentChild.gameObject);
         }
 
-        for (int i = 0; i < inventoryContent.Item1.Length; i++)
+        for (int i = 0; i < inventoryContent.names.Length; i++)
         {
+            Image icon = Instantiate(inventoryIconPrefab, inventoryScrollViewContent, false);
+            Text inventoryItem = Instantiate(inventoryItemNamePrefab, inventoryScrollViewContent, false);
+            Text inventoryAmount = Instantiate(inventoryNumberPrefab, inventoryScrollViewContent, false);
 
-           
-            
-                Image icon = Instantiate(inventoryIconPrefab);
-                Text inventoryItem = Instantiate(inventoryItemNamePrefab);
-                Text inventoryAmount = Instantiate(inventoryNumberPrefab);
-
-                icon.sprite = inventoryIcons[i];
-                inventoryItem.text = inventoryContent.Item1[i];
-                inventoryAmount.text = inventoryContent.Item2[i].ToString();
-
-                icon.transform.SetParent(inventoryScrollViewContent, false);
-                inventoryItem.transform.SetParent(inventoryScrollViewContent, false);
-                inventoryAmount.transform.SetParent(inventoryScrollViewContent, false);
-            
-
-
+            icon.sprite = inventoryIcons[i];
+            inventoryItem.text = inventoryContent.names[i];
+            inventoryAmount.text = inventoryContent.amounts[i].ToString();
         }
+    }
+
+    private string GetItemDescription(string itemNameToFind)
+    {
+        var tradeInfo = town.SupplyDemandPrice();
+        string[] itemNames = tradeInfo.Item1;
+        for (int i = 0; i < itemNames.Length; i++)
+        {
+            if (itemNames[i].Equals(itemNameToFind))
+            {
+                return town.setupSupplyDescription[i];
+            }
+        }
+
+        return string.Empty;
     }
 
     public void makeBuyButtonDarkBrown()
@@ -425,5 +347,4 @@ public class ShopUI : MonoBehaviour
         buyButton.GetComponent<Image>().color = lightbrown;
         sellButton.GetComponent<Image>().color = darkbrown;
     }
-
 }
