@@ -6,6 +6,8 @@ using Random = UnityEngine.Random;
 
 public class Town : MonoBehaviour
 {
+    private const int ItemTypeCount = 10;
+
     #region variables
 
     [System.Serializable]
@@ -28,8 +30,8 @@ public class Town : MonoBehaviour
     public string DebugText = "";
 
     public Sprite[] setupSupplyIcons;
-    string[] setupSupplyItems = new string[10] {"fish","lumber","fur","guns","sugar","coffee","salt","tea","tobacco","cotton" };
-    public string[] setupSupplyDescription = new string[10] { "this is fish", " this is lumber", "this is fur", "this is guns", "this is sugar", "this is coffee", "this is salt", "this is tea", "this is tobacco", "this is cotton" };
+    string[] setupSupplyItems = new string[ItemTypeCount] {"fish","lumber","fur","guns","sugar","coffee","salt","tea","tobacco","cotton" };
+    public string[] setupSupplyDescription = new string[ItemTypeCount] { "this is fish", " this is lumber", "this is fur", "this is guns", "this is sugar", "this is coffee", "this is salt", "this is tea", "this is tobacco", "this is cotton" };
 
 
     public Sprite townIcon;
@@ -73,19 +75,12 @@ public class Town : MonoBehaviour
         townManager = GetComponentInParent<TownManager>();
         
 
-        productionAmount = new float[10]; // Ensure the array has at least 10 elements
-        for (int i = 0; i < 10; i++)
+        productionAmount = new float[ItemTypeCount];
+        for (int i = 0; i < ItemTypeCount; i++)
         {
             productionAmount[i] = Random.Range(0.4f, 1.5f);
-        }
-
-        for (int i = 0; i < 10; i++) {
             supplies.Add(setupSupplyItems[i], setupSupplyCount[i]);
-        }
-        for (int i = 0; i < 10; i++) {
             predictedSupplies.Add(setupSupplyItems[i], 0);
-        }
-        for (int i = 0; i < 10; i++) {
             demand.Add(setupSupplyItems[i], setupDemandCount[i]);
         }
         SetUpConsumption();
@@ -301,17 +296,13 @@ public class Town : MonoBehaviour
         return demand[item] - (int)supplies[item] - predictedSupplies[item];
     }
     public (string[],int[], int[], float[]) SupplyDemandPrice() {
-        int[] sup = new int[10];
-        int[] dem = new int[10];
-        float[] price = new float[10];
+        int[] sup = new int[ItemTypeCount];
+        int[] dem = new int[ItemTypeCount];
+        float[] price = new float[ItemTypeCount];
         
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ItemTypeCount; i++) {
             sup[i] = (int)supplies[setupSupplyItems[i]];
-        }
-        for (int i = 0; i < 10; i++) {
             dem[i] = (int)demand[setupSupplyItems[i]];
-        }
-        for (int i = 0; i < 10; i++) {
             price[i] = CalculateDynamicPrice(setupSupplyItems[i]);
         }
         return (setupSupplyItems,sup, dem, price);
@@ -390,69 +381,47 @@ public class Town : MonoBehaviour
             Debug.Log("not enough money");
             return false;
         }
-
-        int currentAddedCargo = 0;
-        //Debug.Log(fle.commander +"ordered: "+ resource +","+ amount+" from:"+ name);
-        if (!supplies.ContainsKey(resource)) {
-            Debug.Log(gameObject.name + " Doesnt contain:" + resource);
-        }
-
-        foreach (Boat b in fle.GetBoats()) {
-            int cargospace = b.GetCargoMax() - b.GetCargoCurrent();
-            Debug.Log(b.boatName +" space on ship:"+ cargospace +" amount in town: " + supplies[resource]);
-            if ((int)supplies[resource] - cargospace > 0) {
-                if (currentAddedCargo + cargospace < amount) {
-                    currentAddedCargo += cargospace;
-                    b.AddCargo(resource, cargospace);
-                    supplies[resource] -= cargospace;
-                }
-                else {
-
-                    b.AddCargo(resource, amount - currentAddedCargo);
-                    supplies[resource] -= amount - currentAddedCargo;
-                    break;
-                }
-            }
-            else {
-                //Debug.Log("settlement doesnt have enough resource:" + resource +"added:" + supplies[resource]);
-                b.AddCargo(resource, (int)supplies[resource]);
-                supplies[resource] -= (int)supplies[resource];
-            }
-        }
+        TransferCargoToFleet(fle, resource, amount, true);
         return true;
     }
 
     public void FillCargo(Fleet fle, string resource, int amount)
     {
+        TransferCargoToFleet(fle, resource, amount, false);
+    }
 
+    private void TransferCargoToFleet(Fleet fleet, string resource, int amount, bool logBoatDebug)
+    {
         int currentAddedCargo = 0;
-        //Debug.Log(fle.commander +"ordered: "+ resource +","+ amount+" from:"+ name);
-        if (!supplies.ContainsKey(resource)) {
+        if (!supplies.ContainsKey(resource))
+        {
             Debug.Log(gameObject.name + " Doesnt contain:" + resource);
+            return;
         }
 
-        foreach (Boat b in fle.GetBoats()) {
-            int cargospace = b.GetCargoMax() - b.GetCargoCurrent();
-            //Debug.Log(b.boatName + " space on ship:" + cargospace + " amount in town: " + supplies[resource]);
-            if ((int)supplies[resource] - cargospace > 0) {
-                if (currentAddedCargo + cargospace < amount) {
-                    currentAddedCargo += cargospace;
-                    b.AddCargo(resource, cargospace);
-                    supplies[resource] -= cargospace;
-                }
-                else {
-
-                    b.AddCargo(resource, amount - currentAddedCargo);
-                    supplies[resource] -= amount - currentAddedCargo;
-                    break;
-                }
+        foreach (Boat boat in fleet.GetBoats())
+        {
+            if (currentAddedCargo >= amount)
+            {
+                break;
             }
-            else {
-                //Debug.Log("settlement doesnt have enough resource:" + resource +"added:" + supplies[resource]);
-                b.AddCargo(resource, (int)supplies[resource]);
-                supplies[resource] -= (int)supplies[resource];
 
+            int cargoSpace = boat.GetCargoMax() - boat.GetCargoCurrent();
+            if (logBoatDebug)
+            {
+                Debug.Log(boat.boatName + " space on ship:" + cargoSpace + " amount in town: " + supplies[resource]);
             }
+
+            int remainingRequestedAmount = amount - currentAddedCargo;
+            int transferableAmount = Mathf.Min(cargoSpace, (int)supplies[resource], remainingRequestedAmount);
+            if (transferableAmount <= 0)
+            {
+                continue;
+            }
+
+            boat.AddCargo(resource, transferableAmount);
+            supplies[resource] -= transferableAmount;
+            currentAddedCargo += transferableAmount;
         }
     }
 
@@ -509,7 +478,7 @@ public class Town : MonoBehaviour
     }
 
     private void SetUpConsumption(){
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ItemTypeCount; i++) {
             consumptionAmount[i] -= (float)demand[setupSupplyItems[i]] /1000;
         }
     }
