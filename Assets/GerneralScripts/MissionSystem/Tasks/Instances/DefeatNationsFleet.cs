@@ -16,13 +16,12 @@ public class DefeatNationsFleet : TaskInstance
         TargetNationality = targetEnemyNation;
 
         Debug.Log($"EnemyKillTask created: {TaskName}, Target: {targetEnemyNation}, Kills Needed: {TargetKills}");
-        CombatEvents.DefeatFleet += HandleDefeatFleet;
+        SubscribeToEvents();
     }
 
     public override void Initialize()
     {
-        
-        CombatEvents.DefeatFleet += HandleDefeatFleet;
+        SubscribeToEvents();
 
         Debug.Log($"Initialized EnemyKillTask: {TaskName}, Target: {TargetNationality}, Current Kills: {FleetsDefeated}/{TargetKills}");
     }
@@ -45,18 +44,30 @@ public class DefeatNationsFleet : TaskInstance
             CompleteTask();
 
             // Unsubscribe from the event when the task is completed
-            CombatEvents.DefeatFleet -= HandleDefeatFleet;
+            UnsubscribeFromEvents();
         }
     }
     public override void Cleanup()
     {
         // Unsubscribe from the enemy killed event
-        CombatEvents.DefeatFleet -= HandleDefeatFleet;
+        UnsubscribeFromEvents();
         base.Cleanup(); 
     }
 
     ~DefeatNationsFleet()
     {
         Cleanup();
+    }
+
+    private void SubscribeToEvents()
+    {
+        // idempotent subscribe
+        CombatEvents.DefeatFleet -= HandleDefeatFleet;
+        CombatEvents.DefeatFleet += HandleDefeatFleet;
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        CombatEvents.DefeatFleet -= HandleDefeatFleet;
     }
 }

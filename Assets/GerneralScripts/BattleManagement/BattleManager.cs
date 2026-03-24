@@ -71,7 +71,6 @@ namespace GerneralScripts.BattleManagement
 
             CurrentSession = null;
             PendingResult = null;
-            GameEvents.ClearEvents();
         }
     }
 

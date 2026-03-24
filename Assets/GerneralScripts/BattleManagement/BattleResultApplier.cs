@@ -1,4 +1,5 @@
 ﻿using System;
+using MapMode.Scripts;
 using UnityEngine;
 
 namespace GerneralScripts.BattleManagement
@@ -13,6 +14,7 @@ namespace GerneralScripts.BattleManagement
             if (session.HasPlayer)
                 ApplyPlayerAftermath(session, result);
 
+            InvokeDefeatFleetEvent(session, result);
             GameEvents.SaveGame();
         }
 
@@ -72,6 +74,30 @@ namespace GerneralScripts.BattleManagement
                 // PlayerRespawnService.RespawnAtNearestPort();
                 // InventoryService.DropLoot(...);
             }
+        }
+
+        private static void InvokeDefeatFleetEvent(BattleSession session, BattleResult result)
+        {
+            if (session == null || result == null || !session.HasPlayer)
+            {
+                return;
+            }
+
+            if (result.Winner != session.PlayerSide)
+            {
+                return;
+            }
+
+            BattleParticipant enemyParticipant = session.SideA.Controller == ControllerKind.Player
+                ? session.SideB
+                : session.SideA;
+
+            if (enemyParticipant?.Fleet == null)
+            {
+                return;
+            }
+
+            CombatEvents.InvokeDefeatFleet(enemyParticipant.Fleet);
         }
     }
 }

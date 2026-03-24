@@ -7,8 +7,8 @@ using UnityEngine;
 public class GameEvents : MonoBehaviour
 {
     public static GameEvents Instance { get; private set; }
-    public static System.Action SaveInitiated;
-    public static System.Action LoadInitiated;
+    public static event Action SaveInitiated;
+    public static event Action LoadInitiated;
     
     private void Awake()
     {
@@ -44,6 +44,7 @@ public class GameEvents : MonoBehaviour
         Debug.Log("No file to load");
     }
 
+    [Obsolete("Runtime cleanup should happen via subscriber lifecycle (OnEnable/OnDisable or OnDestroy). Avoid clearing global event delegates.")]
     public static void ClearEvents() {
         SaveInitiated = null;
         LoadInitiated = null;

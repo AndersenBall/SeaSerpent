@@ -3,7 +3,7 @@ using MapMode.Scripts.NavalInteractionContracts;
 
 namespace MapMode.Scripts
 {
-    public class NavalInteractionEvent
+    public static class NavalInteractionEvent
     {
         public static event Action<AttackFleetEvent> AttackedFleet;
 

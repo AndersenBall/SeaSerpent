@@ -33,7 +33,7 @@ public class Mission
             else {
                 task.isActive = true;
             }
-            task.OnTaskCompleted += CheckProgress;
+            RebindTaskCompletionHandler(task);
         }
     }
 
@@ -43,7 +43,7 @@ public class Mission
         {
             task.Initialize();
             task.isActive = task.Step == CurrentStep;
-            task.OnTaskCompleted += CheckProgress;
+            RebindTaskCompletionHandler(task);
         }
     }
 
@@ -79,6 +79,12 @@ public class Mission
             task.Cleanup();
             task.OnTaskCompleted -= CheckProgress; // Unsubscribe to avoid memory leaks
         }
+    }
+
+    private void RebindTaskCompletionHandler(TaskInstance task)
+    {
+        task.OnTaskCompleted -= CheckProgress;
+        task.OnTaskCompleted += CheckProgress;
     }
 
     public override string ToString()

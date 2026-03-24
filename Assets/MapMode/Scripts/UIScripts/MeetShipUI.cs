@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using GerneralScripts.BattleManagement;
+using MapMode.Scripts;
+using MapMode.Scripts.NavalInteractionContracts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -76,6 +78,7 @@ public class MeetShipUI : MonoBehaviour
             ResolutionMode.Playable,
             SceneManager.GetActiveScene().name);
 
+        NavalInteractionEvent.InvokeAttackedFleet(new AttackFleetEvent(oppositeFleet, playerStartedAttack: true));
         BattleManager.Instance.StartBattle(session);
     }
 }
