@@ -1,19 +1,11 @@
 ﻿namespace MapMode.Scripts.BoatScripts
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame.Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame;
-    using MapMode.Scripts.BoatScripts;
     using UnityEngine;
     using UnityEngine.UI;
 
     public class MastHealth : ShipHealthComponent
     {
-        [SerializeField] private int _currentHealth;
-    
         private MastControls mastControls;
-        private HUDController hud;
-
         private Slider healthSlider;
         private Canvas healthCanvas;
 
@@ -36,7 +28,7 @@
 
         }
     
-        private void Die()
+        protected override void Die()
         {
             if (healthCanvas != null){
                 healthCanvas.enabled = false;

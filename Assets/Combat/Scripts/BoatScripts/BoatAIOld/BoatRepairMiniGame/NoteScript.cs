@@ -1,37 +1,40 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 {
-
     public class NoteScript : MonoBehaviour
     {
-        [Header("Settings")] [SerializeField]
-        private float spawnTime = 1.5f; // The time the note exists on screen
-        
-        [Header("Judgment Timings (ms)")] [SerializeField]
-        private float perfectTiming = 0.0395f; 
-        
-        [SerializeField] private float goodTiming = 0.0975f; 
-        [SerializeField] private float mehTiming = 0.1425f; 
+        [Header("Settings")]
+        [SerializeField] private float spawnTime = 1.5f;
 
-        [SerializeField] private Button noteButton; // Button associated with this note
+        [Header("Judgment Timings (s)")]
+        [SerializeField] private float perfectTiming = 0.0395f;
+        [SerializeField] private float goodTiming = 0.0975f;
+        [SerializeField] private float mehTiming = 0.1425f;
+
+        [SerializeField] private Button noteButton;
 
         public delegate void NoteResult(Judgment judgment);
-
         public NoteResult onNoteCompleted;
-        
-        private float activationTime;
 
-        
-        
-        private bool wasHit = false;
+        private float activationTime;
+        private bool wasHit;
+
+        private void Awake()
+        {
+            if (noteButton == null)
+            {
+                noteButton = GetComponentInChildren<Button>();
+            }
+        }
 
         private void Start()
         {
             activationTime = Time.time + spawnTime;
-            
-            if (noteButton != null){
+
+            if (noteButton != null)
+            {
                 noteButton.onClick.AddListener(HitNote);
                 noteButton.gameObject.SetActive(false);
             }
@@ -39,8 +42,12 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 
         private void Update()
         {
-            float currentTime = Time.time;
+            if (noteButton == null)
+            {
+                return;
+            }
 
+            float currentTime = Time.time;
 
             if (currentTime >= activationTime - mehTiming)
             {
@@ -51,17 +58,17 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             {
                 RegisterNoteResult(Judgment.Miss);
             }
-
         }
 
         private void HitNote()
         {
-            if (wasHit) return;
-            wasHit = true;
+            if (wasHit)
+            {
+                return;
+            }
 
-            float hitTime = Time.time;
-            float offset = Mathf.Abs(hitTime - activationTime);
-            
+            float offset = Mathf.Abs(Time.time - activationTime);
+
             if (offset <= perfectTiming)
             {
                 RegisterNoteResult(Judgment.Perfect);
@@ -76,20 +83,27 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
             }
             else
             {
-                RegisterNoteResult(Judgment.Miss); 
+                RegisterNoteResult(Judgment.Miss);
             }
         }
-
 
         private void RegisterNoteResult(Judgment judgment)
         {
-            if (noteButton != null){
-                noteButton.gameObject.SetActive(false); 
+            if (wasHit)
+            {
+                return;
             }
 
-            onNoteCompleted?.Invoke(judgment); 
-            Destroy(gameObject); 
+            wasHit = true;
+
+            if (noteButton != null)
+            {
+                noteButton.onClick.RemoveListener(HitNote);
+                noteButton.gameObject.SetActive(false);
+            }
+
+            onNoteCompleted?.Invoke(judgment);
+            Destroy(gameObject);
         }
     }
 }
-

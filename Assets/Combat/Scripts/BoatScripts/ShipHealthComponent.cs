@@ -1,4 +1,4 @@
-﻿using Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame.Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame;
+﻿using Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame;
 
 namespace MapMode.Scripts.BoatScripts
 {
@@ -62,13 +62,15 @@ public class ShipHealthComponent : MonoBehaviour
         if (IsDead) return; 
 
         CurrentHealth -= damageAmount;
-        
-        if (CurrentHealth <= 0f){
-            IsDead = true;
-            Die();
+
+        // Death is handled centrally in the CurrentHealth setter.
+        // If this hit was lethal, do not create a repair task.
+        if (CurrentHealth <= 0)
+        {
+            return;
         }
 
-        SpawnRepairTask(damageAmount,hitPoint);
+        SpawnRepairTask(damageAmount, hitPoint);
 
     }
 
