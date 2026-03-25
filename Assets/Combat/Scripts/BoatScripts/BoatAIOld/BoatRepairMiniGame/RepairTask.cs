@@ -1,9 +1,5 @@
-﻿using MapMode.Scripts.BoatScripts;
+using MapMode.Scripts.BoatScripts;
 using UnityEngine;
-
-namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
-{
-    using UnityEngine;
 
 namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
 {
@@ -11,55 +7,77 @@ namespace Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame
     {
         private ShipHealthComponent boatHealth;
         private int maxRepairAmount;
-        [SerializeField]
-        private GameObject rhythmMiniGamePrefab;
 
-        private Transform uiParent; 
+        [SerializeField] private GameObject rhythmMiniGamePrefab;
+        [SerializeField] private Transform uiParent;
 
-        
-        private RhythmMiniGame rhythmMiniGame; 
-        
-        public void Initialize(ShipHealthComponent parentHealth, int healthRestore )
+        private RhythmMiniGame activeMiniGame;
+        private bool miniGameRunning;
+
+        public void Initialize(ShipHealthComponent parentHealth, int healthRestore)
         {
             boatHealth = parentHealth;
-            maxRepairAmount = healthRestore;
+            maxRepairAmount = Mathf.Max(0, healthRestore);
         }
 
-        //TODO wont work. need to use a raycast
         public void startMiniGame()
         {
-            Debug.Log("starting mini game");
-            if (boatHealth == null) return;
-
-            GameObject miniGameInstance = Instantiate(rhythmMiniGamePrefab, uiParent);
-
-            RhythmMiniGame miniGameScript = miniGameInstance.GetComponent<RhythmMiniGame>();
-            if (miniGameScript != null)
+            if (miniGameRunning || boatHealth == null)
             {
-                miniGameScript.onMiniGameCompleted = OnMiniGameCompleted;
-                miniGameScript.StartRhythmGame();
+                return;
             }
 
+            if (rhythmMiniGamePrefab == null)
+            {
+                Debug.LogWarning("RepairTask is missing a rhythmMiniGamePrefab reference.");
+                return;
+            }
+
+            miniGameRunning = true;
+            Transform parent = uiParent;
+
+            GameObject miniGameInstance = parent == null
+                ? Instantiate(rhythmMiniGamePrefab)
+                : Instantiate(rhythmMiniGamePrefab, parent);
+
+            activeMiniGame = miniGameInstance.GetComponent<RhythmMiniGame>();
+            if (activeMiniGame == null)
+            {
+                Debug.LogWarning("Mini-game prefab does not contain a RhythmMiniGame component.");
+                miniGameRunning = false;
+                Destroy(miniGameInstance);
+                return;
+            }
+
+            activeMiniGame.onMiniGameCompleted += OnMiniGameCompleted;
+            activeMiniGame.StartRhythmGame();
         }
-         private void OnMiniGameCompleted(float accuracy)
+
+        private void OnMiniGameCompleted(float accuracy)
         {
-           
+            if (activeMiniGame != null)
+            {
+                activeMiniGame.onMiniGameCompleted -= OnMiniGameCompleted;
+            }
+
             if (boatHealth != null)
             {
-                int repairAmount = Mathf.RoundToInt(maxRepairAmount * accuracy);
-                boatHealth.CurrentHealth += repairAmount;
-                Debug.Log($"Repair successful! Restored {repairAmount } our of {maxRepairAmount} health.");
+                int repairAmount = Mathf.RoundToInt(maxRepairAmount * Mathf.Clamp01(accuracy));
+                boatHealth.Heal(repairAmount);
+                Debug.Log($"Repair successful! Restored {repairAmount} out of {maxRepairAmount} health.");
             }
-            
-            
+
+            if (activeMiniGame != null)
+            {
+                Destroy(activeMiniGame.gameObject);
+            }
+
             RemoveTask();
         }
-         
+
         public void RemoveTask()
         {
             Destroy(gameObject);
         }
     }
-}
-
 }

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame.Combat.Scripts.BoatScripts.BoatAIOld.BoatRepairMiniGame;
-using MapMode.Scripts.BoatScripts;
+﻿using MapMode.Scripts.BoatScripts;
 using UnityEngine;
 using UnityEngine.UI;
 
