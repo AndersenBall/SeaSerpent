@@ -78,41 +78,61 @@ public class BoatMaster : MonoBehaviour
 
     private void SpawnBoats()
     {
+        SpawnPlayerFleet();
+        SpawnEnemyFleet();
+    }
 
-        if (playerFleet?.GetBoats() != null) {
-            var teamOneBoatTeam = boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == 1);
-            if (teamOneBoatTeam == null)
-            {
-                Debug.LogError("BoatMaster missing team 1 BoatTeamManager.");
-                return;
-            }
-
-            var boats = playerFleet.GetBoats();
-            int flagshipIndex = boats.FindIndex(boat => boat.boatName == playerFleet.FlagShipName);
-
-            for (int i = 0; i < boats.Count; i++) {
-                if (i == flagshipIndex || (flagshipIndex == -1 && i == 0)) {
-                    // Spawn the flagship or, if no flagship is found, the first boat as player-controlled
-                    teamOneBoatTeam.SpawnPlayerBoat(boats[i]);
-                } else {
-                    // Spawn all other boats
-                    teamOneBoatTeam.SpawnBoat(boats[i]);
-                }
-                Debug.Log("team:" + teamOneBoatTeam.GetTeam());
-            }
+    private void SpawnPlayerFleet()
+    {
+        var playerBoats = playerFleet?.GetBoats();
+        if (playerBoats == null)
+        {
+            return;
         }
 
-        if (enemyFleet != null) {
-            foreach (Boat b in enemyFleet.GetBoats()) {
-                foreach (BoatTeamManager boatTeam in boatTeamManagers) {
-                    if (2 == boatTeam.GetTeam()) {
-                        Debug.Log("team:" + boatTeam.GetTeam());
-                        boatTeam.SpawnBoat(b);
-                    }
-                }
-            }
+        var playerTeamManager = GetBoatTeamManager(1);
+        if (playerTeamManager == null)
+        {
+            Debug.LogError("BoatMaster missing team 1 BoatTeamManager.");
+            return;
         }
 
+        int flagshipIndex = playerBoats.FindIndex(boat => boat.boatName == playerFleet.FlagShipName);
+        for (int i = 0; i < playerBoats.Count; i++)
+        {
+            if (IsPlayerControlledBoat(i, flagshipIndex))
+                playerTeamManager.SpawnPlayerBoat(playerBoats[i]);
+            else
+                playerTeamManager.SpawnBoat(playerBoats[i]);
+
+            Debug.Log("team:" + playerTeamManager.GetTeam());
+        }
+    }
+
+    private void SpawnEnemyFleet()
+    {
+        var enemyBoats = enemyFleet?.GetBoats();
+        var enemyTeamManager = GetBoatTeamManager(2);
+        if (enemyBoats == null || enemyTeamManager == null)
+        {
+            return;
+        }
+
+        foreach (Boat enemyBoat in enemyBoats)
+        {
+            Debug.Log("team:" + enemyTeamManager.GetTeam());
+            enemyTeamManager.SpawnBoat(enemyBoat);
+        }
+    }
+
+    private BoatTeamManager GetBoatTeamManager(int teamNumber)
+    {
+        return boatTeamManagers.FirstOrDefault(boatTeam => boatTeam.GetTeam() == teamNumber);
+    }
+
+    private static bool IsPlayerControlledBoat(int boatIndex, int flagshipIndex)
+    {
+        return boatIndex == flagshipIndex || (flagshipIndex == -1 && boatIndex == 0);
     }
 
 
