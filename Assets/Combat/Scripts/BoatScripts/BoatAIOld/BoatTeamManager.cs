@@ -61,11 +61,7 @@ public class BoatTeamManager : MonoBehaviour
             numberOfSailors += 1;
         }
         
-        CannonInterface[] cannons = spawnedBoat.GetComponentsInChildren<CannonInterface>();
-        foreach (var cannon in cannons)
-        {
-            cannon.SetCannonValues(b.cannon ?? new Cannon(CannonType.LongGun));
-        }
+        ConfigureBoatCannons(spawnedBoat, b.cannon);
     }
     public void SpawnPlayerBoat(Boat b)
     {
@@ -97,11 +93,7 @@ public class BoatTeamManager : MonoBehaviour
         }
 
         
-        CannonInterface[] cannons = spawnedBoat.GetComponentsInChildren<CannonInterface>();
-        foreach (var cannon in cannons)
-        {
-            cannon.SetCannonValues(b.cannon ?? new Cannon(CannonType.LongGun));
-        }
+        ConfigureBoatCannons(spawnedBoat, b.cannon);
 
         Transform playerAI = boatAiTransform.Find("ECM_BaseFirstPersonControllerAI"); 
         playerAI.parent = spawnedAIBoat.transform;
@@ -115,6 +107,33 @@ public class BoatTeamManager : MonoBehaviour
         cameraTopDown.GetComponent<TopDownCamController>().SetUPCamera(spawnedBoat.transform);
         var camControl  = GameObject.Find("CameraWrapper").GetComponent<FollowCameraController>();
         camControl.SetUPCamera(spawnedBoat);
+    }
+
+
+    private static void ConfigureBoatCannons(GameObject spawnedBoat, Cannon cannonConfig)
+    {
+        if (cannonConfig == null)
+        {
+            Debug.LogError($"{spawnedBoat.name} does not have a cannon config. Migration requires Boat.cannon to be set.");
+            return;
+        }
+
+        CannonStationSpawner[] cannonStations = spawnedBoat.GetComponentsInChildren<CannonStationSpawner>(true);
+
+        if (cannonStations.Length == 0)
+        {
+            Debug.LogError($"{spawnedBoat.name} has no {nameof(CannonStationSpawner)} components. Add cannon stations to the boat prefab.");
+            return;
+        }
+
+        foreach (var station in cannonStations)
+        {
+            CannonInterface spawnedCannon = station.SpawnCannon(cannonConfig);
+            if (spawnedCannon == null)
+            {
+                Debug.LogError($"{spawnedBoat.name} has a cannon station that failed to spawn a cannon. Check station prefab references.");
+            }
+        }
     }
 
     public int GetTeam() {

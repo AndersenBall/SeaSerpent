@@ -129,7 +129,18 @@ public class PlayerTriggerController : MonoBehaviour
         //Debug.Log("Entered Trigger of " + other.transform.name);
         if (other.CompareTag("Cannon")) {
             hud.cannonKeyOn();
-            activeCannon = other.gameObject.GetComponent<CannonInterface>();
+
+            CannonStationSpawner cannonStation = other.GetComponent<CannonStationSpawner>()
+                ?? other.GetComponentInParent<CannonStationSpawner>();
+
+            if (cannonStation != null)
+            {
+                activeCannon = cannonStation.SpawnedCannon;
+            }
+            else
+            {
+                Debug.LogWarning($"{other.name} is tagged Cannon but has no {nameof(CannonStationSpawner)} in its hierarchy.");
+            }
         }
         if (other.CompareTag("steeringWheel")) {
             triggerInsideOf = other;
