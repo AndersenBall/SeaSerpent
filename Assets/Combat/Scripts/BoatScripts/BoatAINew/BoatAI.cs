@@ -1,5 +1,4 @@
 ﻿
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using MapMode.Scripts.DataTypes.boatComponents.Cannons;
@@ -54,7 +53,7 @@ public class BoatAI : MonoBehaviour
 
     private PandaBehaviour pandaBT = null;
     [Task]
-    public string action;
+    public string action = "FireAtWill";
     
     private bool _isDead = false;
     [Task]
