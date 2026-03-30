@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using MapMode.Scripts;
 using UnityEngine;
@@ -23,6 +24,13 @@ public class FleetMapController : MonoBehaviour
     private float chaseUpdateInterval = 0.5f; 
     private float timeSinceLastUpdate = 0f;
     public Transform destination { get => _destination; set => _destination = value; }
+    public FleetAIState CurrentState { get; private set; } = FleetAIState.Idle;
+    public FleetMapController CurrentTarget { get; private set; }
+    [SerializeField] private float aiTickInterval = 0.5f;
+    [SerializeField] private float detectRadius = 200f;
+    [SerializeField] private float fleePowerRatioThreshold = 1.1f;
+    [SerializeField] private float regroupHpThreshold = 0.35f;
+    private float aiTickTimer = 0f;
 
 
     Fleet fleet;
@@ -45,6 +53,7 @@ public class FleetMapController : MonoBehaviour
         navAgent.speed = fleetSpeed;
         navAgent.acceleration = fleetAcceleration;
         UpdateBoatNames();
+        InitializeAIState();
     }
 
     private void Update()
@@ -52,6 +61,13 @@ public class FleetMapController : MonoBehaviour
 
         if (navAgent != null)
         {
+            aiTickTimer += Time.deltaTime;
+            if (aiTickTimer >= aiTickInterval)
+            {
+                aiTickTimer = 0f;
+                TickAI();
+            }
+
             if (destination != null && destination.position != lastDestinationPosition)
             {
                 timeSinceLastUpdate += Time.deltaTime;
@@ -115,19 +131,24 @@ public class FleetMapController : MonoBehaviour
             return;
         }
 
-        if (fleet.FleetType == AIFleetType.Pirate && otherFleet.FleetType == AIFleetType.Trade)
+        if (!CanEngage(otherFleet))
+        {
+            return;
+        }
+
+        if (BattlePredicter.GetFleetPower(fleet) >= BattlePredicter.GetFleetPower(otherFleet))
         {
             BattlePredicter.ApplyBattleDamage(fleet, otherFleet);
-            UpdateAfterEncounter(otherFleetController);
+            UpdateAfterEncounter(otherFleetController, wonBattle: true);
         }
-        else if (fleet.FleetType == AIFleetType.Trade && otherFleet.FleetType == AIFleetType.Pirate)
+        else
         {
             BattlePredicter.ApplyBattleDamage(otherFleet, fleet);
-            otherFleetController.UpdateAfterEncounter(this);
+            UpdateAfterEncounter(otherFleetController, wonBattle: false);
         }
     }
 
-    public void UpdateAfterEncounter(FleetMapController otherFleetController)
+    public void UpdateAfterEncounter(FleetMapController otherFleetController, bool wonBattle)
     {
         if (fleet == null)
         {
@@ -140,21 +161,41 @@ public class FleetMapController : MonoBehaviour
             return;
         }
 
-        if (fleet.FleetType == AIFleetType.Pirate)
+        CurrentTarget = null;
+
+        if (CurrentState == FleetAIState.Flee && wonBattle)
         {
-            FleetMapController newTarget = FindClosestTradeFleet();
+            ChangeState(FleetAIState.Regroup);
+            return;
+        }
+
+        if (fleet.FleetType == AIFleetType.Pirate || fleet.FleetType == AIFleetType.NavalPatrol || fleet.FleetType == AIFleetType.War)
+        {
+            FleetMapController newTarget = FindNearestHostileFleet();
             if (newTarget != null)
             {
+                CurrentTarget = newTarget;
                 destination = newTarget.transform;
+                ChangeState(FleetAIState.InterceptTarget);
+                return;
             }
         }
+
+        if (fleet.FleetType == AIFleetType.Trade && !wonBattle)
+        {
+            ChangeState(FleetAIState.Flee);
+            return;
+        }
+
+        ChangeState(FleetAIState.Search);
     }
 
-    private FleetMapController FindClosestTradeFleet()
+    private FleetMapController FindClosestFleet(System.Func<Fleet, bool> predicate)
     {
         FleetMapController[] allFleets = FindObjectsOfType<FleetMapController>();
         FleetMapController closestFleet = null;
         float closestDistance = float.MaxValue;
+        float maxDistanceSqr = detectRadius * detectRadius;
 
         foreach (FleetMapController fleetController in allFleets)
         {
@@ -164,12 +205,17 @@ public class FleetMapController : MonoBehaviour
             }
 
             Fleet candidate = fleetController.GetFleet();
-            if (candidate == null || candidate.FleetType != AIFleetType.Trade)
+            if (candidate == null || !predicate(candidate))
             {
                 continue;
             }
 
             float distance = (fleetController.transform.position - transform.position).sqrMagnitude;
+            if (distance > maxDistanceSqr)
+            {
+                continue;
+            }
+
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -197,6 +243,7 @@ public class FleetMapController : MonoBehaviour
     #region methods
     public void SetFleet(Fleet f) {fleet = f;}
     public Fleet GetFleet(){ return fleet;}
+    public void ChangeState(FleetAIState newState) { CurrentState = newState; }
 
     public void DockFleet(Town town) {
         town.DockFleet(fleet);
@@ -249,6 +296,225 @@ public class FleetMapController : MonoBehaviour
     public void UpdateBoatNames() {
         
         boatNames = fleet.ToString();
+    }
+
+    private void InitializeAIState()
+    {
+        CurrentTarget = null;
+
+        switch (fleet.FleetType)
+        {
+            case AIFleetType.Trade:
+                ChangeState(FleetAIState.TransitToTown);
+                break;
+            case AIFleetType.Pirate:
+                ChangeState(FleetAIState.Search);
+                break;
+            case AIFleetType.NavalPatrol:
+            case AIFleetType.War:
+                ChangeState(FleetAIState.PatrolRoute);
+                break;
+            default:
+                ChangeState(FleetAIState.Idle);
+                break;
+        }
+    }
+
+    private void TickAI()
+    {
+        if (fleet == null)
+        {
+            ChangeState(FleetAIState.Disabled);
+            return;
+        }
+
+        if (fleet.getNumberBoats() <= 0)
+        {
+            ChangeState(FleetAIState.Disabled);
+            RemoveFleet();
+            return;
+        }
+
+        switch (CurrentState)
+        {
+            case FleetAIState.TransitToTown:
+                TickTransit();
+                break;
+            case FleetAIState.PatrolRoute:
+            case FleetAIState.Search:
+                TickSearch();
+                break;
+            case FleetAIState.InterceptTarget:
+                TickIntercept();
+                break;
+            case FleetAIState.Flee:
+                TickFlee();
+                break;
+            case FleetAIState.Regroup:
+                TickRegroup();
+                break;
+        }
+    }
+
+    private void TickTransit()
+    {
+        if (fleet.FleetType != AIFleetType.Trade)
+        {
+            return;
+        }
+
+        FleetMapController threat = FindNearestHostileFleet();
+        if (threat != null)
+        {
+            float selfPower = BattlePredicter.GetFleetPower(fleet);
+            float threatPower = BattlePredicter.GetFleetPower(threat.GetFleet());
+            if (selfPower > 0f && (threatPower / selfPower) >= fleePowerRatioThreshold)
+            {
+                CurrentTarget = threat;
+                ChangeState(FleetAIState.Flee);
+            }
+        }
+    }
+
+    private void TickSearch()
+    {
+        FleetMapController target = FindNearestHostileFleet();
+        if (target == null)
+        {
+            return;
+        }
+
+        CurrentTarget = target;
+        destination = target.transform;
+        ChangeState(FleetAIState.InterceptTarget);
+    }
+
+    private void TickIntercept()
+    {
+        if (CurrentTarget == null || CurrentTarget.GetFleet() == null || CurrentTarget.GetFleet().getNumberBoats() <= 0)
+        {
+            CurrentTarget = null;
+            ChangeState(FleetAIState.Search);
+            return;
+        }
+
+        destination = CurrentTarget.transform;
+
+        if (GetFleetHealthRatio() < regroupHpThreshold)
+        {
+            ChangeState(FleetAIState.Regroup);
+        }
+    }
+
+    private void TickFlee()
+    {
+        Town safeTown = FindNearestFriendlyTown();
+        if (safeTown != null)
+        {
+            destination = safeTown.transform;
+        }
+    }
+
+    private void TickRegroup()
+    {
+        Town safeTown = FindNearestFriendlyTown();
+        if (safeTown != null)
+        {
+            destination = safeTown.transform;
+        }
+    }
+
+    private FleetMapController FindNearestHostileFleet()
+    {
+        return FindClosestFleet(CanEngage);
+    }
+
+    private bool CanEngage(Fleet other)
+    {
+        if (other == null || fleet == null)
+        {
+            return false;
+        }
+
+        if (fleet.FleetType == AIFleetType.Pirate)
+        {
+            return other.FleetType == AIFleetType.Trade || other.FleetType == AIFleetType.NavalPatrol || other.FleetType == AIFleetType.War;
+        }
+
+        if (fleet.FleetType == AIFleetType.Trade)
+        {
+            return other.FleetType == AIFleetType.Pirate;
+        }
+
+        if (fleet.FleetType == AIFleetType.NavalPatrol)
+        {
+            return other.FleetType == AIFleetType.Pirate;
+        }
+
+        if (fleet.FleetType == AIFleetType.War)
+        {
+            if (other.FleetType == AIFleetType.Pirate)
+            {
+                return true;
+            }
+
+            return other.FleetType == AIFleetType.War && other.Nationality != fleet.Nationality;
+        }
+
+        return false;
+    }
+
+    private Town FindNearestFriendlyTown()
+    {
+        Town[] allTowns = FindObjectsOfType<Town>();
+        Town closestTown = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (Town town in allTowns)
+        {
+            if (town.nationality != fleet.Nationality)
+            {
+                continue;
+            }
+
+            float distance = (town.transform.position - transform.position).sqrMagnitude;
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTown = town;
+            }
+        }
+
+        return closestTown;
+    }
+
+    private float GetFleetHealthRatio()
+    {
+        var boats = fleet.GetBoats();
+        if (boats == null || boats.Count == 0)
+        {
+            return 0f;
+        }
+
+        float current = 0f;
+        float max = 0f;
+        foreach (Boat b in boats)
+        {
+            if (b == null)
+            {
+                continue;
+            }
+
+            current += Mathf.Max(0, b.currentBoatHealth);
+            max += Mathf.Max(1, b.maxBoatHealth);
+        }
+
+        if (max <= 0f)
+        {
+            return 0f;
+        }
+
+        return current / max;
     }
 
     #endregion
