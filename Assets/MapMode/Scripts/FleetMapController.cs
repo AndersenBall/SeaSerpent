@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using MapMode.Scripts;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class FleetMapController : MonoBehaviour
 {
@@ -31,6 +30,7 @@ public class FleetMapController : MonoBehaviour
     [SerializeField] private float fleePowerRatioThreshold = 1.1f;
     [SerializeField] private float regroupHpThreshold = 0.35f;
     private float aiTickTimer = 0f;
+    private IFleetAIPolicy aiPolicy = new DefaultFleetAIPolicy();
 
 
     Fleet fleet;
@@ -161,33 +161,7 @@ public class FleetMapController : MonoBehaviour
             return;
         }
 
-        CurrentTarget = null;
-
-        if (CurrentState == FleetAIState.Flee && wonBattle)
-        {
-            ChangeState(FleetAIState.Regroup);
-            return;
-        }
-
-        if (fleet.FleetType == AIFleetType.Pirate || fleet.FleetType == AIFleetType.NavalPatrol || fleet.FleetType == AIFleetType.War)
-        {
-            FleetMapController newTarget = FindNearestHostileFleet();
-            if (newTarget != null)
-            {
-                CurrentTarget = newTarget;
-                destination = newTarget.transform;
-                ChangeState(FleetAIState.InterceptTarget);
-                return;
-            }
-        }
-
-        if (fleet.FleetType == AIFleetType.Trade && !wonBattle)
-        {
-            ChangeState(FleetAIState.Flee);
-            return;
-        }
-
-        ChangeState(FleetAIState.Search);
+        aiPolicy.UpdateAfterEncounter(this, otherFleetController, wonBattle);
     }
 
     private FleetMapController FindClosestFleet(System.Func<Fleet, bool> predicate)
@@ -244,6 +218,7 @@ public class FleetMapController : MonoBehaviour
     public void SetFleet(Fleet f) {fleet = f;}
     public Fleet GetFleet(){ return fleet;}
     public void ChangeState(FleetAIState newState) { CurrentState = newState; }
+    public float RegroupHpThreshold => regroupHpThreshold;
 
     public void DockFleet(Town town) {
         town.DockFleet(fleet);
@@ -301,23 +276,8 @@ public class FleetMapController : MonoBehaviour
     private void InitializeAIState()
     {
         CurrentTarget = null;
-
-        switch (fleet.FleetType)
-        {
-            case AIFleetType.Trade:
-                ChangeState(FleetAIState.TransitToTown);
-                break;
-            case AIFleetType.Pirate:
-                ChangeState(FleetAIState.Search);
-                break;
-            case AIFleetType.NavalPatrol:
-            case AIFleetType.War:
-                ChangeState(FleetAIState.PatrolRoute);
-                break;
-            default:
-                ChangeState(FleetAIState.Idle);
-                break;
-        }
+        aiPolicy = FleetAIPolicyFactory.CreateFor(fleet.FleetType);
+        ChangeState(aiPolicy.GetInitialState(this));
     }
 
     private void TickAI()
@@ -335,78 +295,49 @@ public class FleetMapController : MonoBehaviour
             return;
         }
 
-        switch (CurrentState)
-        {
-            case FleetAIState.TransitToTown:
-                TickTransit();
-                break;
-            case FleetAIState.PatrolRoute:
-            case FleetAIState.Search:
-                TickSearch();
-                break;
-            case FleetAIState.InterceptTarget:
-                TickIntercept();
-                break;
-            case FleetAIState.Flee:
-                TickFlee();
-                break;
-            case FleetAIState.Regroup:
-                TickRegroup();
-                break;
-        }
+        aiPolicy.Tick(this);
     }
 
-    private void TickTransit()
+    public void SetCurrentTarget(FleetMapController target)
     {
-        if (fleet.FleetType != AIFleetType.Trade)
-        {
-            return;
-        }
-
-        FleetMapController threat = FindNearestHostileFleet();
-        if (threat != null)
-        {
-            float selfPower = BattlePredicter.GetFleetPower(fleet);
-            float threatPower = BattlePredicter.GetFleetPower(threat.GetFleet());
-            if (selfPower > 0f && (threatPower / selfPower) >= fleePowerRatioThreshold)
-            {
-                CurrentTarget = threat;
-                ChangeState(FleetAIState.Flee);
-            }
-        }
-    }
-
-    private void TickSearch()
-    {
-        FleetMapController target = FindNearestHostileFleet();
-        if (target == null)
-        {
-            return;
-        }
-
         CurrentTarget = target;
-        destination = target.transform;
-        ChangeState(FleetAIState.InterceptTarget);
+        if (target != null)
+        {
+            destination = target.transform;
+        }
     }
 
-    private void TickIntercept()
+    public void ClearCurrentTarget()
     {
-        if (CurrentTarget == null || CurrentTarget.GetFleet() == null || CurrentTarget.GetFleet().getNumberBoats() <= 0)
-        {
-            CurrentTarget = null;
-            ChangeState(FleetAIState.Search);
-            return;
-        }
+        CurrentTarget = null;
+    }
 
-        destination = CurrentTarget.transform;
+    public bool HasValidCurrentTarget()
+    {
+        return CurrentTarget != null && CurrentTarget.GetFleet() != null && CurrentTarget.GetFleet().getNumberBoats() > 0;
+    }
 
-        if (GetFleetHealthRatio() < regroupHpThreshold)
+    public void SyncDestinationToCurrentTarget()
+    {
+        if (CurrentTarget != null)
         {
-            ChangeState(FleetAIState.Regroup);
+            destination = CurrentTarget.transform;
         }
     }
 
-    private void TickFlee()
+    public bool ShouldFleeFrom(FleetMapController threat)
+    {
+        if (threat == null || threat.GetFleet() == null || fleet == null)
+        {
+            return false;
+        }
+
+        float selfPower = BattlePredicter.GetFleetPower(fleet);
+        float threatPower = BattlePredicter.GetFleetPower(threat.GetFleet());
+        return selfPower > 0f && (threatPower / selfPower) >= fleePowerRatioThreshold;
+    }
+
+    public void SetDestinationToNearestFriendlyTown()
     {
         Town safeTown = FindNearestFriendlyTown();
         if (safeTown != null)
@@ -415,53 +346,14 @@ public class FleetMapController : MonoBehaviour
         }
     }
 
-    private void TickRegroup()
-    {
-        Town safeTown = FindNearestFriendlyTown();
-        if (safeTown != null)
-        {
-            destination = safeTown.transform;
-        }
-    }
-
-    private FleetMapController FindNearestHostileFleet()
+    public FleetMapController FindNearestHostileFleet()
     {
         return FindClosestFleet(CanEngage);
     }
 
     private bool CanEngage(Fleet other)
     {
-        if (other == null || fleet == null)
-        {
-            return false;
-        }
-
-        if (fleet.FleetType == AIFleetType.Pirate)
-        {
-            return other.FleetType == AIFleetType.Trade || other.FleetType == AIFleetType.NavalPatrol || other.FleetType == AIFleetType.War;
-        }
-
-        if (fleet.FleetType == AIFleetType.Trade)
-        {
-            return other.FleetType == AIFleetType.Pirate;
-        }
-
-        if (fleet.FleetType == AIFleetType.NavalPatrol)
-        {
-            return other.FleetType == AIFleetType.Pirate;
-        }
-
-        if (fleet.FleetType == AIFleetType.War)
-        {
-            if (other.FleetType == AIFleetType.Pirate)
-            {
-                return true;
-            }
-
-            return other.FleetType == AIFleetType.War && other.Nationality != fleet.Nationality;
-        }
-
-        return false;
+        return aiPolicy.CanEngage(this, other);
     }
 
     private Town FindNearestFriendlyTown()
@@ -488,7 +380,7 @@ public class FleetMapController : MonoBehaviour
         return closestTown;
     }
 
-    private float GetFleetHealthRatio()
+    public float GetFleetHealthRatio()
     {
         var boats = fleet.GetBoats();
         if (boats == null || boats.Count == 0)
